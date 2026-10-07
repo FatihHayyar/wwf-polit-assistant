@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+﻿from fastapi import FastAPI
+
+from app.api.router import api_router
+
 
 app = FastAPI(
     title="WWF Polit-Assistant API",
@@ -6,7 +9,4 @@ app = FastAPI(
     version="0.1.0",
 )
 
-
-@app.get("/health", tags=["System"])
-def health_check() -> dict[str, str]:
-    return {"status": "ok"}
+app.include_router(api_router)
