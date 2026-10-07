@@ -1,0 +1,517 @@
+﻿
+==========================================================================================
+WWF POLIT ASSISTANT ù CLASSIFICATION QUALITY REPORT
+==========================================================================================
+
+==========================================================================================
+INTEGRITY CHECKS
+==========================================================================================
+Affairs:                         325,691
+Distinct classified affairs:     325,691
+Missing classifications:         0
+Fallback + specific conflicts:   0
+Orphan classification rows:      0
+
+INTEGRITY PASSED
+
+==========================================================================================
+CATEGORY DISTRIBUTION
+==========================================================================================
+Specific classification rows: 5,703
+
+    699   12.26%  renewable_electricity               Erneuerbarer Strom
+    596   10.45%  circular_economy                    Kreislaufwirtschaft & Recycling
+    570    9.99%  soil_spatial_planning               Boden & Raumplanung
+    551    9.66%  sustainable_mobility                Nachhaltige Mobilitõt & E-Mobilitõt
+    449    7.87%  public_sector                       Íffentliche Hand
+    404    7.08%  building_efficiency                 Gebõude & Energieeffizienz
+    374    6.56%  waters                              Gewõsser & aquatische Íkosysteme
+    334    5.86%  renewable_heat                      Erneuerbare Wõrme
+    291    5.10%  fossil_energy                       Fossile Energien
+    237    4.16%  agriculture_biodiversity            Landwirtschaft & Biodiversitõt
+    155    2.72%  grids_storage                       Netze & Speicher
+    153    2.68%  environmental_law                   Umweltrecht & Regulierung
+    153    2.68%  species_habitats                    Arten & Lebensrõume
+    136    2.38%  companies_supply_chains             Unternehmen & Lieferketten
+    127    2.23%  food_consumption                    Ernõhrung & Konsum
+    108    1.89%  forest                              Wald
+    102    1.79%  protected_areas                     Schutzgebiete
+     88    1.54%  international_environment           Internationale Umweltpolitik
+     69    1.21%  large_consumers_datacenters         Grossverbraucher & Rechenzentren
+     34    0.60%  resources_raw_materials             Ressourcen & Rohstoffe
+     32    0.56%  sustainable_finance                 Nachhaltige Finanzierung
+     26    0.46%  environmental_funding               Umweltfinanzierung & F÷rderung
+     15    0.26%  environmental_research_education    Umweltbildung & Forschung
+
+==========================================================================================
+TITLE VS CONTENT
+==========================================================================================
+high           4,719
+medium           984
+
+Evidence source distribution:
+title_de               2,607
+text                   2,503
+title_fr               1,473
+title_it                 479
+title_long_fr             38
+title_long_de              7
+title_rm                   4
+
+==========================================================================================
+MULTI-LABEL AFFAIRS
+==========================================================================================
+1 categories: 5,445 affairs
+2 categories: 117 affairs
+3 categories: 8 affairs
+
+==========================================================================================
+TOP MATCHED TERMS
+==========================================================================================
+   281  fr   amÚnagement du territoire
+   257  fr   marchÚs publics
+   230  de   Raumplanung
+   219  de   Recycling
+   212  de   Photovoltaik
+   194  de   Pflanzenschutzmittel
+   179  de   Erdgas
+   178  fr   photovolta´que
+   173  de   Kreislaufwirtschaft
+   167  de   Energieeffizienz
+   160  de   Veloverkehr
+   132  de   Elektromobilitõt
+   129  fr   protection des eaux
+   123  it   energia solare
+   123  de   Langsamverkehr
+   117  de   Windenergie
+   115  fr   recyclage
+   111  fr   mobilitÚ douce
+   103  de   Solarstrom
+   103  it   riciclaggio
+    91  de   Fernwõrme
+    79  de   Revitalisierung
+    78  de   Geothermie
+    77  de   Pestizid
+    64  de   ÷ffentliches Beschaffungswesen
+    59  fr   assainissement ÚnergÚtique
+    59  fr   efficacitÚ ÚnergÚtique
+    55  de   Ladeinfrastruktur
+    54  fr   chauffage Ó distance
+    54  de   Umweltvertrõglichkeitspr³fung
+    54  de   Artenvielfalt
+    54  de   Wiederverwendung
+    53  de   Renaturierung
+    53  fr   renaturation
+    53  de   Heiz÷l
+    52  fr   faune sauvage
+    52  de   Gewõsserschutz
+    52  de   Vorbildfunktion
+    51  fr   gÚothermie
+    50  fr   mazout
+
+==========================================================================================
+CATEGORY SAMPLES
+==========================================================================================
+
+[agriculture_biodiversity] Landwirtschaft & Biodiversitõt (237)
+------------------------------------------------------------------------------------------
+  Affair 5013 | score=10.0 | high
+    Einsatz von Pflanzenschutzmittel in Adliswil
+  Affair 15103 | score=10.0 | high
+    UG Pflanzenschutzmittel in Trinkwasser
+  Affair 36206 | score=10.0 | high
+    Pflanzenschutzmittel und ihre Metaboliten in unseren Gewõssern
+  Affair 40055 | score=10.0 | high
+    Standesinitiative zur Vereinfachung der Mitteilungspflicht f³r Nõhrstoffe und Pflanzenschutzmittel (digiFLUX)
+  Affair 41289 | score=10.0 | high
+    Pflanzenschutzmittel und ihre Metaboliten in unseren Gewõssern und im Grundwasser
+
+[building_efficiency] Gebõude & Energieeffizienz (404)
+------------------------------------------------------------------------------------------
+  Affair 747 | score=10.0 | high
+    Besteuerung des Eigenmietwerts: Ber³cksichtigung energetische Sanierung
+  Affair 1953 | score=10.0 | high
+    Energieeffizienz auch beim Denkmalschutz
+  Affair 3895 | score=10.0 | high
+    Mehr Transparenz bei der Energieeffizienz stõdtischer Liegenschaften
+  Affair 4097 | score=10.0 | high
+    Mehr Transparenz bei der Energieeffizienz im Wohnungsmarkt
+  Affair 4776 | score=10.0 | high
+    Darlehen f³r energetische Sanierung f³r Stockwerkeigent³mergemeinschaften (kurz Stweg)
+
+[circular_economy] Kreislaufwirtschaft & Recycling (596)
+------------------------------------------------------------------------------------------
+  Affair 1303 | score=10.0 | high
+    IT-Recycling
+  Affair 1401 | score=10.0 | high
+    "F³r ein flõchendeckendes Recycling von Plastik in Basel-Stadt"
+  Affair 2091 | score=10.0 | high
+    Kreislaufwirtschaft im Kampf gegen die Klimakrise nutzen
+  Affair 2767 | score=10.0 | high
+    Plastik-Recycling
+  Affair 2913 | score=10.0 | high
+    Kreislaufwirtschaft
+
+[companies_supply_chains] Unternehmen & Lieferketten (136)
+------------------------------------------------------------------------------------------
+  Affair 28846 | score=10.0 | high
+    Rapporto di sostenibilitÓ CSR
+  Affair 47583 | score=10.0 | high
+    Montesinos-Gelder und Sorgfaltspflicht der Banken
+  Affair 48870 | score=10.0 | high
+    Uno-Konvention zur internationalen Unternehmensverantwortung und -haftung
+  Affair 51243 | score=10.0 | high
+    Nachhaltigkeitsberichterstattung der Bundesverwaltung
+  Affair 52496 | score=10.0 | high
+    Strafbarkeit grober Sorgfaltspflichtverletzungen in der Geschõftsf³hrung
+
+[environmental_funding] Umweltfinanzierung & F÷rderung (26)
+------------------------------------------------------------------------------------------
+  Affair 188 | score=10.0 | high
+    Einen Klimafonds "New Green Deal f³r Basel" (NGDB)
+  Affair 8454 | score=10.0 | high
+    ½Cleantech-City Winterthur╗: Klimafonds verbessern und verstõrken
+  Affair 11161 | score=10.0 | high
+    Schaffung eines Klimafonds, zeitliche Umsetzung und Art der Finanzierung
+  Affair 47463 | score=10.0 | high
+    Klimafonds
+  Affair 52146 | score=10.0 | high
+    Energief÷rderung und -beratung im Kanton St.Gallen
+
+[environmental_law] Umweltrecht & Regulierung (153)
+------------------------------------------------------------------------------------------
+  Affair 41051 | score=10.0 | high
+    Missachtung des Espoo-Abkommens: Neue Umweltvertrõglichkeitspr³fung f³r den EAP dringend n÷tig!
+  Affair 43445 | score=10.0 | high
+    Stand und Entwicklung der Immissionen nichtionisierender Strahlung (NIS) 2010/2011; Jõhrliche Berichterstattung an den Grossen ...
+  Affair 46891 | score=10.0 | high
+    Teilrevision von º 20a Umweltschutzgesetz Basel-Stadt betreffend Sauberkeit und Abfallvermeidung
+  Affair 46892 | score=10.0 | high
+    Revision Parkraumbewirtschaftungsverordnung, º 74 Bau- und Planungsgesetz und ºº 16 bis 19 Umweltschutzgesetz
+  Affair 46916 | score=10.0 | high
+    Umweltschutzgesetz. ─nderung (Gen-Lex)
+
+[environmental_research_education] Umweltbildung & Forschung (15)
+------------------------------------------------------------------------------------------
+  Affair 1549 | score=10.0 | high
+    Umweltbildung und -erziehung
+  Affair 57605 | score=10.0 | high
+    Umweltbildung im Kanton St.Gallen
+  Affair 63981 | score=10.0 | high
+    Bericht ³ber die Umwelterziehung
+  Affair 74368 | score=10.0 | high
+    Umweltbildung und -erziehung in St.Gallen
+  Affair 91503 | score=10.0 | high
+    Verbindliche Umweltbildung in der Volksschule
+
+[food_consumption] Ernõhrung & Konsum (127)
+------------------------------------------------------------------------------------------
+  Affair 2135 | score=10.0 | high
+    Nachhaltiger Konsum in der Stadt Luzern
+  Affair 6814 | score=10.0 | high
+    Demande d'Útudier l'Úlaboration d'une politique efficace de lutte contre le gaspillage alimentaire en ville de Fribourg
+  Affair 11835 | score=10.0 | high
+    Vermeidung von Lebensmittelverschwendung in den stõdtischen Verpflegungsbetrieben
+  Affair 13211 | score=20.0 | high
+    Sammelkredit f³r die Unterst³tzung von lokalen Z³rcher Netzwerken und Akteur-Plattformen, die im Bereich ½Nachhaltigkeit, nachh...
+  Affair 21336 | score=10.0 | high
+    Gr³ne Wirtschaft û Reduktion der Lebensmittelverschwendung in der Stadt Bern um einen Drittel
+
+[forest] Wald (108)
+------------------------------------------------------------------------------------------
+  Affair 30149 | score=10.0 | high
+    Forstwirtschaft / Zweckverband Forstrevier Hardwald Umgebung - Teilrevision Verbandsstatuten
+  Affair 49169 | score=8.0 | medium
+    Schutzwaldpflege und Sicherheit der Bev÷lkerung
+  Affair 51559 | score=16.0 | high
+    Mehr Kohõrenz in der Schweizer Waldpolitik
+  Affair 53124 | score=10.0 | high
+    Globale Erwõrmung und Schutz der Tropenwõlder
+  Affair 53131 | score=10.0 | high
+    Grundanforderungen an den naturnahen Waldbau und Biodiversitõtsstrategie des Bafu
+
+[fossil_energy] Fossile Energien (291)
+------------------------------------------------------------------------------------------
+  Affair 295 | score=10.0 | high
+    Sauver la seule station de gaz naturel carburant du Jura
+  Affair 1477 | score=10.0 | high
+    Finanzielles Risiko des IWB-Erdgas-Netzes
+  Affair 6281 | score=10.0 | high
+    "Investiert die Stadt Uster in fossile Energie?"
+  Affair 7584 | score=10.0 | high
+    Erdgas Ostschweiz AG (EGO), Genehmigung des Nachtrags zum Aktionõrsbindungsvertrag (ABV) vom 5. September 2002
+  Affair 9380 | score=10.0 | high
+    Die Gasbehõlter der Erdgas Ostschweiz AG
+
+[grids_storage] Netze & Speicher (155)
+------------------------------------------------------------------------------------------
+  Affair 15441 | score=10.0 | high
+    Bau von Photovoltaikanlagen der Stadt Wõdenswil zur Einspeisung ins Stromnetz
+  Affair 19285 | score=10.0 | high
+    Batteriespeicher
+  Affair 19321 | score=10.0 | high
+    Batteriespeicher f³r das Elektrizitõtsnetz
+  Affair 29108 | score=10.0 | high
+    Richiesta di un credito quadro di CHF 4'800'000.-- per l'aggiornamento della rete elettrica e piccoli lavori reti AP e Gas
+  Affair 29267 | score=10.0 | high
+    Extension du rÚseau de chauffage Ó distance Ó l'est
+
+[international_environment] Internationale Umweltpolitik (88)
+------------------------------------------------------------------------------------------
+  Affair 13888 | score=10.0 | high
+    Klimapolitik der Schweizerischen Nationalbank (SNB), Austausch mit anderen Aktienbesitzenden hinsichtlich einer klimafreundlich...
+  Affair 38570 | score=10.0 | high
+    Masterplan Dekarbonisierung û Umsetzung der Klimaziele von Paris im Kanton Bern
+  Affair 38573 | score=10.0 | high
+    Standortbestimmung zum Klimaschutz nach dem Hitzesommer 2018: Steht die Politik des Kantons Bern im Einklang mit dem Klimavertr...
+  Affair 41569 | score=10.0 | high
+    Autobahn Allschwil û Klimaabkommen
+  Affair 45107 | score=10.0 | high
+    Basel pro Klima: Pariser Klimaabkommen einhalten
+
+[large_consumers_datacenters] Grossverbraucher & Rechenzentren (69)
+------------------------------------------------------------------------------------------
+  Affair 3026 | score=10.0 | high
+    Zweites Datacenter Phase 2 . Projekt LUIIGI (Luzern investiert in getrennte Infrastruktur)
+  Affair 3029 | score=10.0 | high
+    Zweites Datacenter Phase 1. Projekt ½LUIIGI╗ (Luzern investiert in getrennte Infrastruktur)
+  Affair 8523 | score=10.0 | high
+    Abwõrmenutzung und Mehrwert Datacenter Neuhegi
+  Affair 8533 | score=10.0 | high
+    Abwõrmenutzung der Rechenzentren
+  Affair 13296 | score=10.0 | high
+    Betrieb der zwei stõdtischen Datacenter durch OIZ, Bilanz des Betriebs betreffend prognostiziertem und tatsõchlich erreichtem P...
+
+[protected_areas] Schutzgebiete (102)
+------------------------------------------------------------------------------------------
+  Affair 131 | score=10.0 | high
+    Naturschutzgebiet im Honeret Wald (Begr³ndung Postulat)
+  Affair 832 | score=10.0 | high
+    Muslimischer Friedhof im Nahbereich Naturschutzgebiet Schwabbr³nnen
+  Affair 1337 | score=10.0 | high
+    Naturschutzgebiet Ruggeller Riet
+  Affair 10005 | score=10.0 | high
+    Unterst³tzung Naturpark Thal
+  Affair 15639 | score=10.0 | high
+    Beitritt zum Regionalen Naturpark
+
+[public_sector] Íffentliche Hand (449)
+------------------------------------------------------------------------------------------
+  Affair 8700 | score=10.0 | high
+    Nachhaltige ÷ffentliche Beschaffung in Dietikon
+  Affair 16166 | score=10.0 | high
+    Nachhaltige ÷ffentliche Beschaffung Stadt Schaffhausen
+  Affair 17838 | score=10.0 | high
+    Íffentliches Beschaffungswesen: Anforderungen an die Arbeitsbedingungen, den Arbeitsschutz und die Lohngleichheit
+  Affair 24586 | score=10.0 | high
+    Betreffend Sensibilisierung f³r eine nachhaltige ÷ffentliche Beschaffung
+  Affair 27408 | score=10.0 | high
+    Richiedente la pubblicazione dei mandati esterni, e appalti pubblici, sul sito della CittÓ
+
+[renewable_electricity] Erneuerbarer Strom (699)
+------------------------------------------------------------------------------------------
+  Affair 2227 | score=10.0 | high
+    Erstellung einer Solaranlage auf dem Dach des Hallenbades Moosh³sli
+  Affair 4891 | score=10.0 | high
+    Photovoltaik-Informationen
+  Affair 4894 | score=10.0 | high
+    Photovoltaik-Kostenstelle er÷ffnen
+  Affair 5838 | score=10.0 | high
+    Rentable Photovoltaik-Anlagen
+  Affair 5839 | score=10.0 | high
+    Umsetzungsoffensive f³r Photovoltaik-Anlagen in D³bendorf
+
+[renewable_heat] Erneuerbare Wõrme (334)
+------------------------------------------------------------------------------------------
+  Affair 141 | score=10.0 | high
+    Fernwõrme
+  Affair 1304 | score=10.0 | high
+    Konzept Geothermie Thurgau
+  Affair 4124 | score=10.0 | high
+    Fernwõrme vorantreiben ohne neue Abhõngigkeiten
+  Affair 4849 | score=10.0 | high
+    Transformation Wõrmeversorgung, Umsetzung Gegenvorschlag Fernwõrme-Initiative
+  Affair 5211 | score=10.0 | high
+    Fernwõrme Stadt Zug S³d, wenn nicht jetzt, wann dann?
+
+[resources_raw_materials] Ressourcen & Rohstoffe (34)
+------------------------------------------------------------------------------------------
+  Affair 15814 | score=10.0 | high
+    Smart City Schaffhausen û Ein Weg zu mehr Lebensqualitõt, Ressourceneffizienz und Innovation
+  Affair 56151 | score=8.0 | medium
+    Bekõmpfung der geplanten Obsoleszenz
+  Affair 56991 | score=8.0 | medium
+    Íkologischer Fussabdruck der Schweiz heute und im Jahr 2050
+  Affair 57093 | score=10.0 | high
+    Rohstoffabbau und -handel. Korruption und Steuerbefreiung von Unternehmen bekõmpfen
+  Affair 57270 | score=8.0 | medium
+    Verstõrkte F÷rderung des Íkodesigns f³r nachhaltigere Produkte
+
+[soil_spatial_planning] Boden & Raumplanung (570)
+------------------------------------------------------------------------------------------
+  Affair 339 | score=10.0 | high
+    Pour une protection du patrimoine en adÚquation avec les enjeux liÚs au mitage du territoire et du rÚchauffement climatique
+  Affair 1125 | score=10.0 | high
+    Bodenversiegelung sofort stoppen!
+  Affair 4862 | score=10.0 | high
+    Weniger Bodenversiegelung in Wetzikon
+  Affair 6721 | score=10.0 | high
+    Modification de l'article 3 et introduction d'un article 10bis dans le RÞglement du 23 fÚvrier 2015 sur les Úmoluments administ...
+  Affair 6941 | score=10.0 | high
+    Proposition n░ 14 - Demande la modification de lÆarticle 15 du rÞglement du 23 fÚvrier 2015 sur les Úmoluments administratifs e...
+
+[species_habitats] Arten & Lebensrõume (153)
+------------------------------------------------------------------------------------------
+  Affair 158 | score=10.0 | high
+    Kommunale Volksinitiative "Mehr Artenvielfalt f³r Dietikon"
+  Affair 5034 | score=10.0 | high
+    F÷rderung und Schutz der Artenvielfalt
+  Affair 5043 | score=10.0 | high
+    F÷rderung und Schutz der Artenvielfalt
+  Affair 5875 | score=10.0 | high
+    Volksinitiative ½Zum Schutz der Artenvielfalt û Rettet die Bienen╗
+  Affair 6220 | score=10.0 | high
+    Schutz der Artenvielfalt
+
+[sustainable_finance] Nachhaltige Finanzierung (32)
+------------------------------------------------------------------------------------------
+  Affair 29593 | score=10.0 | high
+    Une obligation verte pour le financement de la transition ÚnergÚtique et Úcologique Ó Lausanne
+  Affair 61323 | score=10.0 | high
+    Was tut die Schweiz f³r nachhaltige Finanzen?
+  Affair 63717 | score=10.0 | high
+    Unterst³tzung der Forschung im Bereich der nachhaltigen Finanzen. Worauf wartet die Schweiz noch?
+  Affair 63723 | score=8.0 | medium
+    Finanzmõrkte und Klima. Welche Strategie f³r die Schweiz?
+  Affair 65010 | score=10.0 | high
+    Ist die Biodiversitõt Teil des Mandats der bundesinternen Arbeitsgruppe zu Sustainable Finance?
+
+[sustainable_mobility] Nachhaltige Mobilitõt & E-Mobilitõt (551)
+------------------------------------------------------------------------------------------
+  Affair 199 | score=10.0 | high
+    Rahmenkredit f³r den Fuss- und Veloverkehr im Gegenvorschlag zur Stõdte-Initiative
+  Affair 966 | score=10.0 | high
+    Elektromobilitõt - jetzt die Weichen richtig stellen
+  Affair 1428 | score=10.0 | high
+    Ratschlag Gesamtkonzept Elektromobilitõt; Anpassung des kantonalen Umweltschutzgesetzes
+  Affair 1473 | score=10.0 | high
+    Schutz der Akzeptanz f³r den Veloverkehr durch Identifizierbarkeit von Velos
+  Affair 1600 | score=10.0 | high
+    Umsetzung der neuen Bundesbestimmungen zum Veloverkehr
+
+[waters] Gewõsser & aquatische Íkosysteme (374)
+------------------------------------------------------------------------------------------
+  Affair 271 | score=10.0 | high
+    Gewõsserschutz im Rhein - der Rendite der Pharmaindustrie geopfert
+  Affair 2880 | score=10.0 | high
+    Postulat Nr. 2017-676 von Wiezel Caroline, L20, und Mitunterzeichnende; Ausweisung einer Gr³nzone zum Gewõsserschutz mit Schutz...
+  Affair 3598 | score=10.0 | high
+    Renaturierung Weiheranlage Staffelntõli
+  Affair 3680 | score=10.0 | high
+    Revitalisierung des W³rzenbaches im Areal des Strandbads Lido
+  Affair 5656 | score=10.0 | high
+    Genehmigung der Bauabrechnung ³ber die Revitalisierung des Sagentobelbaches sowie Sanierungen an der Stettbachstrasse
+
+==========================================================================================
+CONTENT-ONLY SAMPLE FOR MANUAL REVIEW
+==========================================================================================
+Affair 9596 | sustainable_mobility | score=8.0
+  Hauptstrassenf³hrung in Olten, Sõlikreisel bis Unterf³hrungsstrasse
+Affair 9633 | sustainable_mobility | score=8.0
+  Prognostiziertes Verkehrsaufkommen Riggenbachstrasse/von Rollstrasse
+Affair 9671 | sustainable_mobility | score=8.0
+  Olten S³dWest, Langsamverkehrsbr³cke beim Damm ³ber die Zufahrt ab Entlastungsstrasse (ERO)/Projekt- und Kreditgenehmigung
+Affair 9733 | building_efficiency | score=8.0
+  Schaffung eines Energiefonds f³r die Stadt Olten
+Affair 9790 | renewable_electricity | score=8.0
+  Preisgestaltung im neuen Strommix
+Affair 9816 | sustainable_mobility | score=8.0
+  Regierungsprogramm 2013-2017
+Affair 9884 | sustainable_mobility | score=8.0
+  Vorschlag ("Volksmotion") "ANDAARE JETZT"
+Affair 9895 | sustainable_mobility | score=8.0
+  Unerledigte parlamentarische Vorst÷sse/Abschreibungen und Kurzberichterstattung - 2005
+Affair 9908 | sustainable_mobility | score=8.0
+  Fussgõngerstreifen
+Affair 10036 | sustainable_mobility | score=8.0
+  Mobilitõtsplan und Parkierungsreglement: Kann Olten Umsatzverluste in zweistelliger Millionenh÷he verkraften?
+Affair 10064 | sustainable_mobility | score=8.0
+  Unerledigte parlamentarische Vorst÷sse/Abschreibungen und Kurzberichterstattung - 2007
+Affair 10089 | building_efficiency | score=8.0
+  Minergiestandard bei allen stõdtischen Neu- und Umbauprojekten
+Affair 10146 | sustainable_mobility | score=8.0
+  Konzept Innenstadt 2008, Parkhaus Munzingerplatz mit Begegnungszone/Zustimmung Konzept, weiteres Vorgehen und Genehmigung Kredit
+Affair 10187 | sustainable_mobility | score=8.0
+  Unterledigte parlamentarische Vorst÷sse/Abschreibung und Kurzberichterstattung
+Affair 47162 | species_habitats | score=8.0
+  Reduktion von hormonaktiven Substanzen
+Affair 47165 | protected_areas | score=8.0
+  Schaffung von Regionalparks in der Schweiz
+Affair 47739 | soil_spatial_planning | score=8.0
+  Alpenkonvention und nachhaltige Entwicklung
+Affair 48299 | sustainable_mobility | score=8.0
+  Berg- und Randregionen. Innovative Verkehrsprojekte
+Affair 48467 | species_habitats | score=9.0
+  Ruhegebiete f³r Wildtiere. ─nderung des Jagdgesetzes
+Affair 48856 | soil_spatial_planning | score=8.0
+  Verbesserte Nutzung bestehender Wohngebõude im lõndlichen Raum
+Affair 48926 | environmental_law | score=8.0
+  Administrative Erleichterungen f³r KMU bei der Anwendung des Umweltrechtes
+Affair 48981 | renewable_heat | score=8.0
+  Geld f³r erneuerbare Energietrõger statt f³r Atomforschung *
+Affair 49169 | forest | score=8.0
+  Schutzwaldpflege und Sicherheit der Bev÷lkerung
+Affair 49174 | fossil_energy | score=8.0
+  Klimamassnahmen im Inland. Benefits
+Affair 49198 | species_habitats | score=9.0
+  Umweltschonende Pflege von Bahnbegleitflõchen in der Schweiz
+Affair 49201 | environmental_law | score=8.0
+  Nationalstrassen. ▄berpr³fung von Bauprojekten
+Affair 49305 | environmental_law | score=8.0
+  Verbandsbeschwerderecht. Buwal-Studien
+Affair 49382 | soil_spatial_planning | score=8.0
+  Nachhaltige Bauzonen
+Affair 49420 | renewable_heat | score=8.0
+  Forschungsprogramm Kraftwerk 2020
+Affair 49808 | soil_spatial_planning | score=8.0
+  Begrenzung der Siedlungsflõche
+Affair 49809 | soil_spatial_planning | score=8.0
+  Stõrkung des Bundesamtes f³r Raumentwicklung
+Affair 49944 | fossil_energy | score=8.0
+  Aussenpolitik in Abhõngigkeit der Energiepolitik
+Affair 49978 | soil_spatial_planning | score=8.0
+  Unwetterkatastrophe 2005
+Affair 50368 | species_habitats | score=9.0
+  Stopp den Quads
+Affair 50468 | renewable_heat | score=8.0
+  Weg vom Íl, hin zu erneuerbaren Energien
+Affair 50468 | renewable_electricity | score=8.0
+  Weg vom Íl, hin zu erneuerbaren Energien
+Affair 50499 | fossil_energy | score=8.0
+  Sichere Landesversorgung
+Affair 50640 | soil_spatial_planning | score=8.0
+  Flõchennutzungszertifikate
+Affair 50758 | environmental_law | score=8.0
+  Klimavertrõglichkeitspr³fung
+Affair 51145 | renewable_electricity | score=8.0
+  Energie- und Klimapolitik des Bundes
+Affair 51205 | soil_spatial_planning | score=8.0
+  Vorschlõge zur Raumentwicklung
+Affair 51211 | agriculture_biodiversity | score=8.0
+  Insektizide mit Imidacloprid oder Fipronil
+Affair 51256 | fossil_energy | score=8.0
+  Reduktion des Energieverbrauchs in der Schweiz
+Affair 51327 | building_efficiency | score=8.0
+  Anreize f³r umfassende energetische Sanierungen bei Privatliegenschaften
+Affair 51363 | environmental_law | score=8.0
+  Lõrmsanierung der Eisenbahnen
+Affair 51531 | environmental_law | score=8.0
+  Lõrmschutzbauten auf der A13
+Affair 51557 | building_efficiency | score=8.0
+  F÷rderung der Sanierung von Hõusern mit preisg³nstigen Mietwohnungen
+Affair 51576 | building_efficiency | score=8.0
+  Erneuerbare Energien f³rs Bundeshaus
+Affair 51593 | renewable_electricity | score=8.0
+  Treibhausgasemissionen. Eurokompatible Reduktionsziele
+Affair 51641 | environmental_law | score=8.0
+  Kunstd³ngereinsatz am Lauberhorn. Gesetzgebung anpassen

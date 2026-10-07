@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: wwf-polit-assistant-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: polit_assistant
+      POSTGRES_USER: polit_assistant
+      POSTGRES_PASSWORD: polit_assistant_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - polit_assistant_python_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U polit_assistant -d polit_assistant"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  polit_assistant_python_postgres_data:
