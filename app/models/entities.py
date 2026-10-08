@@ -130,6 +130,7 @@ class Affair(Base):
     __tablename__ = "affairs"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+
     body_id: Mapped[int | None] = mapped_column(BigInteger)
     body_key: Mapped[str | None] = mapped_column(Text)
     number: Mapped[str | None] = mapped_column(Text)
@@ -173,6 +174,8 @@ class Affair(Base):
 
     updated_at: Mapped[datetime | None] = mapped_column(DateTime)
     created_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+    sync_fingerprint: Mapped[str | None] = mapped_column(Text)
 
 
 class Meeting(Base):
@@ -362,4 +365,5 @@ class ParliamentaryText(Base):
     text_date: Mapped[datetime | None] = mapped_column(DateTime)
     text_format: Mapped[str | None] = mapped_column(Text)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime)
+    sync_fingerprint: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime | None] = mapped_column(DateTime)
