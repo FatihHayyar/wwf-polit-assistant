@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
-
+from app.services.change_event_service import create_change_event
 import httpx
 from sqlalchemy import text
 
@@ -327,6 +327,14 @@ def sync_one_affair(record: dict) -> SyncResult:
 
                 classify_new_affair(db, affair)
 
+                create_change_event(
+                     db,
+                     affair_id=affair.id,
+                     change_type="created",
+                     fingerprint=new_fingerprint,
+                     description="New affair detected.",
+                )
+
                 db.commit()
 
                 return SyncResult(
@@ -355,6 +363,14 @@ def sync_one_affair(record: dict) -> SyncResult:
                     affair.updated_at = values["updated_at"]
 
                 affair.sync_fingerprint = new_fingerprint
+
+                create_change_event(
+                     db,
+                     affair_id=affair.id,
+                     change_type="updated",
+                     fingerprint=new_fingerprint,
+                     description="Changed fields: " + ", ".join(changed_fields),
+                )
 
                 db.commit()
 

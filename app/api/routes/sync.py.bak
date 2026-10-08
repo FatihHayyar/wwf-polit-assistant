@@ -1,0 +1,131 @@
+
+from __future__ import annotations
+
+import hmac
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+
+from fastapi import APIRouter, Header, HTTPException, status
+from pydantic import BaseModel
+from sqlalchemy import text
+
+from app.core.config import settings
+from app.db.database import engine
+
+
+router = APIRouter(
+    prefix="/api/v1/sync",
+    tags=["Sync"],
+)
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+
+
+class DatasetSyncStatus(BaseModel):
+    dataset: str
+    last_updated_at: datetime | None
+    last_id: int | None
+    last_run_at: datetime | None
+    status: str
+    records_processed: int
+    records_new: int
+    records_changed: int
+    records_unchanged: int
+    records_error: int
+    error_message: str | None
+
+
+class SyncStatusResponse(BaseModel):
+    datasets: list[DatasetSyncStatus]
+
+
+class SyncRunResponse(BaseModel):
+    message: str
+    process_id: int
+
+
+@router.get(
+    "/status",
+    response_model=SyncStatusResponse,
+)
+def get_sync_status() -> SyncStatusResponse:
+    query = text(
+        """
+        SELECT
+            dataset,
+            last_updated_at,
+            last_id,
+            last_run_at,
+            status,
+            records_processed,
+            records_new,
+            records_changed,
+            records_unchanged,
+            records_error,
+            error_message
+        FROM sync_checkpoints
+        ORDER BY dataset
+        """
+    )
+
+    with engine.connect() as connection:
+        rows = connection.execute(query).mappings().all()
+
+    return SyncStatusResponse(
+        datasets=[
+            DatasetSyncStatus(**dict(row))
+            for row in rows
+        ]
+    )
+
+
+@router.post(
+    "/run",
+    response_model=SyncRunResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def start_sync(
+    x_sync_api_key: str | None = Header(default=None),
+) -> SyncRunResponse:
+    configured_key = settings.sync_api_key
+
+    if not configured_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Sync API key is not configured.",
+        )
+
+    if not x_sync_api_key or not hmac.compare_digest(
+        x_sync_api_key,
+        configured_key,
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid sync API key.",
+        )
+
+    try:
+        process = subprocess.Popen(
+            [
+                sys.executable,
+                "-u",
+                "-m",
+                "scripts.sync.run_all",
+            ],
+            cwd=str(PROJECT_ROOT),
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except OSError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="Could not start sync process.",
+        ) from exc
+
+    return SyncRunResponse(
+        message="Sync launch requested.",
+        process_id=process.pid,
+    )

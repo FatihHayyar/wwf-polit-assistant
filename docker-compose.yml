@@ -1,3 +1,4 @@
+
 services:
   postgres:
     image: postgres:17
@@ -16,6 +17,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://polit_assistant:polit_assistant_dev@postgres:5432/polit_assistant
+      TZ: Europe/Zurich
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["python", "-u", "-m", "scripts.sync.scheduler"]
 
 volumes:
   polit_assistant_python_postgres_data:

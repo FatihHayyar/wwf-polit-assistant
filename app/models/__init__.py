@@ -1,11 +1,14 @@
+
 from sqlalchemy import Index
 
+from app.models.change_event import ChangeEvent
 from app.models.classification import (
     AffairClassification,
     ClassificationCategory,
     ClassificationEvidence,
     ClassificationRule,
 )
+from app.models.email_token import EmailToken
 from app.models.entities import (
     Agenda,
     Affair,
@@ -20,6 +23,12 @@ from app.models.entities import (
     PoliticalGroup,
     Voting,
 )
+from app.models.notification import Notification
+from app.models.subscription import (
+    UserCantonSubscription,
+    UserCategorySubscription,
+)
+from app.models.user import User
 
 
 # Bodies
@@ -85,16 +94,22 @@ __all__ = [
     "Affair",
     "AffairClassification",
     "Body",
+    "ChangeEvent",
     "ClassificationCategory",
     "ClassificationEvidence",
     "ClassificationRule",
     "Document",
+    "EmailToken",
     "Event",
     "Interest",
     "Meeting",
     "Membership",
+    "Notification",
     "ParliamentaryText",
     "Person",
     "PoliticalGroup",
+    "User",
+    "UserCantonSubscription",
+    "UserCategorySubscription",
     "Voting",
 ]

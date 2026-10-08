@@ -1,0 +1,1443 @@
+﻿
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+
+from app.classification.classifier import AffairClassifier
+from app.db.database import SessionLocal
+from app.models.entities import Affair
+from scripts.classify_affairs import (
+    classify_batch,
+    load_fallback_category,
+    persist_batch,
+)
+
+API_URL = "https://api.openparldata.ch/v1/affairs/"
+BATCH_SIZE = 20
+
+LANGUAGE_FIELDS = {
+    "title": ("de", "fr", "it", "rm"),
+    "title_long": ("de", "fr", "it", "rm"),
+    "type_name": ("de", "fr", "it"),
+    "type_harmonized": ("de", "fr", "it", "en"),
+    "state_name": ("de", "fr", "it"),
+    "state_name_harmonized": ("de", "fr", "it"),
+    "url_external": ("de", "fr", "it"),
+}
+
+DIRECT_FIELDS = (
+    "body_id",
+    "body_key",
+    "number",
+    "external_id",
+    "external_alternative_id",
+    "active",
+)
+
+DATE_FIELDS = (
+    "begin_date",
+    "end_date",
+    "created_at",
+    "updated_at",
+)
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+
+    if isinstance(value, datetime):
+        result = value
+    else:
+        result = datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
+
+    if result.tzinfo is not None:
+        result = result.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+    return result
+
+
+def map_affair(record: dict) -> dict:
+    values = {"id": record["id"]}
+
+    for field in DIRECT_FIELDS:
+        if field in record:
+            values[field] = record[field]
+
+    for field in DATE_FIELDS:
+        if field in record:
+            values[field] = parse_datetime(
+                record[field]
+            )
+
+    for source_field, languages in LANGUAGE_FIELDS.items():
+        if source_field not in record:
+            continue
+
+        translations = record[source_field]
+
+        if translations is None:
+            translations = {}
+
+        if not isinstance(translations, dict):
+            raise ValueError(
+                f"Affair {record['id']}: "
+                f"{source_field} is not a language dictionary"
+            )
+
+        for language in languages:
+            values[f"{source_field}_{language}"] = (
+                translations.get(language)
+            )
+
+    return values
+
+
+def fetch_affairs() -> list[dict]:
+    with httpx.Client(timeout=30) as client:
+        response = client.get(
+            API_URL,
+            params={
+                "limit": BATCH_SIZE,
+                "sort_by": "-updated_at,-id",
+            },
+        )
+
+        response.raise_for_status()
+        return response.json()["data"]
+
+
+def sync_one_affair(record: dict) -> str:
+    values = map_affair(record)
+
+    with SessionLocal() as db:
+        try:
+            affair = db.get(
+                Affair,
+                values["id"],
+            )
+
+            # ---------------------------------
+            # NEW AFFAIR
+            # ---------------------------------
+            if affair is None:
+                affair = Affair(**values)
+
+                db.add(affair)
+                db.flush()
+
+                classifier = AffairClassifier(db)
+
+                fallback_category = (
+                    load_fallback_category(db)
+                )
+
+                (
+                    classification_rows,
+                    accepted_matches,
+                    _stats,
+                    _text_count,
+                ) = classify_batch(
+                    db,
+                    classifier=classifier,
+                    affairs=[affair],
+                    fallback_category=fallback_category,
+                )
+
+                if not classification_rows:
+                    raise RuntimeError(
+                        f"Affair {affair.id}: "
+                        "classification missing"
+                    )
+
+                persist_batch(
+                    db,
+                    classification_rows=classification_rows,
+                    accepted_matches=accepted_matches,
+                )
+
+                # Affair and classification
+                # committed together.
+                db.commit()
+
+                return "NEW_CLASSIFIED"
+
+            # ---------------------------------
+            # EXISTING AFFAIR
+            # ---------------------------------
+            changed_fields = []
+
+            for field, value in values.items():
+                if field in (
+                    "id",
+                    "created_at",
+                    "updated_at",
+                ):
+                    continue
+
+                if getattr(affair, field) != value:
+                    changed_fields.append(field)
+                    setattr(affair, field, value)
+
+            if changed_fields:
+                if "updated_at" in values:
+                    affair.updated_at = (
+                        values["updated_at"]
+                    )
+
+                db.commit()
+
+                return (
+                    "CHANGED: "
+                    + ", ".join(changed_fields)
+                )
+
+            # Ignore timestamp-only changes.
+            db.rollback()
+
+            return "UNCHANGED"
+
+        except Exception:
+            db.rollback()
+            raise
+
+
+def main() -> None:
+    records = fetch_affairs()
+
+    counts = {
+        "NEW_CLASSIFIED": 0,
+        "CHANGED": 0,
+        "UNCHANGED": 0,
+        "ERROR": 0,
+    }
+
+    for record in records:
+        affair_id = record.get("id")
+
+        try:
+            status = sync_one_affair(record)
+
+        except Exception as exc:
+            status = "ERROR"
+            print(
+                f"Affair {affair_id}: "
+                f"ERROR - {exc}"
+            )
+
+        if status != "ERROR":
+            print(
+                f"Affair {affair_id}: "
+                f"{status}"
+            )
+
+        # "CHANGED: title_de" -> "CHANGED"
+        status_key = status.split(":")[0]
+
+        counts[status_key] += 1
+
+    print("\nSonuc:", counts)
+
+
+if __name__ == "__main__":
+    main()
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+
+from app.db.database import SessionLocal
+from app.models.entities import Agenda
+
+
+API_URL = "https://api.openparldata.ch/v1/agendas/"
+BATCH_SIZE = 20
+
+FIELDS = (
+    "body_id",
+    "body_key",
+    "meeting_id",
+    "item_date",
+    "item_external_id",
+    "item_title",
+    "item_number_display",
+    "item_number",
+    "item_description",
+    "item_status",
+    "item_result",
+    "item_category",
+    "item_url",
+    "item_affair_number",
+    "item_affair_id",
+    "item_language",
+    "created_at",
+)
+
+DATE_FIELDS = {
+    "item_date",
+    "created_at",
+}
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+
+    result = datetime.fromisoformat(
+        str(value).replace("Z", "+00:00")
+    )
+
+    if result.tzinfo is not None:
+        result = result.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+    return result
+
+
+def map_agenda(record: dict) -> dict:
+    values = {"id": record["id"]}
+
+    for field in FIELDS:
+        if field not in record:
+            continue
+
+        value = record[field]
+
+        if field in DATE_FIELDS:
+            value = parse_datetime(value)
+
+        values[field] = value
+
+    return values
+
+
+def fetch_agendas() -> list[dict]:
+    with httpx.Client(
+        timeout=30,
+        follow_redirects=True,
+    ) as client:
+        response = client.get(
+            API_URL,
+            params={
+                "limit": BATCH_SIZE,
+                "sort_by": "-id",
+            },
+        )
+
+        response.raise_for_status()
+
+        return response.json()["data"]
+
+
+def sync_one_agenda(record: dict) -> str:
+    values = map_agenda(record)
+
+    with SessionLocal() as db:
+        try:
+            agenda = db.get(
+                Agenda,
+                values["id"],
+            )
+
+            if agenda is None:
+                agenda = Agenda(**values)
+
+                db.add(agenda)
+                db.commit()
+
+                return "NEW"
+
+            changed_fields = []
+
+            for field, value in values.items():
+                if field in ("id", "created_at"):
+                    continue
+
+                if getattr(agenda, field) != value:
+                    changed_fields.append(field)
+                    setattr(agenda, field, value)
+
+            if changed_fields:
+                db.commit()
+
+                return (
+                    "CHANGED: "
+                    + ", ".join(changed_fields)
+                )
+
+            db.rollback()
+            return "UNCHANGED"
+
+        except Exception:
+            db.rollback()
+            raise
+
+
+def main() -> None:
+    records = fetch_agendas()
+
+    counts = {
+        "NEW": 0,
+        "CHANGED": 0,
+        "UNCHANGED": 0,
+        "ERROR": 0,
+    }
+
+    for record in records:
+        agenda_id = record.get("id")
+
+        try:
+            status = sync_one_agenda(record)
+
+        except Exception as exc:
+            status = "ERROR"
+
+            print(
+                f"Agenda {agenda_id}: "
+                f"ERROR - {exc}"
+            )
+
+        if status != "ERROR":
+            print(
+                f"Agenda {agenda_id}: "
+                f"{status}"
+            )
+
+        status_key = status.split(":")[0]
+        counts[status_key] += 1
+
+    print("\nSonuc:", counts)
+
+
+if __name__ == "__main__":
+    main()
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+from sqlalchemy import select
+
+from app.db.database import SessionLocal
+from app.models.entities import Document
+
+
+API_URL = "https://api.openparldata.ch/v1/docs/"
+BATCH_SIZE = 20
+
+DIRECT_FIELDS = (
+    "body_id",
+    "body_key",
+    "external_id",
+    "name",
+    "parent_type",
+    "hash",
+    "url",
+    "url_oparl",
+    "size",
+    "category_harmonized",
+    "format",
+    "language",
+    "text",
+    "affair_id",
+    "meeting_id",
+    "agenda_id",
+)
+
+DATE_FIELDS = (
+    "date",
+    "updated_at",
+)
+
+LANGUAGE_FIELDS = {
+    "category": ("de", "fr", "it"),
+}
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+
+    if isinstance(value, datetime):
+        result = value
+    else:
+        result = datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
+
+    if result.tzinfo is not None:
+        result = result.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+    return result
+
+
+def map_document(record: dict) -> dict:
+    values = {"source_id": record["id"]}
+
+    for field in DIRECT_FIELDS:
+        if field in record:
+            values[field] = record[field]
+
+    for field in DATE_FIELDS:
+        if field in record:
+            values[field] = parse_datetime(
+                record[field]
+            )
+
+    for source_field, languages in LANGUAGE_FIELDS.items():
+        if source_field not in record:
+            continue
+
+        translations = record[source_field]
+
+        if translations is None:
+            translations = {}
+
+        if not isinstance(translations, dict):
+            raise ValueError(
+                f"Document {record['id']}: "
+                f"{source_field} is not a language dictionary"
+            )
+
+        for language in languages:
+            values[f"{source_field}_{language}"] = (
+                translations.get(language)
+            )
+
+    return values
+
+
+def fetch_documents() -> list[dict]:
+    with httpx.Client(
+        timeout=30,
+        follow_redirects=True,
+    ) as client:
+        response = client.get(
+            API_URL,
+            params={
+                "limit": BATCH_SIZE,
+                "sort_by": "-updated_at,-id",
+            },
+        )
+
+        response.raise_for_status()
+        return response.json()["data"]
+
+
+def sync_one_document(record: dict) -> str:
+    values = map_document(record)
+
+    with SessionLocal() as db:
+        try:
+            document = db.scalar(
+                select(Document).where(
+                    Document.source_id
+                    == values["source_id"]
+                )
+            )
+
+            if document is None:
+                document = Document(**values)
+                db.add(document)
+                db.commit()
+                return "NEW"
+
+            changed_fields = []
+
+            for field, value in values.items():
+                if field in (
+                    "source_id",
+                    "updated_at",
+                ):
+                    continue
+
+                if getattr(document, field) != value:
+                    changed_fields.append(field)
+                    setattr(document, field, value)
+
+            if changed_fields:
+                if "updated_at" in values:
+                    document.updated_at = (
+                        values["updated_at"]
+                    )
+
+                db.commit()
+
+                return (
+                    "CHANGED: "
+                    + ", ".join(changed_fields)
+                )
+
+            db.rollback()
+            return "UNCHANGED"
+
+        except Exception:
+            db.rollback()
+            raise
+
+
+def main() -> None:
+    records = fetch_documents()
+
+    counts = {
+        "NEW": 0,
+        "CHANGED": 0,
+        "UNCHANGED": 0,
+        "ERROR": 0,
+    }
+
+    for record in records:
+        document_id = record.get("id")
+        affair_id = record.get("affair_id")
+
+        try:
+            status = sync_one_document(record)
+
+        except Exception as exc:
+            status = "ERROR"
+            print(
+                f"Document {document_id}: "
+                f"ERROR - {exc}"
+            )
+
+        if status != "ERROR":
+            print(
+                f"Document {document_id} "
+                f"(Affair {affair_id}): "
+                f"{status}"
+            )
+
+        status_key = status.split(":")[0]
+        counts[status_key] += 1
+
+    print("\nSonuc:", counts)
+
+
+if __name__ == "__main__":
+    main()
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+
+from app.db.database import SessionLocal
+from app.models.entities import Event
+
+
+API_URL = "https://api.openparldata.ch/v1/events/"
+BATCH_SIZE = 20
+
+DIRECT_FIELDS = (
+    "body_id",
+    "body_key",
+    "external_id",
+    "position",
+    "last",
+    "actor_type",
+    "affair_id",
+    "meeting_id",
+    "details_url",
+    "details_text",
+)
+
+DATE_FIELDS = (
+    "date",
+    "created_at",
+    "updated_at",
+)
+
+LANGUAGE_FIELDS = {
+    "title": ("de", "fr", "it"),
+    "title_harmonized": ("de", "fr", "it", "en"),
+    "actor": ("de", "fr", "it"),
+}
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+
+    if isinstance(value, datetime):
+        result = value
+    else:
+        result = datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
+
+    if result.tzinfo is not None:
+        result = result.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+    return result
+
+
+def map_event(record: dict) -> dict:
+    values = {"id": record["id"]}
+
+    for field in DIRECT_FIELDS:
+        if field in record:
+            values[field] = record[field]
+
+    for field in DATE_FIELDS:
+        if field in record:
+            values[field] = parse_datetime(
+                record[field]
+            )
+
+    for source_field, languages in LANGUAGE_FIELDS.items():
+        if source_field not in record:
+            continue
+
+        translations = record[source_field]
+
+        if translations is None:
+            translations = {}
+
+        if not isinstance(translations, dict):
+            raise ValueError(
+                f"Event {record['id']}: "
+                f"{source_field} is not a language dictionary"
+            )
+
+        for language in languages:
+            values[f"{source_field}_{language}"] = (
+                translations.get(language)
+            )
+
+    return values
+
+
+def fetch_events() -> list[dict]:
+    with httpx.Client(
+        timeout=30,
+        follow_redirects=True,
+    ) as client:
+        response = client.get(
+            API_URL,
+            params={
+                "limit": BATCH_SIZE,
+                "sort_by": "-updated_at,-id",
+            },
+        )
+
+        response.raise_for_status()
+        return response.json()["data"]
+
+
+def sync_one_event(record: dict) -> str:
+    values = map_event(record)
+
+    with SessionLocal() as db:
+        try:
+            event = db.get(
+                Event,
+                values["id"],
+            )
+
+            if event is None:
+                event = Event(**values)
+                db.add(event)
+                db.commit()
+                return "NEW"
+
+            changed_fields = []
+
+            for field, value in values.items():
+                if field in (
+                    "id",
+                    "created_at",
+                    "updated_at",
+                ):
+                    continue
+
+                if getattr(event, field) != value:
+                    changed_fields.append(field)
+                    setattr(event, field, value)
+
+            if changed_fields:
+                if "updated_at" in values:
+                    event.updated_at = (
+                        values["updated_at"]
+                    )
+
+                db.commit()
+
+                return (
+                    "CHANGED: "
+                    + ", ".join(changed_fields)
+                )
+
+            db.rollback()
+            return "UNCHANGED"
+
+        except Exception:
+            db.rollback()
+            raise
+
+
+def main() -> None:
+    records = fetch_events()
+
+    counts = {
+        "NEW": 0,
+        "CHANGED": 0,
+        "UNCHANGED": 0,
+        "ERROR": 0,
+    }
+
+    for record in records:
+        event_id = record.get("id")
+        affair_id = record.get("affair_id")
+
+        try:
+            status = sync_one_event(record)
+
+        except Exception as exc:
+            status = "ERROR"
+            print(
+                f"Event {event_id}: "
+                f"ERROR - {exc}"
+            )
+
+        if status != "ERROR":
+            print(
+                f"Event {event_id} "
+                f"(Affair {affair_id}): "
+                f"{status}"
+            )
+
+        status_key = status.split(":")[0]
+        counts[status_key] += 1
+
+    print("\nSonuc:", counts)
+
+
+if __name__ == "__main__":
+    main()
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+
+from app.db.database import SessionLocal
+from app.models.entities import Voting
+
+
+API_URL = "https://api.openparldata.ch/v1/votings/"
+BATCH_SIZE = 20
+
+DIRECT_FIELDS = (
+    "body_id",
+    "body_key",
+    "external_id",
+    "affair_id",
+    "meeting_id",
+    "group_id",
+    "results_yes",
+    "results_no",
+    "results_abstention",
+    "results_absent",
+    "results_string",
+    "decision",
+)
+
+DATE_FIELDS = (
+    "date",
+    "created_at",
+    "updated_at",
+)
+
+LANGUAGE_FIELDS = {
+    "title": ("de", "fr", "it"),
+    "type": ("de", "fr", "it"),
+    "meaning_of_yes": ("de", "fr", "it"),
+    "meaning_of_no": ("de", "fr", "it"),
+}
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+
+    if isinstance(value, datetime):
+        result = value
+    else:
+        result = datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
+
+    if result.tzinfo is not None:
+        result = result.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+    return result
+
+
+def map_voting(record: dict) -> dict:
+    values = {"id": record["id"]}
+
+    for field in DIRECT_FIELDS:
+        if field in record:
+            values[field] = record[field]
+
+    for field in DATE_FIELDS:
+        if field in record:
+            values[field] = parse_datetime(
+                record[field]
+            )
+
+    for source_field, languages in LANGUAGE_FIELDS.items():
+        if source_field not in record:
+            continue
+
+        translations = record[source_field]
+
+        if translations is None:
+            translations = {}
+
+        if not isinstance(translations, dict):
+            raise ValueError(
+                f"Voting {record['id']}: "
+                f"{source_field} is not a language dictionary"
+            )
+
+        for language in languages:
+            values[f"{source_field}_{language}"] = (
+                translations.get(language)
+            )
+
+    return values
+
+
+def fetch_votings() -> list[dict]:
+    with httpx.Client(
+        timeout=30,
+        follow_redirects=True,
+    ) as client:
+        response = client.get(
+            API_URL,
+            params={
+                "limit": BATCH_SIZE,
+                "sort_by": "-updated_at,-id",
+            },
+        )
+
+        response.raise_for_status()
+        return response.json()["data"]
+
+
+def sync_one_voting(record: dict) -> str:
+    values = map_voting(record)
+
+    with SessionLocal() as db:
+        try:
+            voting = db.get(
+                Voting,
+                values["id"],
+            )
+
+            if voting is None:
+                voting = Voting(**values)
+                db.add(voting)
+                db.commit()
+
+                return "NEW"
+
+            changed_fields = []
+
+            for field, value in values.items():
+                if field in (
+                    "id",
+                    "created_at",
+                    "updated_at",
+                ):
+                    continue
+
+                if getattr(voting, field) != value:
+                    changed_fields.append(field)
+                    setattr(voting, field, value)
+
+            if changed_fields:
+                if "updated_at" in values:
+                    voting.updated_at = (
+                        values["updated_at"]
+                    )
+
+                db.commit()
+
+                return (
+                    "CHANGED: "
+                    + ", ".join(changed_fields)
+                )
+
+            db.rollback()
+            return "UNCHANGED"
+
+        except Exception:
+            db.rollback()
+            raise
+
+
+def main() -> None:
+    records = fetch_votings()
+
+    counts = {
+        "NEW": 0,
+        "CHANGED": 0,
+        "UNCHANGED": 0,
+        "ERROR": 0,
+    }
+
+    for record in records:
+        voting_id = record.get("id")
+        affair_id = record.get("affair_id")
+
+        try:
+            status = sync_one_voting(record)
+
+        except Exception as exc:
+            status = "ERROR"
+            print(
+                f"Voting {voting_id}: "
+                f"ERROR - {exc}"
+            )
+
+        if status != "ERROR":
+            print(
+                f"Voting {voting_id} "
+                f"(Affair {affair_id}): "
+                f"{status}"
+            )
+
+        status_key = status.split(":")[0]
+        counts[status_key] += 1
+
+    print("\nSonuc:", counts)
+
+
+if __name__ == "__main__":
+    main()
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+
+from app.db.database import SessionLocal
+from app.models.entities import ParliamentaryText
+
+
+API_URL = "https://api.openparldata.ch/v1/texts/"
+BATCH_SIZE = 20
+
+DIRECT_FIELDS = (
+    "body_id",
+    "body_key",
+    "external_id",
+    "affair_id",
+    "text_format",
+)
+
+DATE_FIELDS = (
+    "text_date",
+    "created_at",
+    "updated_at",
+)
+
+LANGUAGE_FIELDS = {
+    "type": ("de", "fr", "it", "rm"),
+    "text": ("de", "fr", "it", "rm"),
+}
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+
+    if isinstance(value, datetime):
+        result = value
+    else:
+        result = datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
+
+    if result.tzinfo is not None:
+        result = result.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+    return result
+
+
+def map_text(record: dict) -> dict:
+    values = {"id": record["id"]}
+
+    for field in DIRECT_FIELDS:
+        if field in record:
+            values[field] = record[field]
+
+    for field in DATE_FIELDS:
+        if field in record:
+            values[field] = parse_datetime(
+                record[field]
+            )
+
+    for source_field, languages in LANGUAGE_FIELDS.items():
+        if source_field not in record:
+            continue
+
+        translations = record[source_field]
+
+        if translations is None:
+            translations = {}
+
+        if not isinstance(translations, dict):
+            raise ValueError(
+                f"Text {record['id']}: "
+                f"{source_field} is not a language dictionary"
+            )
+
+        for language in languages:
+            values[f"{source_field}_{language}"] = (
+                translations.get(language)
+            )
+
+    return values
+
+
+def fetch_texts() -> list[dict]:
+    with httpx.Client(
+        timeout=30,
+        follow_redirects=True,
+    ) as client:
+        response = client.get(
+            API_URL,
+            params={
+                "limit": BATCH_SIZE,
+                "sort_by": "-updated_at,-id",
+            },
+        )
+
+        response.raise_for_status()
+        return response.json()["data"]
+
+
+def sync_one_text(record: dict) -> str:
+    values = map_text(record)
+
+    with SessionLocal() as db:
+        try:
+            parliamentary_text = db.get(
+                ParliamentaryText,
+                values["id"],
+            )
+
+            if parliamentary_text is None:
+                parliamentary_text = ParliamentaryText(
+                    **values
+                )
+                db.add(parliamentary_text)
+                db.commit()
+                return "NEW"
+
+            changed_fields = []
+
+            for field, value in values.items():
+                if field in (
+                    "id",
+                    "created_at",
+                    "updated_at",
+                ):
+                    continue
+
+                if (
+                    getattr(parliamentary_text, field)
+                    != value
+                ):
+                    changed_fields.append(field)
+                    setattr(
+                        parliamentary_text,
+                        field,
+                        value,
+                    )
+
+            if changed_fields:
+                if "updated_at" in values:
+                    parliamentary_text.updated_at = (
+                        values["updated_at"]
+                    )
+
+                db.commit()
+
+                return (
+                    "CHANGED: "
+                    + ", ".join(changed_fields)
+                )
+
+            db.rollback()
+            return "UNCHANGED"
+
+        except Exception:
+            db.rollback()
+            raise
+
+
+def main() -> None:
+    records = fetch_texts()
+
+    counts = {
+        "NEW": 0,
+        "CHANGED": 0,
+        "UNCHANGED": 0,
+        "ERROR": 0,
+    }
+
+    for record in records:
+        text_id = record.get("id")
+        affair_id = record.get("affair_id")
+
+        try:
+            status = sync_one_text(record)
+
+        except Exception as exc:
+            status = "ERROR"
+            print(
+                f"Text {text_id}: "
+                f"ERROR - {exc}"
+            )
+
+        if status != "ERROR":
+            print(
+                f"Text {text_id} "
+                f"(Affair {affair_id}): "
+                f"{status}"
+            )
+
+        status_key = status.split(":")[0]
+        counts[status_key] += 1
+
+    print("\nSonuc:", counts)
+
+
+if __name__ == "__main__":
+    main()
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+import httpx
+
+from app.db.database import SessionLocal
+from app.models.entities import Meeting
+
+
+API_URL = "https://api.openparldata.ch/v1/meetings/"
+BATCH_SIZE = 20
+
+DIRECT_FIELDS = (
+    "body_id",
+    "body_key",
+    "external_id",
+    "type",
+    "parent_type",
+    "parent_external_id",
+    "number",
+    "abbreviation",
+    "group_id",
+    "state",
+    "location",
+)
+
+DATE_FIELDS = (
+    "begin_date",
+    "end_date",
+    "created_at",
+    "updated_at",
+)
+
+LANGUAGE_FIELDS = {
+    "name": ("de", "fr", "it", "rm"),
+    "description": ("de", "fr", "it"),
+}
+
+
+def parse_datetime(value):
+    if not value:
+        return None
+
+    if isinstance(value, datetime):
+        result = value
+    else:
+        result = datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
+
+    if result.tzinfo is not None:
+        result = result.astimezone(
+            timezone.utc
+        ).replace(tzinfo=None)
+
+    return result
+
+
+def map_meeting(record: dict) -> dict:
+    values = {"id": record["id"]}
+
+    for field in DIRECT_FIELDS:
+        if field in record:
+            values[field] = record[field]
+
+    for field in DATE_FIELDS:
+        if field in record:
+            values[field] = parse_datetime(
+                record[field]
+            )
+
+    for source_field, languages in LANGUAGE_FIELDS.items():
+        if source_field not in record:
+            continue
+
+        translations = record[source_field]
+
+        if translations is None:
+            translations = {}
+
+        if not isinstance(translations, dict):
+            raise ValueError(
+                f"Meeting {record['id']}: "
+                f"{source_field} is not a language dictionary"
+            )
+
+        for language in languages:
+            values[f"{source_field}_{language}"] = (
+                translations.get(language)
+            )
+
+    return values
+
+
+def fetch_meetings() -> list[dict]:
+    with httpx.Client(
+        timeout=30,
+        follow_redirects=True,
+    ) as client:
+        response = client.get(
+            API_URL,
+            params={
+                "limit": BATCH_SIZE,
+                "sort_by": "-updated_at,-id",
+            },
+        )
+
+        response.raise_for_status()
+        return response.json()["data"]
+
+
+def sync_one_meeting(record: dict) -> str:
+    values = map_meeting(record)
+
+    with SessionLocal() as db:
+        try:
+            meeting = db.get(
+                Meeting,
+                values["id"],
+            )
+
+            if meeting is None:
+                meeting = Meeting(**values)
+                db.add(meeting)
+                db.commit()
+                return "NEW"
+
+            changed_fields = []
+
+            for field, value in values.items():
+                if field in (
+                    "id",
+                    "created_at",
+                    "updated_at",
+                ):
+                    continue
+
+                if getattr(meeting, field) != value:
+                    changed_fields.append(field)
+                    setattr(meeting, field, value)
+
+            if changed_fields:
+                if "updated_at" in values:
+                    meeting.updated_at = (
+                        values["updated_at"]
+                    )
+
+                db.commit()
+
+                return (
+                    "CHANGED: "
+                    + ", ".join(changed_fields)
+                )
+
+            db.rollback()
+            return "UNCHANGED"
+
+        except Exception:
+            db.rollback()
+            raise
+
+
+def main() -> None:
+    records = fetch_meetings()
+
+    counts = {
+        "NEW": 0,
+        "CHANGED": 0,
+        "UNCHANGED": 0,
+        "ERROR": 0,
+    }
+
+    for record in records:
+        meeting_id = record.get("id")
+
+        try:
+            status = sync_one_meeting(record)
+
+        except Exception as exc:
+            status = "ERROR"
+            print(
+                f"Meeting {meeting_id}: "
+                f"ERROR - {exc}"
+            )
+
+        if status != "ERROR":
+            print(
+                f"Meeting {meeting_id}: "
+                f"{status}"
+            )
+
+        status_key = status.split(":")[0]
+        counts[status_key] += 1
+
+    print("\nSonuc:", counts)
+
+
+if __name__ == "__main__":
+    main()

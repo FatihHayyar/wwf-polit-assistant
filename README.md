@@ -2,227 +2,94 @@
 
 A political monitoring assistant for WWF Switzerland based on Swiss parliamentary open data.
 
-The project is developed as part of the **Wirtschaftsprojekt (WIPRO)** in the BSc Informatik program at Hochschule Luzern (HSLU).
+Developed as part of the **Wirtschaftsprojekt (WIPRO)** in the BSc Informatik program at Hochschule Luzern (HSLU).
 
 ## Project Goal
 
-The goal of the project is to build a functional MVP that helps WWF Switzerland identify, search and monitor politically relevant parliamentary activities.
+The goal is to develop a functional MVP that helps WWF Switzerland search, classify and monitor politically relevant parliamentary activities.
 
-The system integrates data from OpenParlData and prepares it for:
+The platform combines OpenParlData, WWF-specific topic classification, canton filtering, email-based subscriptions and automated synchronization.
 
-- structured political data search
-- WWF-specific topic classification
-- canton-based filtering and monitoring
-- keyword-based filtering and monitoring
-- monitoring of new and updated parliamentary items
-- email subscriptions and notifications
-- a documented REST API
-- a simple user interface
+AI-based functionality is optional and is not required for the initial MVP.
 
-The architecture is designed so that AI-based functionality can be added later without making AI a dependency of the initial MVP.
+## Current Status — 8 October 2026
 
----
+The FastAPI backend, PostgreSQL integration, initial data import, classification pipeline, affair search and subscription infrastructure are implemented.
 
-## Current Status
+The following functionality is available:
 
-The project is currently under active development.
+- OpenParlData bulk download and validated snapshot import
+- PostgreSQL raw staging and normalized parliamentary data
+- Rule-based hierarchical WWF classification
+- Affair search, filtering, pagination and detail API
+- Email-based registration and passwordless login
+- Email verification and JWT authentication
+- Theme and canton subscription management
+- Change-event and notification creation for affairs
+- SMTP email notification delivery
+- Incremental synchronization for seven datasets
+- API-triggered synchronization with concurrency protection
+- Structured synchronization results and technical logs
 
-The data integration, normalization, WWF classification and first search/detail API foundation are implemented.
+**Verified tests:**
 
-The following components are currently available:
+- All seven synchronization modules completed successfully in a manual run.
+- A Bern affair classified under *Erneuerbarer Strom* matched a *Klima & Energie* subscription.
+- A notification was created for the matching subscriber.
+- A real notification email was successfully received.
 
-- Python / FastAPI backend
-- PostgreSQL database
-- Docker-based local database environment
-- SQLAlchemy database integration
-- Alembic database migrations
-- OpenAPI / Swagger documentation through FastAPI
-- OpenParlData bulk export downloader
-- snapshot-based raw data storage
-- download validation using the OpenParlData manifest
-- PostgreSQL raw staging layer
-- streaming gzip import using PostgreSQL `COPY`
-- normalized parliamentary application data
-- WWF rule-based classification
-- affair search and filtering
-- pagination
-- category and subcategory discovery API
-- canton discovery API
-- parliamentary affair type discovery API
-- affair detail API
-- parliamentary text retrieval for individual affairs
-- official-source links for parliamentary affairs
-
-The initial OpenParlData snapshot currently used for development is:
-
-```text
-2026-10-06
-```
-
-The selected bootstrap datasets contain approximately:
-
-```text
-126 files
-5.91 GB compressed data
-3,098,065 records
-```
-
-### Current Affair Dataset
-
-```text
-325,691 parliamentary affairs
-```
-
-All imported affairs have been processed by the current WWF classification pipeline.
-
-Current classification coverage:
-
-```text
-Affairs:                  325,691
-Classified affairs:       325,691
-Missing classifications:        0
-Classification rows:      325,824
-Evidence rows:              7,111
-Fallback rows:            320,121
-```
-
-The current rule-based classification result is treated as a stable MVP baseline while development continues on search, monitoring, subscriptions and the user interface.
-
----
+**Important limitation:** Changes in related datasets such as agendas, meetings, votings, documents, events and texts are not yet fully connected to affair-based notifications.
 
 ## Architecture
 
-The MVP uses a deliberately simple architecture that can later be integrated into WWF's Azure environment.
-
 ```text
 OpenParlData
-     |
-     | Bulk Export / REST API
-     v
-+-------------------------+
-| OpenParlData Integration|
-+-------------------------+
-     |
-     v
-+-------------------------+
-| Raw Snapshot Storage    |
-| NDJSON.GZ               |
-+-------------------------+
-     |
-     v
-+-------------------------+
-| PostgreSQL Raw Staging  |
-+-------------------------+
-     |
-     v
-+-------------------------+
-| Normalized Data Model   |
-+-------------------------+
-     |
-     v
-+-------------------------+
-| WWF Classification      |
-+-------------------------+
-     |
-     v
-+-------------------------+
-| Affair Query Service    |
-+-------------------------+
-     |
-     +--------------------+
-     |                    |
-     v                    v
- Search REST API     Subscription Matcher
-     |                    |
-     v                    v
-    UI               Monitoring
-                          |
-                          v
-                    Notifications
-```
-
-Initial bootstrap and ongoing synchronization are intentionally separated.
-
----
-
-## Initial Bootstrap
-
-The initial bootstrap follows this process:
-
-```text
-OpenParlData Bulk Export
-        |
-        v
-Parallel Download
-        |
-        v
-Raw NDJSON.GZ Snapshot
-        |
-        v
-PostgreSQL COPY
-        |
-        v
-Raw Staging
-        |
-        v
-Normalization
-        |
-        v
-Relations / Indexes
-        |
-        v
+      |
+      v
+Bulk Import / Incremental Sync
+      |
+      v
+PostgreSQL
+      |
+      v
+Normalized Parliamentary Data
+      |
+      v
 WWF Classification
-        |
-        v
-Validation
+      |
+      +----------------------+
+      |                      |
+      v                      v
+Search & Detail API     Change Events
+                             |
+                             v
+                     Subscription Matching
+                             |
+                             v
+                     Notification Queue
+                             |
+                             v
+                         SMTP Email
 ```
 
-Network download and data processing are separated so that processing errors do not require downloading the complete OpenParlData snapshot again.
+The initial bulk import and ongoing incremental synchronization are separate processes.
 
----
+## Technology Stack
 
-## Incremental Synchronization
+- Python 3.13
+- FastAPI and Pydantic
+- SQLAlchemy and Psycopg
+- PostgreSQL 17
+- Alembic
+- Docker and Docker Compose
+- OpenAPI / Swagger
+- SMTP email delivery
 
-After the initial bootstrap, regular updates are intended to use a different pipeline:
+## OpenParlData Bootstrap
 
-```text
-OpenParlData API
-        |
-        v
-Candidate Changes
-        |
-        v
-Fingerprint Comparison
-        |
-        v
-Actual Changes
-        |
-        v
-Database Upsert
-        |
-        v
-Classification / Monitoring
-        |
-        v
-Subscription Matching
-        |
-        v
-Notifications
-```
+The initial development snapshot is dated **2026-10-06**.
 
-Remote `updated_at` timestamps should not automatically be interpreted as meaningful content changes.
-
-Local state and fingerprints can be used to distinguish actual changes from upstream metadata updates or bulk-update operations.
-
-Incremental synchronization and automatic monitoring are not yet complete.
-
----
-
-## OpenParlData Data
-
-The current bootstrap includes:
-
-| Dataset | Records |
+| Dataset | Initial records |
 |---|---:|
 | Bodies | 2,411 |
 | Persons | 26,864 |
@@ -238,1047 +105,458 @@ The current bootstrap includes:
 | Texts | 225,739 |
 | **Total** | **3,098,065** |
 
-Individual parliamentary votes are intentionally not included in the initial full mirror because the OpenParlData export contains more than 75 million individual vote records.
+The initial import consists of approximately 126 compressed files and 5.91 GB of data.
 
-Aggregate voting information is included through the `votings` dataset.
+These figures describe the initial bootstrap snapshot, not necessarily the current database totals.
 
-Individual votes can later be retrieved on demand when required.
-
----
-
-## Normalized Application Data
-
-The OpenParlData raw staging layer is transformed into a normalized application model.
-
-Relevant entities include:
-
-```text
-Bodies
- |
- +-- Persons
- |
- +-- Memberships
- |
- +-- Groups
- |
- +-- Affairs
- |     |
- |     +-- Texts
- |     +-- Documents
- |     +-- Events
- |     +-- Votings
- |
- +-- Meetings
-       |
-       +-- Agendas
-            |
-            +-- Affairs
-```
-
-Relations are based on identifiers supplied by OpenParlData rather than inferred from textual content.
-
-This normalized model is used by the API, WWF classification, search and future monitoring components.
-
----
+Individual parliamentary votes are not included in the full local mirror. Aggregate voting information is available through the votings dataset.
 
 ## WWF Classification
 
-The MVP uses a configurable rule-based WWF classification system.
+The MVP uses configurable rule-based classification.
 
-The classification pipeline has been executed over all currently imported parliamentary affairs.
+It supports hierarchical topics, subcategories, multilingual rules, weights, scores, confidence values, classification evidence and fallback classification.
 
-```text
-325,691 / 325,691 affairs classified
-```
+Main topic areas:
 
-The classification system supports:
+- Climate & Energy
+- Biodiversity & Landscape
+- Sustainable Economy & Consumption
+- Environment & Policy
+- Other (fallback)
 
-- hierarchical WWF topics
-- subcategories
-- multilingual rules
-- rule weights
-- classification scores
-- confidence values
-- classification evidence
-- fallback classification
+For the initial bootstrap, all 325,691 affairs were classified.
 
-### Current Topic Structure
+The original classification baseline included 325,824 classification rows, 7,111 evidence rows and 320,121 fallback rows.
 
-The current taxonomy contains the following main areas:
+The rule-based approach is retained for the MVP. AI-assisted classification may be introduced later.
 
-```text
-Climate & Energy
-Biodiversity & Landscape
-Sustainable Economy & Consumption
-Environment & Policy
-Other
-```
+## Search and Filtering
 
-### Climate & Energy
+The affair search endpoint is:
 
-Current subcategories include:
-
-- renewable electricity
-- renewable heating and cooling
-- building efficiency
-- sustainable mobility
-- grids and storage
-- fossil energy
-- large consumers and data centres
-
-### Biodiversity & Landscape
-
-Current subcategories include:
-
-- species and habitats
-- protected areas
-- forest
-- waters
-- soil and spatial planning
-- agriculture and biodiversity
-
-### Sustainable Economy & Consumption
-
-Current subcategories include:
-
-- circular economy
-- resources and raw materials
-- sustainable finance
-- companies and supply chains
-- food and consumption
-
-### Environment & Policy
-
-Current subcategories include:
-
-- environmental law
-- public sector
-- environmental funding
-- international environment
-- environmental research and education
-
-### Fallback Classification
-
-Affairs that do not match a specific WWF topic receive the fallback category:
-
-```text
-other
-```
-
-The fallback category ensures that every imported affair has a classification result.
-
-Rule-based classification is the MVP approach.
-
-The architecture allows AI-assisted classification to be introduced later without replacing the current deterministic classification pipeline.
-
----
-
-## Search API
-
-The first affair search API is implemented.
-
-Main endpoint:
-
-```text
+```http
 GET /api/v1/affairs
 ```
 
-The endpoint returns a paginated affair list.
+Supported filters include keyword, canton, WWF category, subcategory, year, month and parliamentary affair type.
 
-Default page size:
+Filters can be combined using AND semantics. Multilingual keyword matching uses OR semantics across supported title fields.
 
-```text
-10 affairs
-```
-
-Results are currently ordered by newest parliamentary affairs first.
-
-### Supported Filters
-
-The search API currently supports:
-
-- keyword
-- canton
-- WWF main category
-- WWF subcategory
-- year
-- month
-- parliamentary affair type
-- pagination
-
-Filters can be combined.
-
-For example:
-
-```text
-GET /api/v1/affairs?q=Photovoltaik&canton=ZH&category=climate_energy&year=2026&page=1
-```
-
-Filter combinations use AND semantics.
-
-For multilingual keyword fields, matching uses OR semantics across the supported title fields.
-
----
-
-## Keyword Search
-
-The current MVP keyword search covers:
-
-- German title
-- French title
-- Italian title
-- German long title
-- French long title
-- Italian long title
-- affair number
-
-PostgreSQL `pg_trgm` indexes are used for efficient partial title matching.
-
-Full parliamentary-text and document-content search is intentionally deferred.
-
-A first direct `%ILIKE%` approach over large text/document content was not sufficiently efficient for the dataset size.
-
-A later implementation should use an appropriate PostgreSQL full-text search and indexing strategy.
-
----
-
-## Canton Filtering
-
-Affairs are connected to parliamentary bodies.
-
-Canton filtering therefore uses:
-
-```text
-affairs.body_id
-        |
-        v
-bodies.id
-        |
-        v
-bodies.canton_key
-```
-
-This is necessary because an affair's `body_key` is not guaranteed to be a canton code.
-
-Municipal and other parliamentary bodies can have different body identifiers while still belonging to a canton.
-
----
-
-## WWF Topic Filtering
-
-The API supports hierarchical WWF filtering.
-
-When a main category is selected without a subcategory:
-
-```text
-Main category
-+
-all direct subcategories
-```
-
-are included.
-
-When a subcategory is selected:
-
-```text
-exact selected subcategory
-```
-
-is used.
-
-This allows the frontend to provide:
-
-```text
-Hauptthema
-    |
-    +-- Unterthema
-```
-
-dropdowns.
-
----
-
-## Affair Type Filtering
-
-The API supports filtering by harmonized parliamentary affair type.
-
-Examples may include:
-
-```text
-Motion
-Postulat
-Interpellation
-Anfrage
-Regierungsgeschäft
-```
-
-The filter is case-insensitive.
-
-For example:
-
-```text
-GET /api/v1/affairs?affair_type=motion
-```
-
-can match:
-
-```text
-Motion
-```
-
-Available affair types are read from the database instead of being hard-coded in the frontend.
-
----
-
-## Affair Detail API
-
-Individual affairs can be retrieved through:
-
-```text
-GET /api/v1/affairs/{affair_id}
-```
-
-The detail response can contain:
-
-- affair number
-- multilingual titles
-- long titles
-- affair type
-- state, where available
-- begin date
-- end date
-- active status
-- parliamentary body
-- canton
-- WWF classifications
-- classification confidence and score
-- parliamentary texts
-- official source URL
+Search results use server-side pagination, with a default page size of 10.
 
 Example:
 
-```text
-GET /api/v1/affairs/340682
+```http
+GET /api/v1/affairs?q=Photovoltaik&canton=ZH&year=2026&page=1
 ```
 
-The API retrieves parliamentary texts only for the selected affair.
+Title-based partial search uses PostgreSQL `pg_trgm` indexes.
 
-It does not scan the complete text or document datasets when loading an affair detail page.
+Full-text search across complete parliamentary texts and document contents remains planned.
 
-This makes detail retrieval independent from the later full-text search implementation.
+### Affair Details
 
----
-
-## Planned Affair Detail UI
-
-The user interface is intended to show only essential information on the main search page.
-
-Each page will contain up to 10 affairs.
-
-A user can select an affair to open its detail view.
-
-The detail page is intended to provide:
-
-```text
-Back to overview
-
-Affair title
-Affair number
-
-Affair type
-Parliament / body
-Canton
-Date
-WWF topic / subcategory
-
-Parliamentary text preview
-
-[Read more]
-
-[Open original source]
+```http
+GET /api/v1/affairs/{affair_id}
 ```
 
-For long parliamentary texts, the frontend can initially display only a preview.
+The detail response includes available parliamentary metadata, WWF classifications, parliamentary texts and official-source links.
 
-The user can then expand the complete text using:
-
-```text
-Weiterlesen
-```
-
-and optionally collapse it again.
-
-If no parliamentary text is available, the official source URL can still be provided.
-
-Parliamentary texts may contain HTML markup from the source system. The frontend must sanitize such content before rendering it as HTML.
-
----
-
-## Supporting API Endpoints
-
-### Health
+Canton filtering resolves the canton through the parliamentary body:
 
 ```text
-GET /health
+affairs.body_id
+      |
+      v
+bodies.id
+      |
+      v
+bodies.canton_key
 ```
 
-The endpoint verifies that the API and PostgreSQL connection are available.
+## Authentication
 
-### Categories
+The backend implements passwordless email authentication.
+
+The supported flow is:
 
 ```text
-GET /api/v1/categories
+Register email
+      |
+      v
+Receive verification link
+      |
+      v
+Verify email
+      |
+      v
+Authenticated account
+      |
+      v
+Manage subscriptions
 ```
 
-Returns active WWF main categories and their subcategories.
+Returning users can request a one-time email login link.
 
-The fallback `other` category is not intended as a normal search dropdown option.
+The backend uses JWT authentication and supports account deletion.
 
-### Cantons
+Relevant endpoints:
 
-```text
-GET /api/v1/cantons
+```http
+POST /api/v1/auth/register
+GET  /api/v1/auth/verify-email
+POST /api/v1/auth/login
+GET  /api/v1/auth/verify-login
 ```
 
-Returns canton codes currently available through parliamentary bodies.
+Authentication and subscription management are backend features. The frontend user experience is still under development.
 
-### Affair Types
+## Subscriptions
 
-```text
-GET /api/v1/affair-types
+Users can subscribe to WWF topics and Swiss cantons.
+
+Subscription matching follows these rules:
+
+- Multiple selected topics use OR semantics.
+- Multiple selected cantons use OR semantics.
+- Topics and cantons are combined using AND semantics.
+- A selected parent topic includes its descendant categories.
+- No selected topics means all topics, provided at least one canton is selected.
+- No selected cantons means all cantons, provided at least one topic is selected.
+- Both selections empty means no active notification subscription.
+
+Examples:
+
+| Topics | Cantons | Meaning |
+|---|---|---|
+| Klima & Energie | BE | Climate and energy affairs in Bern |
+| Klima & Energie | All | Climate and energy affairs in every canton |
+| All | ZH | Affairs across all topics in Zürich |
+
+Subscriptions can be added, removed or replaced through the REST API.
+
+The bulk update endpoint is:
+
+```http
+PUT /api/v1/subscriptions
 ```
 
-Returns harmonized affair types currently available in the database.
-
-This allows the frontend to populate filters dynamically instead of maintaining hard-coded lists.
-
----
-
-## State / Status Filtering
-
-The normalized affair model contains a harmonized state field.
-
-However, current OpenParlData coverage for this field is very limited.
-
-Current data:
-
-```text
-Total affairs:        325,691
-Affairs with state:       278
-Affairs without state: 325,413
-```
-
-Available harmonized states currently include:
-
-```text
-Abgeschlossen
-Eingereicht
-Traktandiert
-```
-
-Because the field is populated for only a very small fraction of the dataset, state filtering is not currently intended as a primary MVP user-interface filter.
-
-The field remains available in the data model and can be reconsidered if future OpenParlData synchronization provides better coverage.
-
----
-
-## Pagination
-
-Affair search uses server-side pagination.
-
-Current page size:
-
-```text
-10
-```
-
-The API response contains:
+Example request:
 
 ```json
 {
-  "items": [],
-  "pagination": {
-    "page": 1,
-    "page_size": 10,
-    "total_items": 0,
-    "total_pages": 0
-  }
+  "category_ids": [1],
+  "canton_keys": ["BE"]
 }
 ```
 
-The frontend can therefore implement previous/next navigation without loading the complete affair dataset.
+The subscription update process also supports email confirmation.
 
----
+## Incremental Synchronization
 
-## Monitoring and Subscriptions
+The backend contains seven incremental synchronization modules:
 
-Monitoring and subscriptions are the next major backend phase.
+| Dataset | Module |
+|---|---|
+| Affairs | `scripts.sync.incremental_sync` |
+| Agendas | `scripts.sync.agendas_sync` |
+| Meetings | `scripts.sync.meetings_sync` |
+| Votings | `scripts.sync.votings_sync` |
+| Events | `scripts.sync.events_sync` |
+| Documents | `scripts.sync.docs_sync` |
+| Texts | `scripts.sync.texts_sync` |
 
-The intended subscription model should support combinations of:
+The synchronization process uses checkpoints to resume incremental processing.
 
-- canton
-- WWF classification
-- WWF subcategory
-- individual keywords
-- parliamentary affair type
+For affairs, fingerprints help distinguish actual record changes from unchanged records.
 
-The same filter logic used by affair search should be reusable by subscription matching.
+The combined synchronization runner is:
 
-This avoids maintaining separate search and subscription semantics.
+```powershell
+python -m scripts.sync.run_all
+```
 
-### Planned Email-Based Subscription Flow
+The application is configured for a daily synchronization at **03:00 Europe/Zurich**.
 
-The planned MVP user flow does not require a traditional username/password account.
+### Sync API
 
-A user can enter an email address to subscribe to WWF monitoring channels or saved filter combinations.
+```http
+POST /api/v1/sync/run
+GET  /api/v1/sync/status
+GET  /api/v1/sync/latest
+GET  /api/v1/sync/runs/{run_id}
+GET  /api/v1/sync/runs/{run_id}/log
+```
+
+`POST /run` starts a background synchronization and requires the configured sync API key.
+
+`GET /status` shows individual dataset checkpoints.
+
+`GET /latest` returns a structured summary including:
+
+- Run status
+- Start and finish timestamps
+- Execution duration
+- Successful and failed dataset counts
+- New, changed and unchanged record counts
+- Record errors
+- Sent and failed notification emails
+
+Run summaries and technical logs are stored locally under `logs/`.
+
+The synchronization runner uses a PostgreSQL advisory lock to prevent overlapping full synchronization runs.
+
+### Verified Synchronization Result
+
+On 8 October 2026, a manual run reported:
+
+```text
+Status: completed
+Datasets: 7/7 successful
+Duration: 24.24 seconds
+New records: 0
+Changed records: 0
+Errors: 0
+Emails sent: 0
+Emails failed: 0
+```
+
+This confirms successful execution of the seven modules for that run. It does not establish that related-dataset notification propagation is complete.
+
+## Change Events and Notifications
+
+For new and changed affairs, the backend supports:
+
+```text
+Affair created / updated
+          |
+          v
+      ChangeEvent
+          |
+          v
+   Subscription Match
+          |
+          v
+       Notification
+          |
+          v
+      Pending Queue
+          |
+          v
+       SMTP Email
+```
+
+The notification service checks whether the user remains active, verified and subscribed before sending.
+
+Failed email attempts remain pending for retry. Notifications that no longer satisfy the subscription conditions can be cancelled.
+
+The email sender processes a limited batch of pending notifications per run.
+
+### Tested Notification Flow
+
+A test used the existing Bern affair:
+
+```text
+Affair ID: 18792
+Title: Komplettierung Solaranlage Schiessanlage Weier
+Canton: BE
+Category: Erneuerbarer Strom
+Parent topic: Klima & Energie
+```
+
+The subscription matcher successfully created a pending notification for the matching account.
+
+A subsequent controlled test successfully delivered a real email through SMTP.
+
+Temporary test change events and notifications were removed afterward.
+
+### Related-Dataset Monitoring — Planned
+
+The next development phase will connect changes in related parliamentary data to the appropriate affairs.
+
+Examples include:
+
+- A new agenda item for an existing affair
+- A new or rescheduled parliamentary meeting
+- A newly published document
+- A new parliamentary text
+- A voting result
+- A new event associated with an affair
 
 The intended flow is:
 
 ```text
-User selects topic / filters
-        |
-        v
-Subscribe
-        |
-        v
-Enter email address
-        |
-        v
-Activation email
-        |
-        v
-Activation link
-        |
-        v
-Email verified
-        |
-        v
-Manage subscriptions
+Agenda / Meeting / Voting / Event / Document / Text change
+                           |
+                           v
+                  Resolve related affair(s)
+                           |
+                           v
+                      ChangeEvent
+                           |
+                           v
+                  Subscription Matching
+                           |
+                           v
+                    Email Notification
 ```
 
-After successful email verification, the user should remain verified for the current session.
+This functionality must be implemented carefully because different datasets have different relationships to affairs.
 
-A verified email address can have multiple subscriptions.
+An affair-level `updated` test alone does not prove that a meeting or agenda change is detected automatically.
 
-Examples:
+## Supporting API Endpoints
 
-```text
-Subscription 1
-Canton: ZH
-WWF Topic: Climate & Energy
-Keyword: Photovoltaik
-
-Subscription 2
-Canton: BE
-WWF Topic: Biodiversity & Landscape
-
-Subscription 3
-Affair Type: Motion
-WWF Subcategory: Sustainable Mobility
+```http
+GET /health
+GET /api/v1/categories
+GET /api/v1/cantons
+GET /api/v1/affair-types
 ```
 
-Users should be able to:
+`GET /health` checks application and database availability.
 
-- add subscriptions
-- remove individual subscriptions
-- change existing subscriptions
-- manage multiple monitoring channels
-- unsubscribe completely from the system
-
-If an email address is already registered, the application should inform the user appropriately instead of creating duplicate user identities.
-
-If an email address is not registered when attempting account/subscription management, the application should also communicate that state clearly.
-
-Email verification and subscription management are planned work and are not yet implemented.
-
----
-
-## Monitoring Existing Affairs
-
-Subscriptions are not limited to discovering new matching affairs.
-
-The system should also support monitoring already known parliamentary objects for meaningful updates.
-
-Relevant monitored entities may include:
-
-- Affairs
-- Meetings
-- Agendas
-- Documents
-- Texts
-- Events
-- Votings
-
-The intended monitoring flow is:
-
-```text
-OpenParlData update
-        |
-        v
-Local synchronization
-        |
-        v
-Change detection
-        |
-        +----------------------+
-        |                      |
-        v                      v
-New affair              Existing affair changed
-        |                      |
-        v                      v
-Subscription match      Monitoring match
-        |                      |
-        +-----------+----------+
-                    |
-                    v
-              Notification
-```
-
-Change detection should use local state and fingerprints where appropriate to avoid notifications caused only by irrelevant upstream timestamp changes.
-
----
-
-## Technology Stack
-
-### Backend
-
-- Python 3.13
-- FastAPI
-- Pydantic
-- SQLAlchemy
-- Psycopg
-- Alembic
-
-### Database
-
-- PostgreSQL 17
-
-### Infrastructure
-
-- Docker
-- Docker Compose
-
-### API
-
-FastAPI automatically provides an OpenAPI specification and interactive Swagger documentation.
-
-During local development:
-
-```text
-http://localhost:8000/docs
-```
-
----
-
-## Project Structure
-
-```text
-polit-assistant-python/
-|
-+-- app/
-|   +-- api/
-|   |   +-- routes/
-|   |
-|   +-- classification/
-|   +-- core/
-|   +-- db/
-|   +-- integrations/
-|   |   +-- openparldata/
-|   |
-|   +-- models/
-|   +-- monitoring/
-|   +-- repositories/
-|   +-- schemas/
-|   +-- services/
-|   +-- main.py
-|
-+-- data/
-|   +-- raw/
-|
-+-- migrations/
-|
-+-- scripts/
-|   +-- bootstrap/
-|       +-- download_openparldata.py
-|       +-- inspect_exports.py
-|       +-- import_raw.py
-|
-+-- tests/
-|
-+-- docker-compose.yml
-+-- pyproject.toml
-+-- .env.example
-+-- README.md
-```
-
----
+The other endpoints provide data for search filters and category selection.
 
 ## Local Development
 
 ### Requirements
 
-The local development environment requires:
-
 - Python 3.13+
-- Docker
-- Docker Compose
+- Docker and Docker Compose
+- PostgreSQL through the provided Docker configuration
 
-### Python Environment
-
-Create a virtual environment.
-
-Windows PowerShell:
+### Create and Activate Virtual Environment
 
 ```powershell
 python -m venv .venv
-```
-
-Activate it:
-
-```powershell
 .venv\Scripts\Activate.ps1
-```
-
-Install project dependencies:
-
-```powershell
 pip install -e .
 ```
 
----
+### Environment Configuration
 
-## Environment Configuration
+Copy `.env.example` to `.env` and configure the required settings.
 
-Copy:
+The local PostgreSQL database is exposed on port `5433`.
 
-```text
-.env.example
-```
+Email and sync credentials must remain private. Do not commit `.env`, JWT secrets, SMTP credentials or sync API keys.
 
-to:
-
-```text
-.env
-```
-
-The local development configuration uses a PostgreSQL instance exposed on port:
-
-```text
-5433
-```
-
----
-
-## Start PostgreSQL
+### Start Database
 
 ```powershell
 docker compose up -d
 ```
 
-Check the container:
-
-```powershell
-docker compose ps
-```
-
----
-
-## Database Migrations
-
-Apply all migrations:
+### Apply Migrations
 
 ```powershell
 python -m alembic upgrade head
 ```
 
----
-
-## Start the API
+### Start API
 
 ```powershell
 python -m uvicorn app.main:app --reload
 ```
 
-Health endpoint:
+Swagger documentation:
 
 ```text
-GET /health
+http://127.0.0.1:8000/docs
 ```
 
-Swagger UI:
+### Initial Bootstrap Commands
 
-```text
-http://localhost:8000/docs
-```
-
----
-
-## OpenParlData Bootstrap
-
-The initial data load uses the official OpenParlData bulk exports.
-
-### Download
-
-Show the planned download without downloading files:
+Inspect planned downloads:
 
 ```powershell
 python scripts/bootstrap/download_openparldata.py --dry-run
 ```
 
-Download and verify the selected datasets:
+Download selected datasets:
 
 ```powershell
 python scripts/bootstrap/download_openparldata.py --workers 6
 ```
 
-Already completed files are detected using their expected manifest size and skipped.
-
-Raw files are stored by snapshot:
-
-```text
-data/raw/<snapshot>/
-```
-
-For example:
-
-```text
-data/raw/2026-10-06/
-```
-
-Raw exports are intentionally excluded from Git.
-
----
-
-## Inspect Export Structure
-
-The structure of downloaded OpenParlData records can be inspected without modifying the files or database:
+Inspect exports:
 
 ```powershell
 python scripts/bootstrap/inspect_exports.py
 ```
 
----
-
-## Raw PostgreSQL Import
-
-Import one dataset:
-
-```powershell
-python scripts/bootstrap/import_raw.py bodies
-```
-
-Import all selected bootstrap datasets:
+Import raw data:
 
 ```powershell
 python scripts/bootstrap/import_raw.py all
 ```
 
-The importer:
-
-- streams compressed `.ndjson.gz` files
-- does not extract the complete files to disk
-- uses PostgreSQL `COPY`
-- stores the original OpenParlData record as JSONB
-- validates imported row counts against the export manifest
-- skips datasets that are already completely imported
-- keeps completed datasets when a later dataset fails
-
-The raw staging layer is an intermediate bootstrap mechanism.
-
-Application queries use the normalized data model.
-
----
-
-## Search Performance
-
-The parliamentary dataset contains hundreds of thousands of affairs and large document/text collections.
-
-Search implementation therefore needs to avoid unindexed scans over large text fields.
-
-Current title-based partial search uses PostgreSQL trigram indexing.
-
-The PostgreSQL extension used is:
-
-```text
-pg_trgm
-```
-
-Trigram GIN indexes are used for multilingual affair title and long-title fields.
-
-Full parliamentary-content search is planned separately using a suitable indexed full-text search strategy.
-
-The initial MVP does not require Elasticsearch.
-
-PostgreSQL remains the preferred search backend unless a concrete future requirement justifies additional infrastructure.
-
----
-
-## Azure Compatibility
-
-The solution is designed with future integration into WWF's Azure environment in mind.
-
-The architecture therefore aims to remain:
-
-- container-friendly
-- configuration-driven
-- stateless at the API layer
-- PostgreSQL-based
-- compatible with standard Azure deployment approaches
-- free of unnecessary infrastructure dependencies
-
-Additional infrastructure components should only be introduced when there is a clear technical requirement and compatibility with the WWF environment has been considered.
-
----
-
-## AI
-
-AI is not required for the first working MVP.
-
-The initial system focuses on:
-
-- reliable OpenParlData integration
-- normalized structured data
-- WWF classification
-- search
-- filtering
-- monitoring
-- subscriptions
-- notifications
-
-Possible later extensions include:
-
-- semantic search
-- natural-language queries
-- summarization
-- AI-assisted classification
-- conversational access
-- retrieval-augmented generation
-
-This separation allows the core political data platform to remain useful even without an AI service.
-
----
+Raw exports and database snapshots should not be committed to Git.
 
 ## MVP Roadmap
 
-### Completed / Working Foundation
+### Implemented
 
-- OpenParlData bulk download
-- raw PostgreSQL staging
-- normalized parliamentary data
-- SQLAlchemy models
-- WWF taxonomy
-- rule-based WWF classification
-- full affair classification run
-- classification validation
-- FastAPI application
-- PostgreSQL health check
-- affair list API
-- pagination
-- keyword title search
-- canton filtering
-- WWF category filtering
-- WWF subcategory filtering
-- year filtering
-- month filtering
-- affair type filtering
-- categories API
-- cantons API
-- affair-types API
-- affair detail API
-- parliamentary text retrieval
-- official source links
+- Bulk OpenParlData integration
+- PostgreSQL raw staging and normalized models
+- WWF taxonomy and rule-based classification
+- Affair search and detail endpoints
+- Keyword and structured filtering
+- Email registration and verification
+- Passwordless login
+- Theme and canton subscriptions
+- Subscription matching
+- Affair change events and notifications
+- SMTP notification delivery
+- Seven incremental sync modules
+- Sync execution and result APIs
 
 ### Next
 
-- email identity / activation flow
-- subscription persistence
-- multiple subscriptions per verified email
-- subscription management
-- complete unsubscribe flow
-- reuse affair filters for subscription matching
-- incremental OpenParlData synchronization
-- new-affair detection
-- existing-affair change detection
-- email notifications
-- simple frontend
-- search results page
-- affair detail page
-- text preview / expand interaction
+- Connect agenda changes to related affair notifications
+- Connect meeting changes to related affair notifications
+- Extend the same mechanism to votings, events, documents and texts
+- Include meaningful change details in notification emails
+- Reclassify existing affairs when relevant thematic content changes
+- Improve synchronization and notification failure recovery
+- Implement the frontend for search, affair details and subscription management
 
 ### Later / Optional
 
-- indexed parliamentary-content full-text search
-- advanced monitoring
-- meetings / agendas API
-- voting API
-- political groups API
-- interests API
-- AI-assisted functionality
-- semantic search
-- summarization
-
----
+- Indexed full-text search across parliamentary content
+- Additional parliamentary entity APIs
+- AI-assisted classification
+- Semantic search
+- Summarization and natural-language queries
 
 ## Known MVP Limitations
 
-Current known limitations include:
+- Related-dataset changes are not yet fully propagated to affair notifications.
+- Updated affairs are not automatically reclassified in every relevant scenario.
+- Notification emails currently provide limited change details.
+- Full parliamentary-text and document-content search is not implemented.
+- Harmonized affair state coverage is limited.
+- The frontend is not yet implemented.
+- Local JSON sync results are not a replacement for production-grade job monitoring.
+- The system is a development MVP, not a production-ready deployment.
 
-- full parliamentary-text search is not yet implemented
-- document-content search is not yet implemented
-- harmonized affair state coverage is very limited
-- subscriptions are not yet implemented
-- email verification is not yet implemented
-- notifications are not yet implemented
-- incremental synchronization is not yet complete
-- frontend is not yet implemented
-- AI functionality is intentionally deferred
+## Azure Compatibility
 
-These limitations are part of the current development state and do not prevent the existing data, classification and search/detail API foundation from being tested.
+The architecture is designed with potential integration into WWF's Azure environment in mind.
 
----
+It prioritizes PostgreSQL, configuration-driven services, container compatibility and minimal infrastructure dependencies.
 
 ## Data Source
 
-Parliamentary data is provided by OpenParlData.
-
-Source attribution:
-
-> Source: OpenParlData.ch
-
-OpenParlData data is provided under the CC BY 4.0 license.
-
----
+Parliamentary data is provided by **OpenParlData.ch** under the CC BY 4.0 license.
 
 ## Project Context
 
 This project is developed for **WWF Switzerland** as part of the HSLU BSc Informatik Wirtschaftsprojekt.
 
-The MVP is intended as a technically sound, testable prototype and foundation for further development rather than a production-ready final platform.
-
-The implementation prioritizes:
-
-```text
-Data Integration
-        |
-        v
-WWF Classification
-        |
-        v
-Search & Filtering
-        |
-        v
-Monitoring
-        |
-        v
-Subscriptions & Notifications
-        |
-        v
-User Interface
-```
-
-AI-based functionality remains an optional extension after the core MVP functionality.
-
----
+The goal is a technically sound and testable prototype that can be extended into a broader political monitoring platform.
 
 ## License
 
