@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
+    JSON,
     DateTime,
     ForeignKey,
     Index,
@@ -46,6 +48,9 @@ class ChangeEvent(Base):
         primary_key=True,
         autoincrement=True,
     )
+    changes: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    notification_eligible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    notification_policy: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     dataset: Mapped[str] = mapped_column(
         String(50),

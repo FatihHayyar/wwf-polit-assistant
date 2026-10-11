@@ -42,8 +42,9 @@ def main():
             context=browser.new_context(viewport={"width":1440,"height":1000})
             page=context.new_page();page.goto("http://127.0.0.1:8766/")
             page.locator("#language").select_option("en")
-            assert page.locator("#datasets button").count()==4
+            assert page.locator("#datasets button").count()==9
             assert page.locator("#membership-login").is_visible()
+            assert not page.locator("#membership-logout").is_visible()
             page.locator('#datasets button[data-value="meetings"]').click()
             page.locator('[name="q"]').fill("saved filter")
             page.locator("#membership-login").click()
@@ -66,8 +67,13 @@ def main():
             saved=page.request.get("http://127.0.0.1:8766/api/v1/subscriptions").json()
             assert saved["category_ids"]==[1]
             assert send.call_count==1
+            page.locator('button[data-close="subscription-dialog"]').click()
+            assert page.locator("#membership-logout").is_visible()
+            page.locator("#membership-logout").click()
+            page.locator("#membership-register").wait_for(state="visible")
+            assert not page.locator("#membership-view").is_visible()
             assert len(context.pages)>=1
-            print("Membership browser checks passed: four-item public navigation, cross-tab login without lost filters, grouped topics, parent coverage and saved subscriptions.")
+            print("Membership browser checks passed: nine-item public navigation, cross-tab login without lost filters, grouped topics, parent coverage and saved subscriptions.")
             browser.close()
     finally:
         server.should_exit=True;thread.join(timeout=10)

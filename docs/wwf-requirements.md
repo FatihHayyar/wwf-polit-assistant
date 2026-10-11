@@ -72,20 +72,24 @@ Container logs and database backups also need an agreed operational owner.
 
 ## Verification
 
-31 isolated regression tests pass, including keyword matching, watch fanout,
-unsubscribe cancellation and subscription persistence. SMTP and upstream sync
-are mocked. JavaScript syntax and translation coverage are checked. Edge browser
-checks verify four UI languages, concise affair details, contextual agenda links,
-mobile width, cross-tab login and grouped subscription management. Live sync/mail,
-Azure integration and expert taxonomy approval
-remain outstanding. No live sync or real email was triggered during this review.
+60 isolated regression tests pass, with frontend translation checks and isolated
+Edge browser checks. A real resumed sync completed 9/9 datasets; 77 real emails
+were delivered before an SMTP authentication disconnect. Azure integration,
+reliable SMTP delivery, expert taxonomy approval and final WWF use-case acceptance
+remain open. See [daily review](daily-review-2026-10-11.md) for the detailed evidence.
 
 ## Public navigation and subscriptions
 
-Public browsing uses affairs, meetings, groups and interest declarations as the
-main entry points. Events, agendas, voting results, documents and texts provide
-context within related records instead of separate top-level menus. All nine
-datasets remain in synchronization and the API. Subscription management groups
+Public browsing offers all nine content types as separate left-navigation sections.
+Keyword/theme/canton/date filters apply to the selected dataset only, and filter
+selections are remembered independently for each section. Each card opens full
+details and contextual links to related affairs, meetings, agendas and records.
+All nine datasets remain in synchronization and the API. Subscription management groups
 subtopics under main themes and provides canton, keyword and dataset filters.
 Email verification returns to the application and updates an existing tab while
 preserving its current view and filters.
+
+Notification eligibility now uses explicit per-dataset substantive-change rules,
+separate from source persistence. Technical/formatting changes are stored but do
+not notify. Pending notifications are rechecked, and related updates are grouped
+into one summary per user/affair. See the monitoring guide for the rule table.

@@ -15,9 +15,23 @@ router = APIRouter(prefix="/api/v1/entities", tags=["Entities"])
 
 @router.get("")
 def available_entities():
-    return {"datasets": list(ENTITIES), "navigation": list(PRIMARY_DATASETS),
+    return {"datasets": list(ENTITIES), "navigation": list(ENTITIES),
             "supporting_datasets": [key for key in ENTITIES if key not in PRIMARY_DATASETS],
             "classification_basis": "own_content_and_related_affairs"}
+
+
+@router.get("/search")
+def unified_search(datasets: list[Dataset] | None = Query(None), q: str | None = None,
+                   canton: str | None = None, category: str | None = None, subcategory: str | None = None,
+                   date_from: date | None = None, date_to: date | None = None,
+                   page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=50),
+                   db: Session = Depends(get_db)):
+    if date_from and date_to and date_from > date_to:
+        raise HTTPException(422, "date_from must not be after date_to")
+    from app.services.entity_service import search_all_entities
+    return search_all_entities(db, datasets, q=q, canton=canton, category=category,
+                              subcategory=subcategory, date_from=date_from, date_to=date_to,
+                              page=page, page_size=page_size)
 
 
 @router.get("/{dataset}")
@@ -50,6 +64,11 @@ def entity_detail(dataset: Dataset, record_id: int, db: Session = Depends(get_db
     result = {"dataset": dataset, "record": serialize_entity(entity),
               "affair_ids": sorted(related_affair_ids(db, dataset, entity))}
     result.update(record_presentation(db,dataset,entity))
+    from app.models.entities import Affair
+    result["linked_affairs"] = [dict(id=affair.id, title=affair.title_de or affair.title_fr or affair.title_it,
+                                     number=affair.number)
+                                for linked_id in result["affair_ids"]
+                                if (affair := db.get(Affair, linked_id)) is not None]
     if dataset == "affairs":
         from app.services.affair_service import get_affair_detail
         result["detail"] = get_affair_detail(db, record_id)

@@ -485,7 +485,8 @@ def classify_new_affair(db, affair: Affair) -> None:
 
 def sync_one_affair(record: dict) -> SyncResult:
 
-    values = map_affair(record)
+    from app.services.sync_normalization import normalize_values
+    values = normalize_values(Affair, map_affair(record))
 
     new_fingerprint = calculate_fingerprint(values)
 
@@ -532,6 +533,7 @@ def sync_one_affair(record: dict) -> SyncResult:
                 )
 
             changed_fields = []
+            changes = {}
 
             for field, value in values.items():
 
@@ -550,6 +552,8 @@ def sync_one_affair(record: dict) -> SyncResult:
                 if getattr(affair, field) != value:
 
                     changed_fields.append(field)
+                    from fastapi.encoders import jsonable_encoder
+                    changes[field] = jsonable_encoder({"before": getattr(affair, field), "after": value})
 
             if changed_fields:
 
@@ -573,6 +577,7 @@ def sync_one_affair(record: dict) -> SyncResult:
                      affair_id=affair.id,
 
                      change_type="updated",
+                     changes=changes,
                      new_occurrence=True,
 
                      fingerprint=new_fingerprint,
@@ -680,383 +685,9 @@ def fetch_page(
     raise RuntimeError("Unexpected retry loop exit")
 
 def run_incremental_sync() -> None:
+    from scripts.sync.entity_sync import run_dataset
+    run_dataset("affairs")
 
-    print("=" * 72, flush=True)
-
-    print("INCREMENTAL AFFAIR SYNC - GERCEK ISLEM", flush=True)
-
-    print("=" * 72, flush=True)
-
-    original_checkpoint = get_checkpoint()
-
-    original_cursor = checkpoint_cursor(
-
-        original_checkpoint
-
-    )
-
-    print(
-
-        "Baslangic checkpoint:",
-
-        original_checkpoint.updated_at,
-
-        original_checkpoint.record_id,
-
-        flush=True,
-
-    )
-
-    counts = {
-
-        "NEW_CLASSIFIED": 0,
-
-        "CHANGED": 0,
-
-        "UNCHANGED": 0,
-
-        "ERROR": 0,
-
-    }
-
-    pages = 0
-
-    scanned = 0
-
-    offset = 0
-
-    reached_checkpoint = False
-
-    # En yeni basarili kaydin cursor'u.
-
-    # En eski islenen kaydi checkpoint yapmayacagiz.
-
-    newest_cursor = None
-
-    # API'deki ilk sayfanin en yeni cursor'u.
-
-    # Bu calisma icin ust sinir olarak kullanilir.
-
-    run_upper_cursor = None
-
-    try:
-
-        with httpx.Client(
-
-            timeout=60,
-
-            follow_redirects=True,
-
-        ) as client:
-
-            while True:
-
-                page = fetch_page(
-
-                    client,
-
-                    offset=offset,
-
-                )
-
-                pages += 1
-
-                if not page:
-
-                    print(
-
-                        "API kayitlari bitti.",
-
-                        flush=True,
-
-                    )
-
-                    break
-
-                if run_upper_cursor is None:
-
-                    run_upper_cursor = record_cursor(page[0])
-
-                print(
-
-                    f"[SAYFA {pages}] "
-
-                    f"offset={offset} "
-
-                    f"gelen={len(page)} "
-
-                    f"taranan={scanned}",
-
-                    flush=True,
-
-                )
-
-                for record in page:
-
-                    cursor = record_cursor(record)
-
-                    scanned += 1
-
-                    # Sync basladiktan sonra daha yeni
-
-                    # timestamp alan kayitlari bu turda
-
-                    # islemiyoruz.
-
-                    if cursor > run_upper_cursor:
-
-                        continue
-
-                    if (
-
-                        original_cursor is not None
-
-                        and cursor <= original_cursor
-
-                    ):
-
-                        reached_checkpoint = True
-
-                        break
-
-                    result = sync_one_affair(record)
-
-                    counts[result.status] += 1
-
-                    if (
-
-                        newest_cursor is None
-
-                        or cursor > newest_cursor
-
-                    ):
-
-                        newest_cursor = cursor
-
-                    processed = (
-
-                        counts["NEW_CLASSIFIED"]
-
-                        + counts["CHANGED"]
-
-                        + counts["UNCHANGED"]
-
-                    )
-
-                    print(
-
-                        f"[{processed}] "
-
-                        f"Affair {record['id']}: "
-
-                        f"{result.status}",
-
-                        flush=True,
-
-                    )
-
-                    if result.changed_fields:
-
-                        print(
-
-                            "    Changed:",
-
-                            ", ".join(result.changed_fields),
-
-                            flush=True,
-
-                        )
-
-                    if processed % 100 == 0:
-
-                        print(
-
-                            "--- ILERLEME: "
-
-                            f"sayfa={pages}, "
-
-                            f"taranan={scanned}, "
-
-                            f"islenen={processed}, "
-
-                            f"NEW={counts['NEW_CLASSIFIED']}, "
-
-                            f"CHANGED={counts['CHANGED']}, "
-
-                            f"UNCHANGED={counts['UNCHANGED']}",
-
-                            flush=True,
-
-                        )
-
-                if reached_checkpoint:
-
-                    print(
-
-                        "Checkpoint'e ulasildi.",
-
-                        flush=True,
-
-                    )
-
-                    break
-
-                if len(page) < PAGE_SIZE:
-
-                    print(
-
-                        "API son sayfasina ulasildi.",
-
-                        flush=True,
-
-                    )
-
-                    break
-
-                offset += PAGE_SIZE
-
-    except BaseException as exc:
-
-        # Ctrl+C dahil: kismi calismada checkpoint
-
-        # orijinal konumunda kalir.
-
-        counts["ERROR"] += 1
-
-        set_checkpoint(
-
-            original_checkpoint,
-
-            status="error",
-
-            records_processed=(
-
-                counts["NEW_CLASSIFIED"]
-
-                + counts["CHANGED"]
-
-                + counts["UNCHANGED"]
-
-            ),
-
-            records_new=counts["NEW_CLASSIFIED"],
-
-            records_changed=counts["CHANGED"],
-
-            records_unchanged=counts["UNCHANGED"],
-
-            records_error=counts["ERROR"],
-
-            error_message=str(exc),
-
-        )
-
-        print(
-
-            f"SYNC DURDU: {exc}",
-
-            flush=True,
-
-        )
-
-        print(
-
-            "Checkpoint ilerletilmedi.",
-
-            flush=True,
-
-        )
-
-        raise
-
-    # Tum tarama basariliysa en yeni kaydin
-
-    # cursor'una ilerle.
-
-    if newest_cursor is not None:
-
-        final_checkpoint = Checkpoint(
-
-            updated_at=newest_cursor[0],
-
-            record_id=newest_cursor[1],
-
-        )
-
-    else:
-
-        final_checkpoint = original_checkpoint
-
-    set_checkpoint(
-
-        final_checkpoint,
-
-        status="idle",
-
-        records_processed=(
-
-            counts["NEW_CLASSIFIED"]
-
-            + counts["CHANGED"]
-
-            + counts["UNCHANGED"]
-
-        ),
-
-        records_new=counts["NEW_CLASSIFIED"],
-
-        records_changed=counts["CHANGED"],
-
-        records_unchanged=counts["UNCHANGED"],
-
-        records_error=0,
-
-        error_message=None,
-
-    )
-
-    print()
-
-    print("=" * 72)
-
-    print("INCREMENTAL AFFAIR SYNC SONUCU")
-
-    print("=" * 72)
-
-    print("API sayfalari:", pages)
-
-    print("Taranan:", scanned)
-
-    print(
-
-        "Islenen:",
-
-        counts["NEW_CLASSIFIED"]
-
-        + counts["CHANGED"]
-
-        + counts["UNCHANGED"],
-
-    )
-
-    print("NEW + CLASSIFIED:", counts["NEW_CLASSIFIED"])
-
-    print("CHANGED:", counts["CHANGED"])
-
-    print("UNCHANGED:", counts["UNCHANGED"])
-
-    print("ERROR:", counts["ERROR"])
-
-    print(
-
-        "Yeni checkpoint:",
-
-        final_checkpoint.updated_at,
-
-        final_checkpoint.record_id,
-
-    )
 
 if __name__ == "__main__":
-
     run_incremental_sync()

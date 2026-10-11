@@ -35,6 +35,39 @@ RUN_ID = os.environ.get("SYNC_RUN_ID") or uuid.uuid4().hex
 RESULT_FILE = os.environ.get("SYNC_RESULT_FILE") or str(
     Path(__file__).resolve().parents[2] / "logs" / f"sync_{RUN_ID}.json"
 )
+CANCEL_FILE = Path(RESULT_FILE).with_suffix(".cancel")
+RESUME_FILE = os.environ.get("SYNC_RESUME_FILE")
+DATASET_KEYS = {"Affairs": "affairs", "Agendas": "agendas", "Meetings": "meetings",
+                "Votings": "votings", "Events": "events", "Documents": "docs",
+                "Texts": "texts", "Groups": "groups", "Interest Declarations": "interests"}
+
+
+class SyncCancelled(Exception):
+    pass
+
+
+def check_cancelled() -> None:
+    if CANCEL_FILE.exists():
+        raise SyncCancelled("Cancellation requested by administrator.")
+
+
+def run_dataset(module: str) -> int:
+    check_cancelled()
+    process = subprocess.Popen([sys.executable, "-u", "-m", module])
+    try:
+        while process.poll() is None:
+            check_cancelled()
+            time.sleep(1)
+        check_cancelled()
+        return process.returncode
+    finally:
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
 
 
 def now_iso() -> str:
@@ -76,7 +109,7 @@ def notify_parent(message: str) -> None:
 
 
 def initial_result() -> dict:
-    return {
+    result = {
         "run_id": RUN_ID,
         "status": "running",
         "started_at": now_iso(),
@@ -98,7 +131,50 @@ def initial_result() -> dict:
             "emails_failed": 0,
         },
         "error_message": None,
+        "current_dataset": None,
+        "process_id": os.getpid(),
+        "cancellable": True,
+        "job_id": os.environ.get("SYNC_JOB_ID", RUN_ID),
+        "resume_of": None,
+        "dataset_results": {},
     }
+    if RESUME_FILE:
+        parent = json.loads(Path(RESUME_FILE).read_text(encoding="utf-8"))
+        result["resume_of"] = parent["run_id"]
+        result["dataset_results"] = {name: detail for name, detail in parent.get("dataset_results", {}).items()
+                                     if detail["status"] == "completed"}
+        if not parent.get("dataset_results"):
+            # Compatibility for runs before stage manifests existed. Only an
+            # explicit runner OK marker proves that a legacy stage completed.
+            import re
+            log = Path(RESUME_FILE).with_suffix(".log").read_text(encoding="utf-8", errors="replace")
+            snapshot = checkpoint_snapshot()
+            for name in re.findall(r"^\[\d+/\d+\] OK: (.*?) \(", log, re.MULTILINE):
+                if name in DATASET_KEYS:
+                    result["dataset_results"][name] = {"status": "completed", "records": snapshot.get(DATASET_KEYS[name], {}), "legacy": True}
+    # Recover a stage whose worker committed completion just before its runner
+    # exited without recording the OK marker.
+    from scripts.sync.source_batches import job_directory
+    directory = job_directory()
+    if directory:
+        for name, key in DATASET_KEYS.items():
+            path = directory / f"{'documents' if key == 'docs' else key}.json"
+            if path.exists():
+                state = json.loads(path.read_text(encoding="utf-8"))
+                if state.get("complete"):
+                    result["dataset_results"][name] = {"status": "completed", "records": {
+                        "new": state["counts"]["NEW"], "changed": state["counts"]["CHANGED"],
+                        "unchanged": state["counts"]["UNCHANGED"], "errors": state["counts"]["ERROR"]}}
+    recompute_totals(result)
+    return result
+
+
+def recompute_totals(result):
+    details = result["dataset_results"].values()
+    result["datasets"]["successful"] = sum(d["status"] == "completed" for d in details)
+    result["datasets"]["failed"] = sum(d["status"] == "failed" for d in details)
+    result["records"] = {key: sum(d.get("records", {}).get(key, 0) for d in result["dataset_results"].values())
+                         for key in ("new", "changed", "unchanged", "errors")}
 
 
 def checkpoint_snapshot() -> dict:
@@ -128,32 +204,6 @@ def checkpoint_snapshot() -> dict:
     }
 
 
-def update_record_totals(
-    result: dict,
-    dataset_name: str,
-) -> None:
-    dataset_key = {
-        "Affairs": "affairs",
-        "Agendas": "agendas",
-        "Meetings": "meetings",
-        "Votings": "votings",
-        "Events": "events",
-        "Documents": "docs",
-        "Texts": "texts",
-        "Groups": "groups",
-        "Interest Declarations": "interests",
-    }[dataset_name]
-
-    snapshot = checkpoint_snapshot()
-    counts = snapshot.get(dataset_key)
-
-    if counts is None:
-        return
-
-    for key in ("new", "changed", "unchanged", "errors"):
-        result["records"][key] += counts[key]
-
-
 def run_all_syncs(result: dict) -> None:
     started_at = datetime.now()
     total = len(SYNC_MODULES)
@@ -165,6 +215,13 @@ def run_all_syncs(result: dict) -> None:
     print(f"Datasets: {total}", flush=True)
 
     for index, (name, module) in enumerate(SYNC_MODULES, start=1):
+        check_cancelled()
+        if result["dataset_results"].get(name, {}).get("status") == "completed":
+            print(f"[{index}/{total}] SKIP: {name} (already committed in this job)", flush=True)
+            continue
+        result["current_dataset"] = name
+        result["dataset_results"][name] = {"status": "running"}
+        save_result(result)
         print("\n" + "=" * 70, flush=True)
         print(f"[{index}/{total}] START: {name}", flush=True)
         print(f"Module: {module}", flush=True)
@@ -173,35 +230,31 @@ def run_all_syncs(result: dict) -> None:
         start_time = time.monotonic()
 
         try:
-            process = subprocess.run(
-                [sys.executable, "-u", "-m", module],
-                check=False,
-            )
+            returncode = run_dataset(module)
         except KeyboardInterrupt:
             raise SystemExit(130)
 
         duration = time.monotonic() - start_time
+        result["dataset_results"][name] = {
+            "status": "failed" if returncode else "completed", "duration_seconds": round(duration, 2),
+            "records": checkpoint_snapshot().get(DATASET_KEYS[name], {})}
+        recompute_totals(result)
 
-        if process.returncode != 0:
-            result["datasets"]["failed"] += 1
-            update_record_totals(result, name)
+        if returncode != 0:
             result["error_message"] = (
                 f"{name} sync failed "
-                f"(exit code {process.returncode})."
+                f"(exit code {returncode})."
             )
             save_result(result)
 
             print(
                 f"SYNC FAILED: {name} "
-                f"(exit code {process.returncode})",
+                f"(exit code {returncode})",
                 flush=True,
             )
 
             continue
 
-        result["datasets"]["successful"] += 1
-
-        update_record_totals(result, name)
         save_result(result)
 
         print(
@@ -224,8 +277,14 @@ def send_notification_emails(result: dict) -> None:
     print("SENDING PENDING NOTIFICATION EMAILS", flush=True)
     print("=" * 70, flush=True)
 
+    def progress(sent, failed):
+        result["notifications"]["emails_sent"] = sent
+        result["notifications"]["emails_failed"] = failed
+        if (sent + failed) % 100 == 0:
+            save_result(result)
+
     try:
-        sent, failed = send_pending_notifications(limit=100)
+        sent, failed = send_pending_notifications(before_each=check_cancelled, on_progress=progress)
 
         result["notifications"]["emails_sent"] = sent
         result["notifications"]["emails_failed"] = failed
@@ -233,6 +292,8 @@ def send_notification_emails(result: dict) -> None:
         print(f"Emails sent: {sent}", flush=True)
         print(f"Emails failed: {failed}", flush=True)
 
+    except SyncCancelled:
+        raise
     except Exception as exc:
         result["error_message"] = (
             f"Notification email processing failed: {exc}"
@@ -248,6 +309,8 @@ def send_notification_emails(result: dict) -> None:
 
 
 def main() -> None:
+    os.environ.setdefault("SYNC_RUN_ID", RUN_ID)
+    os.environ.setdefault("SYNC_JOB_ID", RUN_ID)
     with engine.connect() as connection:
         acquired = connection.execute(
             text("SELECT pg_try_advisory_lock(:lock_id)"),
@@ -274,13 +337,28 @@ def main() -> None:
 
         try:
             run_all_syncs(result)
+            if result["datasets"]["failed"]:
+                raise RuntimeError("One or more datasets failed. Notifications remain pending until this job is resumed successfully.")
+            check_cancelled()
+            result["current_dataset"] = "notifications"
+            save_result(result)
             send_notification_emails(result)
+            check_cancelled()
 
             result["status"] = "failed" if result["datasets"]["failed"] else (
                 "completed_with_email_errors" if result["notifications"]["emails_failed"] or result["error_message"] else "completed"
             )
             if result["datasets"]["failed"]:
                 raise SystemExit(1)
+
+        except SyncCancelled as exc:
+            result["status"] = "cancelled"
+            result["error_message"] = str(exc)
+            connection.execute(text(
+                "UPDATE sync_checkpoints SET status = 'cancelled', "
+                "error_message = :message WHERE status = 'running'"
+            ), {"message": str(exc)})
+            connection.commit()
 
         except BaseException as exc:
             result["status"] = "failed"
@@ -298,6 +376,7 @@ def main() -> None:
             )
 
             save_result(result)
+            CANCEL_FILE.unlink(missing_ok=True)
 
             connection.execute(
                 text("SELECT pg_advisory_unlock(:lock_id)"),

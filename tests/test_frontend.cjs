@@ -11,6 +11,8 @@ assert.equal(JSON.stringify(ui.languages),JSON.stringify(["de","fr","it","en"]))
 for(const [key,translations] of Object.entries(ui.translations))for(const language of ui.languages)assert.ok(translations[language],`${key}: missing ${language}`);
 const html=fs.readFileSync(path.join(root,"app/web/index.html"),"utf8");
 for(const match of html.matchAll(/data-i18n(?:-aria|-placeholder)?="([^"]+)"/g))assert.ok(ui.translations[match[1]],`Missing HTML translation: ${match[1]}`);
+assert.ok(!html.includes("sync-open"));
+assert.ok(!fs.readFileSync(path.join(root,"app/web/app.js"),"utf8").includes("/api/v1/sync/"));
 assert.equal(ui.readLanguage(),"de");ui.saveLanguage("fr");assert.equal(ui.readLanguage(),"fr");ui.saveLanguage("rm");assert.equal(ui.readLanguage(),"de");
 const record={id:203543,body_id:263,body_key:"NW",external_id:"101053",created_at:"2025-08-14",updated_at:"2026-07-27",number:"2023.NWLR.655",title_de:"Alpinen Photovoltaik-Anlagen",type_harmonized_de:"Interpellation",type_harmonized_fr:"Interpellation",type_harmonized_it:"interpellanza",type_harmonized_en:"Interpellation",state_name_de:"Beantwortet",begin_date:"2023-04-04"};
 for(const language of ui.languages){

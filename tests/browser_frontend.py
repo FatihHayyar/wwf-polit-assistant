@@ -58,6 +58,15 @@ def main():
             assert "Séance du 06.12.2027" in page.locator(".record-title").inner_text()
             print("Browser agenda check passed: actual meeting title, official source and linked meeting navigation.", flush=True)
             page.locator('[data-close="detail-dialog"]').click()
+            page.set_viewport_size({"width":1440,"height":1000})
+            page.goto("http://127.0.0.1:8765/")
+            page.locator("#results .result-card").first.wait_for()
+            assert page.locator("#account-open").count()==0
+            filters=page.locator(".filters").bounding_box()
+            card=page.locator("#subscription-section").bounding_box()
+            assert abs(filters["y"]-card["y"])<2
+            assert card["x"]>filters["x"]+filters["width"]
+            page.screenshot(path=str(Path(__file__).resolve().parents[1]/"logs"/"ui-home-layout.png"))
             page.set_viewport_size({"width":390,"height":844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
             print("Browser checks passed: saved language, no JS errors, mobile width.", flush=True)

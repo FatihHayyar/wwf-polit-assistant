@@ -1,4 +1,4 @@
-from sqlalchemy import distinct, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.entities import Body
@@ -39,7 +39,7 @@ def get_cantons(
     db: Session,
 ) -> list[CantonResponse]:
     statement = (
-        select(distinct(Body.canton_key))
+        select(Body.canton_key).distinct()
         .where(
             Body.canton_key.is_not(None),
             Body.canton_key != "",

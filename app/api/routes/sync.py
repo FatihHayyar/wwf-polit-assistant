@@ -81,6 +81,12 @@ class SyncSummaryResponse(BaseModel):
     records: RecordTotals
     notifications: NotificationTotals
     error_message: str | None
+    current_dataset: str | None = None
+    process_id: int | None = None
+    cancellable: bool = False
+    job_id: str | None = None
+    resume_of: str | None = None
+    dataset_results: dict[str, Any] = {}
 
 
 class SyncLogResponse(BaseModel):
@@ -133,7 +139,8 @@ def load_run_result(run_id: str) -> dict[str, Any]:
     "/status",
     response_model=SyncStatusResponse,
 )
-def get_sync_status() -> SyncStatusResponse:
+def get_sync_status(x_sync_api_key: str | None = Header(default=None)) -> SyncStatusResponse:
+    verify_sync_api_key(x_sync_api_key)
     query = text(
         """
         SELECT
@@ -228,7 +235,36 @@ def get_sync_run(
 ) -> dict[str, Any]:
     verify_sync_api_key(x_sync_api_key)
 
-    return load_run_result(run_id.hex)
+    result = load_run_result(run_id.hex)
+    if result["status"] == "running" and result.get("current_dataset"):
+        keys = {"Affairs": "affairs", "Agendas": "agendas", "Meetings": "meetings",
+                "Votings": "votings", "Events": "events", "Documents": "docs",
+                "Texts": "texts", "Groups": "groups", "Interest Declarations": "interests"}
+        name = result["current_dataset"]
+        for row in get_sync_status(x_sync_api_key).datasets:
+            if row.dataset == keys.get(name):
+                result.setdefault("dataset_results", {}).setdefault(name, {})["records"] = {
+                    "new": row.records_new, "changed": row.records_changed,
+                    "unchanged": row.records_unchanged, "errors": row.records_error}
+                details = result["dataset_results"].values()
+                result["records"] = {key: sum(d.get("records", {}).get(key, 0) for d in details)
+                                     for key in ("new", "changed", "unchanged", "errors")}
+    return result
+
+
+@router.post(
+    "/runs/{run_id}/cancel",
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def cancel_sync(run_id: uuid.UUID, x_sync_api_key: str | None = Header(default=None)) -> dict:
+    verify_sync_api_key(x_sync_api_key)
+    result = load_run_result(run_id.hex)
+    if result["status"] != "running":
+        raise HTTPException(status_code=409, detail="Sync is no longer running.")
+    if not result.get("cancellable"):
+        raise HTTPException(status_code=409, detail="This run predates cancellation support; restart the worker after it finishes.")
+    (LOGS_DIR / f"sync_{run_id.hex}.cancel").touch()
+    return {"run_id": run_id.hex, "message": "Cancellation requested. Check run status for confirmation."}
 
 
 @router.post(
@@ -238,6 +274,7 @@ def get_sync_run(
 )
 def start_sync(
     x_sync_api_key: str | None = Header(default=None),
+    resume_from: uuid.UUID | None = None,
 ) -> SyncRunResponse:
     verify_sync_api_key(x_sync_api_key)
 
@@ -253,6 +290,14 @@ def start_sync(
     environment["SYNC_READY_FILE"] = str(ready_file)
     environment["SYNC_RUN_ID"] = run_id
     environment["SYNC_RESULT_FILE"] = str(result_file)
+    environment["SYNC_JOB_ID"] = run_id
+    environment.pop("SYNC_RESUME_FILE", None)
+    if resume_from is not None:
+        parent = load_run_result(resume_from.hex)
+        if parent["status"] not in {"cancelled", "failed", "running"}:
+            raise HTTPException(status_code=409, detail="Only unfinished runs can be resumed.")
+        environment["SYNC_RESUME_FILE"] = str(LOGS_DIR / f"sync_{resume_from.hex}.json")
+        environment["SYNC_JOB_ID"] = uuid.UUID(parent.get("job_id") or resume_from.hex).hex
 
     try:
         with log_file.open("w", encoding="utf-8") as output:
@@ -317,3 +362,8 @@ def start_sync(
         process_id=process.pid,
         run_id=run_id,
     )
+
+
+@router.post("/runs/{run_id}/resume", response_model=SyncRunResponse, status_code=status.HTTP_202_ACCEPTED)
+def resume_sync(run_id: uuid.UUID, x_sync_api_key: str | None = Header(default=None)) -> SyncRunResponse:
+    return start_sync(x_sync_api_key=x_sync_api_key, resume_from=run_id)

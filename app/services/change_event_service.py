@@ -33,6 +33,7 @@ def create_change_event(
     source_id: int | None = None,
     affair_ids: set[int] | None = None,
     new_occurrence: bool = False,
+    changes: dict | None = None,
 ) -> ChangeEvent:
     """
     Record an entity change and create matching notifications.
@@ -91,6 +92,7 @@ def create_change_event(
         event = ChangeEvent(
             dataset=dataset, source_id=source_id, affair_id=affair_id,
             change_type=change_type, fingerprint=fingerprint, description=description,
+            changes=changes,
         )
         db.add(event)
         db.flush()
@@ -101,6 +103,10 @@ def create_change_event(
             db.add(ChangeEventAffair(change_event_id=event.id, affair_id=affected_id))
     db.flush()
 
-    create_notifications_for_event(db, event)
+    from app.services.notification_policy import VERSION, event_eligible
+    event.notification_eligible = event_eligible(event)
+    event.notification_policy = VERSION
+    if event.notification_eligible:
+        create_notifications_for_event(db, event)
 
     return event

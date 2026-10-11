@@ -58,6 +58,9 @@ def get_category_and_ancestor_ids(
 
 
 def create_notifications_for_event(db: Session, event: ChangeEvent) -> int:
+    from app.services.notification_policy import event_eligible
+    if not event_eligible(event):
+        return 0
     from app.services.monitoring_match_service import event_subjects, matching_subject
     subjects = event_subjects(db, event)
     if not subjects:

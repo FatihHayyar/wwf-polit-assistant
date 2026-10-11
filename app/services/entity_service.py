@@ -25,11 +25,18 @@ def category_ids(db, code):
     return result
 
 
-def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategory=None,
-                  year=None, month=None, date_from=None, date_to=None, affair_id=None,
-                  group_id=None, person_id=None,
-                  agenda_id=None, meeting_id=None,
-                  page=1, page_size=10):
+def search_expression(dataset):
+    spec = ENTITIES[dataset]
+    parts = [func.coalesce(getattr(spec.model, field), "") for field in spec.title_fields]
+    expression = parts[0]
+    for part in parts[1:]:
+        expression = expression + "\n" + part
+    return func.lower(expression)
+
+
+def entity_statement(db, dataset, *, q=None, canton=None, category=None, subcategory=None,
+                     year=None, month=None, date_from=None, date_to=None, affair_id=None,
+                     group_id=None, person_id=None, agenda_id=None, meeting_id=None, direct_search=False):
     spec = ENTITIES[dataset]
     model = spec.model
     key = model.pk if dataset == "documents" else model.id
@@ -44,8 +51,13 @@ def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategor
         statement = statement.where(model.person_id == person_id) if dataset == "interests" else statement.where(False)
     if q and q.strip():
         term = "%" + q.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
-        matches = [getattr(model, field).ilike(term, escape="\\") for field in spec.title_fields]
-        if dataset == "agendas":
+        matches = [search_expression(dataset).like(term.lower(), escape="\\")] if direct_search else [getattr(model, field).ilike(term, escape="\\") for field in spec.title_fields]
+        if direct_search and dataset in {"documents", "texts"} and db.bind.dialect.name == "postgresql":
+            from sqlalchemy import literal_column
+            config = literal_column("'simple'::regconfig")
+            matches = [func.to_tsvector(config, func.left(search_expression(dataset), 100000)).op("@@")(func.plainto_tsquery(config, q.strip()))]
+
+        if dataset == "agendas" and not direct_search:
             matches.extend([
                 model.meeting_id.in_(select(Meeting.id).where(or_(*(getattr(Meeting, field).ilike(term, escape="\\")
                     for field in ("name_de","name_fr","name_it","description_de","description_fr","description_it"))))),
@@ -70,9 +82,26 @@ def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategor
         ids = category_ids(db, subcategory or category)
         affair_ids = select(AffairClassification.affair_id).where(AffairClassification.category_id.in_(ids))
         inherited = related_entity_condition(dataset, model, affair_ids)
-        own = select(EntityClassification.entity_id).where(EntityClassification.dataset == dataset,
-                EntityClassification.entity_id == key, EntityClassification.category_id.in_(ids)).exists()
+        own = key.in_(select(EntityClassification.entity_id).where(
+                EntityClassification.dataset == dataset, EntityClassification.category_id.in_(ids)))
         statement = statement.where(or_(inherited, own))
+    return statement
+
+
+def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategory=None,
+                  year=None, month=None, date_from=None, date_to=None, affair_id=None,
+                  group_id=None, person_id=None,
+                  agenda_id=None, meeting_id=None,
+                  page=1, page_size=10, record_ids=None):
+    spec = ENTITIES[dataset]
+    model = spec.model
+    key = model.pk if dataset == "documents" else model.id
+    date_column = getattr(model, spec.date_field)
+    statement = entity_statement(db, dataset, q=q, canton=canton, category=category, subcategory=subcategory,
+        year=year, month=month, date_from=date_from, date_to=date_to, affair_id=affair_id,
+        group_id=group_id, person_id=person_id, agenda_id=agenda_id, meeting_id=meeting_id)
+    if record_ids is not None:
+        statement = statement.where(key.in_(record_ids))
     total = db.scalar(select(func.count()).select_from(statement.subquery())) or 0
     key = model.pk if dataset == "documents" else model.id
     rows = db.scalars(statement.order_by(date_column.desc().nullslast(), key.desc()).limit(page_size).offset((page - 1) * page_size)).all()
@@ -139,8 +168,14 @@ def record_presentation(db, dataset, entity):
         return next((getattr(row,prefix+lang,None) for lang in ("de","fr","it","en","rm")
                      if getattr(row,prefix+lang,None)),None) if row is not None else None
     meeting_id=getattr(entity,"meeting_id",None)
+    agenda_id=getattr(entity,"agenda_id",None)
+    agenda=db.get(Agenda,agenda_id) if agenda_id is not None else None
+    if meeting_id is None and agenda is not None:
+        meeting_id=agenda.meeting_id
     meeting=db.get(Meeting,meeting_id) if meeting_id is not None else None
     affair_id=getattr(entity,"item_affair_id",None) or getattr(entity,"affair_id",None)
+    if affair_id is None and agenda is not None:
+        affair_id=agenda.item_affair_id
     affair=db.get(Affair,affair_id) if affair_id is not None else None
     group_id=getattr(entity,"group_id",None) or (meeting.group_id if meeting else None)
     group=db.get(PoliticalGroup,group_id) if group_id is not None else None
@@ -158,6 +193,7 @@ def record_presentation(db, dataset, entity):
     if dataset == "votings" and not title:
         title=affair_title or meeting_title
     return dict(title=" ".join(title.split())[:240] if title else None,
+        agenda=dict(id=agenda.id,title=agenda.item_title or agenda.item_description or agenda.item_affair_number) if agenda else None,
         context_title=affair_title or meeting_title,
         meeting=dict(id=meeting.id,title=meeting_title,date=meeting.begin_date) if meeting else None,
         affair=dict(id=affair.id,title=affair_title,number=affair.number) if affair else None,
@@ -174,8 +210,37 @@ def record_presentation(db, dataset, entity):
 
 def affair_changes(db, affair_id, limit=100):
     related = select(ChangeEventAffair.change_event_id).where(ChangeEventAffair.affair_id == affair_id)
-    events = db.scalars(select(ChangeEvent).where(or_(ChangeEvent.affair_id == affair_id, ChangeEvent.id.in_(related)))
+    events = db.scalars(select(ChangeEvent).where(ChangeEvent.change_type != "ignored", or_(ChangeEvent.affair_id == affair_id, ChangeEvent.id.in_(related)))
                        .order_by(ChangeEvent.detected_at.desc(), ChangeEvent.id.desc()).limit(limit)).all()
     return [jsonable_encoder(dict(id=event.id, dataset=event.dataset, source_id=event.source_id,
                                  change_type=event.change_type, description=event.description, detected_at=event.detected_at))
             for event in events]
+
+
+def search_all_entities(db, datasets=None, *, page=1, page_size=10, **filters):
+    from sqlalchemy import literal, union_all
+    selected = list(dict.fromkeys(datasets or ENTITIES))
+    if any(dataset not in ENTITIES for dataset in selected):
+        raise ValueError("Unknown dataset")
+    parts = []
+    for dataset in selected:
+        spec = ENTITIES[dataset]
+        key = spec.model.pk if dataset == "documents" else spec.model.id
+        statement = entity_statement(db, dataset, direct_search=True, **filters)
+        parts.append(statement.with_only_columns(literal(dataset).label("dataset"), key.label("record_id"),
+                     getattr(spec.model, spec.date_field).label("date")).order_by(None))
+    combined = union_all(*parts).subquery()
+    total = db.scalar(select(func.count()).select_from(combined)) or 0
+    rows = db.execute(select(combined).order_by(combined.c.date.desc().nullslast(),
+        combined.c.dataset, combined.c.record_id.desc()).limit(page_size).offset((page-1)*page_size)).all()
+    hydrated = {}
+    for dataset in selected:
+        ids = [row.record_id for row in rows if row.dataset == dataset]
+        if ids:
+            result = list_entities(db, dataset, record_ids=ids, page_size=page_size)
+            for item in result["items"]:
+                item["dataset"] = dataset
+                hydrated[(dataset, item["id"])] = item
+    return {"items": [hydrated[(row.dataset, row.record_id)] for row in rows],
+            "pagination": {"page": page, "page_size": page_size, "total_items": total,
+                           "total_pages": ceil(total/page_size)}}

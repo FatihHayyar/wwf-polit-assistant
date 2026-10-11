@@ -14,6 +14,7 @@ from importlib import import_module
 
 import httpx
 from sqlalchemy import select, text
+from app.services.sync_normalization import normalize_values
 
 from app.db.database import SessionLocal
 from app.services.change_event_service import create_change_event
@@ -23,9 +24,11 @@ from app.services.reclassification_service import reclassify_affairs
 from app.services.entity_classification_service import classify_entity
 from app.classification.classifier import AffairClassifier
 from app.models.entity_classification import EntityClassification
+from scripts.sync.source_batches import make_source
 
 
 ADAPTERS = {
+    "affairs": ("incremental_sync", "map_affair", "updated_at"),
     "agendas": ("agendas_sync", "map_agenda", None),
     "meetings": ("meetings_sync", "map_meeting", "updated_at"),
     "votings": ("votings_sync", "map_voting", None),
@@ -58,9 +61,11 @@ def choose_document(candidates, values):
 
 def sync_record(db, dataset, values, existing=None, classifier=None):
     model = ENTITIES[dataset].model
+    values = normalize_values(model, values)
     new = existing is None
     before_ids = set()
     changed_fields = []
+    changes = {}
     if new:
         entity = model(**values)
         db.add(entity)
@@ -74,6 +79,9 @@ def sync_record(db, dataset, values, existing=None, classifier=None):
             if field in {"id", "pk", "source_id", "created_at"}:
                 continue
             if getattr(entity, field) != value:
+                if field not in IGNORED:
+                    from fastapi.encoders import jsonable_encoder
+                    changes[field] = jsonable_encoder({"before": getattr(entity, field), "after": value})
                 setattr(entity, field, value)
                 if field not in IGNORED:
                     changed_fields.append(field)
@@ -90,29 +98,11 @@ def sync_record(db, dataset, values, existing=None, classifier=None):
         affair_id=min(ids) if ids else None, affair_ids=ids,
         change_type="created" if new else "updated",
         new_occurrence=not new,
+        changes=changes if not new else None,
         fingerprint=fingerprint(entity),
         description="New record detected." if new else "Changed fields: " + ", ".join(changed_fields),
     )
     return "NEW" if new else "CHANGED"
-
-
-def fetch_page(client, url, offset, sort_by):
-    for attempt in range(5):
-        try:
-            response = client.get(url, params={"limit": PAGE_SIZE, "offset": offset, "sort_by": sort_by})
-            response.raise_for_status()
-            records = response.json().get("data")
-            if not isinstance(records, list):
-                raise ValueError("API response must contain a data list")
-            return records
-        except httpx.HTTPStatusError as exc:
-            if exc.response.status_code not in {429, 500, 502, 503, 504} or attempt == 4:
-                raise
-        except (httpx.TimeoutException, httpx.NetworkError, httpx.RemoteProtocolError):
-            if attempt == 4:
-                raise
-        time.sleep(min(2 ** attempt, 16))
-    raise RuntimeError("Retry loop exhausted")
 
 
 def run_dataset(dataset, recheck=False):
@@ -129,7 +119,8 @@ def run_dataset(dataset, recheck=False):
     newest = original
     upper = None
     counts = dict(NEW=0, CHANGED=0, UNCHANGED=0, ERROR=0)
-    offset = 0
+    started = time.monotonic()
+    source = None
     full_scan = recheck or cursor_field is None
     sort_by = f"-{cursor_field},-id" if cursor_field else "-id"
 
@@ -157,22 +148,35 @@ def run_dataset(dataset, recheck=False):
     save("running")
     try:
         with httpx.Client(timeout=60, follow_redirects=True) as client:
+            source = make_source(client, adapter.API_URL, dataset, full_scan)
+            if source.state and source.mode == "inventory":
+                def restore_cursor(value):
+                    return adapter.parse_datetime(value[0]) or datetime.min, int(value[1])
+                original = restore_cursor(source.state["original"])
+                newest = restore_cursor(source.state["newest"])
+                upper = restore_cursor(source.state["upper"]) if source.state.get("upper") else None
+                counts = dict(source.state["counts"])
+                counts["ERROR"] = 0
+                print(f"{dataset}: RESUME inventory position={source.position}", flush=True)
             while True:
-                records = fetch_page(client, adapter.API_URL, offset, sort_by)
-                if not records:
+                records, finished = source.next(sort_by)
+                if not records and finished:
                     break
-                if upper is None:
+                if upper is None and records:
                     upper = cursor(records[0])
                 selected = []
+                raw_by_id = {int(record["id"]): record for record in records}
                 reached = False
                 for record in records:
                     position = cursor(record)
-                    if position > upper:
+                    if not full_scan and position > upper:
                         continue
                     if not full_scan and position <= original:
-                        reached = True
-                        break
-                    selected.append((position, mapper(record)))
+                        if source.mode == "api":
+                            reached = True
+                            break
+                        continue
+                    selected.append((position, normalize_values(model, mapper(record))))
                 key = "source_id" if dataset == "documents" else "id"
                 ids = [values[key] for _, values in selected]
                 with SessionLocal() as db:
@@ -187,6 +191,14 @@ def run_dataset(dataset, recheck=False):
                         EntityClassification.dataset == dataset, EntityClassification.entity_id.in_(entity_ids)))) if entity_ids else set()
                     batch_counts = dict(NEW=0, CHANGED=0, UNCHANGED=0)
                     for position, values in selected:
+                        if dataset == "affairs":
+                            # Preserve Affairs' existing classification/event behavior.
+                            result = adapter.sync_one_affair(raw_by_id[values["id"]])
+                            if result.status == "ERROR":
+                                raise RuntimeError("Affair sync failed")
+                            batch_counts["NEW" if result.status == "NEW_CLASSIFIED" else result.status] += 1
+                            newest = max(newest, position)
+                            continue
                         candidates = existing.get(values[key], [])
                         entity = choose_document(candidates, values) if dataset == "documents" else (candidates[0] if candidates else None)
                         missing_classification = entity is not None and (entity.pk if dataset == "documents" else entity.id) not in classified
@@ -207,12 +219,30 @@ def run_dataset(dataset, recheck=False):
                     db.commit()
                 for name, count in batch_counts.items():
                     counts[name] += count
-                print(f"{dataset}: offset={offset} {counts}", flush=True)
-                if reached or len(records) < PAGE_SIZE:
+                state = dict(counts=counts, original=[original[0].isoformat(), original[1]],
+                             newest=[newest[0].isoformat(), newest[1]],
+                             upper=[upper[0].isoformat(), upper[1]] if upper else None, complete=False)
+                source.commit(state)
+                save("running")
+                print(f"{dataset}: mode={source.mode} position={source.position} {counts}", flush=True)
+                if reached or finished:
                     break
-                offset += PAGE_SIZE
         save("idle", final=newest)
+        if source is not None:
+            source.commit(dict(counts=counts, original=[original[0].isoformat(), original[1]],
+                               newest=[newest[0].isoformat(), newest[1]], upper=None, complete=True))
     except BaseException as exc:
         counts["ERROR"] += 1
         save("error", str(exc))
         raise
+    finally:
+        print("\n" + "=" * 72, flush=True)
+        print(f"{dataset.upper()} SYNC SONUCU", flush=True)
+        print("=" * 72, flush=True)
+        print(f"API sayfalari: {source.api_calls if source else 0}", flush=True)
+        print(f"Taranan (bu deneme): {source.scanned if source else 0}", flush=True)
+        print(f"Islenen: {sum(counts[k] for k in ('NEW','CHANGED','UNCHANGED'))}", flush=True)
+        for key in ("NEW", "CHANGED", "UNCHANGED", "ERROR"):
+            print(f"{key}: {counts[key]}", flush=True)
+        print(f"Checkpoint: {'ilerletilmedi' if counts['ERROR'] else newest}", flush=True)
+        print(f"Sure: {time.monotonic()-started:.1f} seconds", flush=True)

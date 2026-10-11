@@ -226,7 +226,9 @@ Authentication and subscription management are available in the local frontend.
 ## Subscriptions
 
 Users can subscribe to WWF topics, Swiss cantons, individual keywords and datasets,
-or follow specific records. See the monitoring guide for their combined behavior.
+or follow specific records. Source persistence and email eligibility are separate:
+technical/formatting-only changes do not notify, and related updates are grouped
+into summaries per user/affair. See the monitoring guide for the per-dataset rules.
 
 Subscription matching follows these rules:
 
@@ -571,3 +573,8 @@ The goal is a technically sound and testable prototype that can be extended into
 ## License
 
 A project-specific software license has not yet been defined.
+
+
+The public interface has nine dataset sections in the left navigation. Filters apply only to the selected dataset and are remembered separately when switching sections. Every card opens its own details with linked affairs, meetings, agendas and other related records where available. The UI uses the dataset-specific `/api/v1/entities/{dataset}` endpoints; the unified search API remains available for compatibility but is not used by the main page.
+
+Daily implementation/requirements/issue review: [11 October 2026](docs/daily-review-2026-10-11.md).

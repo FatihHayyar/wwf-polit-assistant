@@ -29,6 +29,16 @@ def sqlite_integer(type_, compiler, **kw):
     return "INTEGER"
 
 
+class MemorySource:
+    def __init__(self, records):
+        self.records=records;self.state={};self.mode="inventory";self.position=0;self.api_calls=0;self.scanned=0
+    def next(self, sort_by):
+        self.api_calls+=1;self.scanned+=len(self.records)
+        return self.records,True
+    def commit(self, state):
+        self.state=state;self.position=len(self.records)
+
+
 class MonitoringTests(unittest.TestCase):
     def setUp(self):
         self.engine = create_engine("sqlite:///:memory:")
@@ -52,6 +62,154 @@ class MonitoringTests(unittest.TestCase):
         self.db.add(UserCategorySubscription(user_id=1,category_id=1))
         self.db.commit()
 
+    def test_numeric_api_value_matches_persisted_text(self):
+        agenda=self.db.get(Agenda,1)
+        agenda.item_number="1"
+        self.db.commit()
+        self.assertEqual(sync_record(self.db,"agendas",{"id":1,"item_number":1},agenda),"UNCHANGED")
+        self.assertEqual(self.count(ChangeEvent),0)
+        self.assertEqual(sync_record(self.db,"agendas",{"id":1,"item_number":2},agenda),"CHANGED")
+        self.db.commit();self.db.expire_all()
+        self.assertEqual(self.db.get(Agenda,1).item_number,"2")
+        self.assertEqual(sync_record(self.db,"agendas",{"id":1,"item_number":2},self.db.get(Agenda,1)),"UNCHANGED")
+        self.assertEqual(self.count(ChangeEvent),1)
+
+    def test_mail_queue_drains_past_one_batch_and_does_not_retry_failures_in_same_run(self):
+        from app.services.notification_email_service import send_pending_notifications
+        from app.services.email_service import EmailServiceError
+        for i in range(105):
+            sync_record(self.db,"agendas",{"id":1,"item_title":f"Solar {i}","item_result":f"Solar {i}"},self.db.get(Agenda,1))
+        self.db.commit()
+        with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)), patch("app.services.notification_email_service.send_email",side_effect=[EmailServiceError("retry later")]+[None]*104) as send:
+            self.assertEqual(send_pending_notifications(batch_size=20,digest=False),(104,1))
+            self.assertEqual(send.call_count,105)
+        self.db.expire_all()
+        self.assertEqual(self.db.scalar(select(func.count()).select_from(Notification).where(Notification.status=="pending")),1)
+        with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)), patch("app.services.notification_email_service.send_email") as send:
+            self.assertEqual(send_pending_notifications(batch_size=20,digest=False),(1,0))
+            send.assert_called_once()
+
+    def test_shared_affair_runner_preserves_classification_and_checkpoint(self):
+        from scripts.sync.entity_sync import run_dataset
+        self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
+            last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+        self.db.commit()
+        records=[{"id":1,"body_id":1,"title":{"de":"Neue Photovoltaik"},"updated_at":"2026-10-11T00:00:00"}]
+        with patch("scripts.sync.entity_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.incremental_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.entity_sync.make_source",side_effect=lambda *args:MemorySource(records)):
+            run_dataset("affairs")
+        self.db.expire_all()
+        self.assertEqual(self.db.get(Affair,1).title_de,"Neue Photovoltaik")
+        self.assertEqual(self.count(ChangeEvent),1)
+        self.assertEqual(self.db.scalar(text("SELECT status FROM sync_checkpoints WHERE dataset='affairs'")),"idle")
+
+    def test_interrupted_inventory_restarts_at_committed_batch(self):
+        import json,tempfile
+        from pathlib import Path
+        import httpx
+        from scripts.sync.source_batches import BatchSource, atomic_json
+        from scripts.sync.entity_sync import run_dataset
+        self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
+            last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+        self.db.commit()
+        requested=[];fail=[True]
+        def handler(request):
+            record_id=int(request.url.params["id"]);requested.append(record_id)
+            if record_id==1 and fail[0]:raise ValueError("simulated interruption")
+            return httpx.Response(200,json={"data":[{"id":record_id,"item_title":f"Updated {record_id}"}],"meta":{"has_more":False}})
+        with tempfile.TemporaryDirectory() as folder, httpx.Client(transport=httpx.MockTransport(handler)) as client, patch("scripts.sync.source_batches.job_directory",return_value=Path(folder)), patch("scripts.sync.source_batches.PAGE_SIZE",1), patch("scripts.sync.entity_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.entity_sync.make_source",side_effect=lambda _,url,dataset,full:BatchSource(client,url,dataset,full)):
+            atomic_json(Path(folder)/"agendas_ids.json",[2,1])
+            with self.assertRaisesRegex(ValueError,"simulated interruption"):run_dataset("agendas")
+            state=json.loads((Path(folder)/"agendas.json").read_text())
+            self.assertEqual(state["position"],1)
+            self.assertFalse(state["complete"])
+            self.assertEqual(self.count(ChangeEvent),1)
+            fail[0]=False;requested.clear()
+            run_dataset("agendas")
+            self.assertEqual(requested,[1])
+            self.assertTrue(json.loads((Path(folder)/"agendas.json").read_text())["complete"])
+        self.db.expire_all()
+        self.assertEqual(self.count(ChangeEvent),2)
+        self.assertEqual(self.db.scalar(text("SELECT records_changed FROM sync_checkpoints WHERE dataset='agendas'")),2)
+
+    def test_technical_and_formatting_changes_are_saved_without_notifications(self):
+        agenda=self.db.get(Agenda,1)
+        self.assertEqual(sync_record(self.db,"agendas",{"id":1,"item_url":"https://example.org/new"},agenda),"CHANGED")
+        self.assertEqual(sync_record(self.db,"agendas",{"id":1,"item_title":" Solar  \n"},agenda),"CHANGED")
+        self.db.commit()
+        self.assertEqual(self.count(ChangeEvent),2)
+        self.assertEqual(self.count(Notification),0)
+        event=self.db.scalars(select(ChangeEvent).order_by(ChangeEvent.id.desc())).first()
+        self.assertEqual(event.changes["item_title"]["before"],"Solar")
+        self.assertFalse(event.notification_eligible)
+        sync_record(self.db,"agendas",{"id":1,"item_result":"Angenommen"},agenda)
+        self.db.commit();self.assertEqual(self.count(Notification),1)
+
+    def test_digest_groups_updates_and_retries_failed_group_next_invocation(self):
+        from app.services.notification_email_service import send_pending_notifications
+        from app.services.email_service import EmailServiceError
+        for i in range(3):sync_record(self.db,"agendas",{"id":1,"item_result":f"Result {i}"},self.db.get(Agenda,1))
+        self.db.commit()
+        with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)),patch("app.services.notification_email_service.send_email",side_effect=EmailServiceError("retry")) as send:
+            self.assertEqual(send_pending_notifications(batch_size=1),(0,1));send.assert_called_once()
+        self.db.expire_all();self.assertEqual(self.db.scalar(select(func.count()).select_from(Notification).where(Notification.status=="pending")),3)
+        with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)),patch("app.services.notification_email_service.send_email") as send:
+            self.assertEqual(send_pending_notifications(batch_size=1),(1,0));send.assert_called_once()
+            self.assertIn("3 Neuigkeiten",send.call_args.kwargs["body"])
+        self.db.expire_all();self.assertEqual(self.db.scalar(select(func.count()).select_from(Notification).where(Notification.status=="sent")),3)
+
+    def test_legacy_technical_notification_is_cancelled_before_delivery(self):
+        from app.services.notification_email_service import send_pending_notifications
+        event=ChangeEvent(dataset="agendas",source_id=1,affair_id=1,change_type="updated",fingerprint="legacy-tech",description="Changed fields: item_url, item_affair_id")
+        self.db.add(event);self.db.flush();self.db.add(Notification(user_id=1,change_event_id=event.id,status="pending"));self.db.commit()
+        with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)),patch("app.services.notification_email_service.send_email") as send:
+            self.assertEqual(send_pending_notifications(),(0,0));send.assert_not_called()
+        self.db.expire_all();self.assertEqual(self.db.scalar(select(Notification.status)),"cancelled")
+
+    def test_digest_sends_more_than_100_distinct_affairs(self):
+        from app.services.notification_email_service import send_pending_notifications
+        for i in range(105):
+            affair_id=2000+i
+            self.db.add(Affair(id=affair_id,body_id=1,title_de=f"Solar {i}"));self.db.flush()
+            self.db.add(AffairClassification(affair_id=affair_id,category_id=2,score=10,confidence="high",classifier_version="test",classified_at=datetime(2026,1,1)))
+            event=ChangeEvent(dataset="affairs",source_id=affair_id,affair_id=affair_id,change_type="created",fingerprint=f"group-{i}")
+            self.db.add(event);self.db.flush();self.db.add(Notification(user_id=1,change_event_id=event.id,status="pending"))
+        self.db.commit()
+        with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)),patch("app.services.notification_email_service.send_email") as send:
+            self.assertEqual(send_pending_notifications(batch_size=20),(105,0));self.assertEqual(send.call_count,105)
+        self.db.expire_all();self.assertEqual(self.db.scalar(select(func.count()).select_from(Notification).where(Notification.status=="pending")),0)
+
+    def test_unified_search_has_global_pagination_and_type_selection(self):
+        from app.services.entity_service import search_all_entities
+        first=search_all_entities(self.db, ["affairs", "agendas"], page_size=2)
+        self.assertEqual(first["pagination"]["total_items"],4)
+        self.assertEqual(first["pagination"]["total_pages"],2)
+        second=search_all_entities(self.db,["affairs","agendas"],page=2,page_size=2)
+        keys=lambda result:{(item["dataset"],item["id"]) for item in result["items"]}
+        self.assertFalse(keys(first)&keys(second))
+        only=search_all_entities(self.db,["agendas"])
+        self.assertTrue(all(item["dataset"]=="agendas" for item in only["items"]))
+        all_types=search_all_entities(self.db)
+        self.assertGreaterEqual(all_types["pagination"]["total_items"],5)
+
+    def test_unified_keyword_search_matches_own_content_and_detail_keeps_context(self):
+        from app.services.entity_service import search_all_entities
+        from app.api.routes.entities import entity_detail
+        self.db.get(Affair,1).title_de="UniqueBioabfall"
+        self.db.commit()
+        result=search_all_entities(self.db,["affairs","agendas"],q="UniqueBioabfall")
+        self.assertEqual([(item["dataset"],item["id"]) for item in result["items"]],[("affairs",1)])
+        detail=entity_detail("agendas",1,self.db)
+        self.assertEqual(detail["linked_affairs"][0]["title"],"UniqueBioabfall")
+        self.assertEqual(detail["meeting"]["id"],1)
+        self.db.add(ParliamentaryText(id=800,body_id=1,affair_id=1,text_de="Bioabfall Stellungnahme"))
+        self.db.commit()
+        text_detail=entity_detail("texts",800,self.db)
+        self.assertEqual(text_detail["linked_affairs"][0]["id"],1)
+        self.assertEqual(text_detail["record"]["text_de"],"Bioabfall Stellungnahme")
+
+
     def tearDown(self):
         self.db.close()
         self.engine.dispose()
@@ -63,13 +221,13 @@ class MonitoringTests(unittest.TestCase):
         self.db.add(UserKeywordSubscription(user_id=1, keyword="solaranlage"))
         self.db.add(UserCantonSubscription(user_id=1, canton_key="BE"))
         self.db.commit()
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Sitzung"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Sitzung","item_result":"Neue Sitzung"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(Notification),0)
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue SOLARANLAGE"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue SOLARANLAGE","item_result":"Neue SOLARANLAGE"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
-        sync_record(self.db,"agendas",{"id":2,"item_title":"Neue Solaranlage"},self.db.get(Agenda,2))
+        sync_record(self.db,"agendas",{"id":2,"item_title":"Neue Solaranlage","item_result":"Neue Solaranlage"},self.db.get(Agenda,2))
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
 
@@ -77,7 +235,7 @@ class MonitoringTests(unittest.TestCase):
         self.db.query(UserCategorySubscription).delete()
         self.db.add(UserKeywordSubscription(user_id=1, keyword="wärmepumpe"))
         self.db.commit()
-        sync_record(self.db,"agendas",{"id":50,"body_id":1,"item_title":"Wärmepumpe für Schule"})
+        sync_record(self.db,"agendas",{"id":50,"body_id":1,"item_title":"Wärmepumpe für Schule","item_result":"Wärmepumpe für Schule"})
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
 
@@ -86,8 +244,8 @@ class MonitoringTests(unittest.TestCase):
         self.db.add(UserRecordWatch(user_id=1, dataset="affairs", record_id=1))
         self.db.add(UserDatasetSubscription(user_id=1, dataset="texts"))
         self.db.commit()
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Verfahren geändert"},self.db.get(Agenda,1))
-        sync_record(self.db,"agendas",{"id":2,"item_title":"Anderes Verfahren"},self.db.get(Agenda,2))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Verfahren geändert","item_result":"Verfahren geändert"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":2,"item_title":"Anderes Verfahren","item_result":"Anderes Verfahren"},self.db.get(Agenda,2))
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
 
@@ -95,7 +253,7 @@ class MonitoringTests(unittest.TestCase):
         self.db.query(UserCategorySubscription).delete()
         self.db.add(UserRecordWatch(user_id=1, dataset="meetings", record_id=1))
         self.db.commit()
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Agenda geändert"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Agenda geändert","item_result":"Agenda geändert"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
 
@@ -104,7 +262,7 @@ class MonitoringTests(unittest.TestCase):
         self.db.query(UserCategorySubscription).delete()
         self.db.add(UserRecordWatch(user_id=1, dataset="affairs", record_id=1))
         self.db.commit()
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Agenda"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Agenda","item_result":"Neue Agenda"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
         self.db.query(UserRecordWatch).delete()
@@ -164,14 +322,14 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(self.count(Notification),0)
 
     def test_agenda_change_updates_affair_history(self):
-        result=sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Solaranlage"},self.db.get(Agenda,1))
+        result=sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Solaranlage","item_result":"Neue Solaranlage"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(result,"CHANGED")
         self.assertEqual(self.count(Notification),1)
         detail=get_affair_detail(self.db,1)
         self.assertEqual(detail.changes[0]["dataset"],"agendas")
         self.assertEqual(detail.related["agendas"]["items"][0]["title"],"Neue Solaranlage")
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Solaranlage"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Solaranlage","item_result":"Neue Solaranlage"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(ChangeEvent),1)
 
@@ -185,7 +343,7 @@ class MonitoringTests(unittest.TestCase):
 
     def test_return_to_previous_content_is_a_new_change(self):
         for title in ("Version A","Version B","Version A","Version A"):
-            sync_record(self.db,"agendas",{"id":1,"item_title":title},self.db.get(Agenda,1))
+            sync_record(self.db,"agendas",{"id":1,"item_title":title,"item_result":title},self.db.get(Agenda,1))
             self.db.commit()
         self.assertEqual(self.count(ChangeEvent),3)
         self.assertEqual(self.count(Notification),3)
@@ -193,7 +351,7 @@ class MonitoringTests(unittest.TestCase):
     def test_dataset_subscription(self):
         self.db.add(UserDatasetSubscription(user_id=1,dataset="texts"))
         self.db.commit()
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Changed"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Changed","item_result":"Changed"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(Notification),0)
 
@@ -214,7 +372,7 @@ class MonitoringTests(unittest.TestCase):
 
     def test_standalone_entity_classified_and_notified(self):
         self.add_rule("Photovoltaik","solar_title")
-        sync_record(self.db,"agendas",{"id":50,"body_id":1,"item_title":"Photovoltaik"})
+        sync_record(self.db,"agendas",{"id":50,"body_id":1,"item_title":"Photovoltaik","item_result":"Photovoltaik"})
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
         result=list_entities(self.db,"agendas",category="climate",q="Photovoltaik")
@@ -233,7 +391,7 @@ class MonitoringTests(unittest.TestCase):
 
     def test_email_rechecks_current_subscription(self):
         from app.services.notification_email_service import send_pending_notifications
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Traktanden"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Traktanden","item_result":"Neue Traktanden"},self.db.get(Agenda,1))
         self.db.commit()
         self.db.query(UserCategorySubscription).delete()
         self.db.commit()
@@ -251,8 +409,8 @@ class MonitoringTests(unittest.TestCase):
         self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_id,status) VALUES ('agendas',100,'idle')"))
         self.db.commit()
         records=[{"id":2,"body_id":2,"meeting_id":1,"item_affair_id":2,"item_title":"Wind"},
-                 {"id":1,"body_id":1,"meeting_id":1,"item_affair_id":1,"item_title":"Alter Datensatz aktualisiert"}]
-        with patch("scripts.sync.entity_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.entity_sync.fetch_page",return_value=records):
+                 {"id":1,"body_id":1,"meeting_id":1,"item_affair_id":1,"item_title":"Alter Datensatz aktualisiert","item_result":"Angenommen"}]
+        with patch("scripts.sync.entity_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.entity_sync.make_source",side_effect=lambda *args:MemorySource(records)):
             run_dataset("agendas")
             run_dataset("agendas")
         self.db.expire_all()
@@ -295,7 +453,7 @@ class MonitoringTests(unittest.TestCase):
         self.db.add(UserRecordWatch(user_id=1,dataset="groups",record_id=42))
         self.db.commit()
         sync_record(self.db,"meetings",{"id":1,"location":"Neuer Ort"},self.db.get(Meeting,1))
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Traktanden"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Traktanden","item_result":"Neue Traktanden"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(Notification),2)
 
@@ -321,7 +479,7 @@ class MonitoringTests(unittest.TestCase):
         self.add_rule("Photovoltaik","solar_title")
         for dataset in ("groups","interests"):
             record={"id":50,"body_id":1,"name":{"de":"Photovoltaik"},"updated_at":"2026-01-01"}
-            with patch("scripts.sync.entity_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.entity_sync.fetch_page",return_value=[record]):
+            with patch("scripts.sync.entity_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.entity_sync.make_source",side_effect=lambda *args:MemorySource([record])):
                 run_dataset(dataset)
                 record["updated_at"]="2026-02-01"
                 run_dataset(dataset)
@@ -362,7 +520,7 @@ class MonitoringTests(unittest.TestCase):
     def test_primary_affair_subscription_includes_supporting_changes(self):
         self.db.add(UserDatasetSubscription(user_id=1,dataset="affairs"))
         self.db.commit()
-        sync_record(self.db,"agendas",{"id":1,"item_title":"Änderung zum Geschäft"},self.db.get(Agenda,1))
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Änderung zum Geschäft","item_result":"Änderung zum Geschäft"},self.db.get(Agenda,1))
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
 
@@ -379,7 +537,7 @@ class MonitoringTests(unittest.TestCase):
         meeting=entity_detail("meetings",1,self.db)
         self.assertEqual(meeting["related"]["votings"]["pagination"]["total_items"],1)
         self.assertEqual(entity_detail("votings",91,self.db)["record"]["results_abstention"],0)
-        self.assertEqual(available_entities()["navigation"],["affairs","meetings","groups","interests"])
+        self.assertEqual(available_entities()["navigation"],["affairs","agendas","meetings","votings","events","documents","texts","groups","interests"])
 
     def test_email_login_redirects_cookie_and_rejects_reuse(self):
         from app.services.email_verification_service import create_login_token
