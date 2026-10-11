@@ -16,6 +16,9 @@ from app.models.subscription import (
     UserCategorySubscription,
 )
 from app.models.user import User
+from app.models.dataset_subscription import UserDatasetSubscription
+from app.models.monitoring_subscription import UserKeywordSubscription, UserRecordWatch
+from app.services.entity_registry import ENTITIES
 from app.services.canton_service import CANTON_NAMES
 from app.services.email_service import EmailServiceError, send_email
 
@@ -55,6 +58,9 @@ class CantonSubscriptionResponse(BaseModel):
 class SubscriptionUpdate(BaseModel):
     category_ids: list[int] = Field(default_factory=list)
     canton_keys: list[str] = Field(default_factory=list)
+    datasets: list[str] = Field(default_factory=list)
+    keywords: list[str] = Field(default_factory=list, max_length=20)
+    clear_watches: bool = False
 
 
 class SubscriptionSummary(BaseModel):
@@ -64,6 +70,9 @@ class SubscriptionSummary(BaseModel):
     all_cantons: bool
     category_names: list[str]
     canton_names: list[str]
+    datasets: list[str] = Field(default_factory=list)
+    keywords: list[str] = Field(default_factory=list)
+    active: bool = False
 
 
 def category_name(category: ClassificationCategory) -> str:
@@ -138,6 +147,12 @@ def update_all_subscriptions(
         )
 
     requested_category_ids = set(payload.category_ids)
+    requested_datasets = set(payload.datasets)
+    keywords = {" ".join(keyword.split()).casefold() for keyword in payload.keywords}
+    if any(not keyword or len(keyword) > 200 for keyword in keywords):
+        raise HTTPException(422, "Keywords must contain 1 to 200 characters.")
+    if requested_datasets - set(ENTITIES):
+        raise HTTPException(422, "Invalid datasets.")
 
     if any(
         category_id <= 0
@@ -164,15 +179,7 @@ def update_all_subscriptions(
             ),
         )
 
-    # At least one theme or canton must be selected.
-    if not requested_category_ids and not normalized_cantons:
-        raise HTTPException(
-            status_code=422,
-            detail=(
-                "Select at least one category or canton. "
-                "An empty group means all values in that group."
-            ),
-        )
+    # Empty general filters pause filter subscriptions; explicit watches remain independent.
 
     categories = (
         db.query(ClassificationCategory)
@@ -245,6 +252,20 @@ def update_all_subscriptions(
             )
         )
 
+    existing_datasets = db.query(UserDatasetSubscription).filter(UserDatasetSubscription.user_id == current_user.id).all()
+    existing_dataset_names = {item.dataset for item in existing_datasets}
+    for item in existing_datasets:
+        if item.dataset not in requested_datasets:
+            db.delete(item)
+    for dataset in requested_datasets - existing_dataset_names:
+        db.add(UserDatasetSubscription(user_id=current_user.id, dataset=dataset))
+    db.query(UserKeywordSubscription).filter_by(user_id=current_user.id).delete(synchronize_session=False)
+    for keyword in sorted(keywords):
+        db.add(UserKeywordSubscription(user_id=current_user.id, keyword=keyword))
+    if payload.clear_watches:
+        db.query(UserRecordWatch).filter_by(user_id=current_user.id).delete(synchronize_session=False)
+    has_watches = db.query(UserRecordWatch).filter_by(user_id=current_user.id).first() is not None
+    active = bool(requested_category_ids or normalized_cantons or keywords or has_watches)
     db.commit()
 
     sorted_categories = sorted(
@@ -284,6 +305,8 @@ def update_all_subscriptions(
             f"{theme_lines}\n\n"
             "Deine Kantone:\n"
             f"{canton_lines}\n\n"
+            f"Suchbegriffe: {', '.join(sorted(keywords)) or 'Keine Einschränkung'}\n"
+            f"Benachrichtigungen: {'Aktiv' if active else 'Beendet'}\n\n"
             "Ein ausgewähltes Oberthema umfasst alle Unterthemen.\n"
             "Wenn keine Themen ausgewählt sind, gelten alle Themen.\n"
             "Wenn keine Kantone ausgewählt sind, gelten alle Kantone.\n\n"
@@ -299,7 +322,45 @@ def update_all_subscriptions(
         all_cantons=not bool(sorted_cantons),
         category_names=selected_category_names,
         canton_names=selected_canton_names,
+        datasets=sorted(requested_datasets),
+        keywords=sorted(keywords),
+        active=active,
     )
+
+
+@router.get("")
+def subscription_summary(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    category_ids = [item.category_id for item in db.query(UserCategorySubscription).filter_by(user_id=current_user.id)]
+    canton_keys = [item.canton_key for item in db.query(UserCantonSubscription).filter_by(user_id=current_user.id)]
+    datasets = [item.dataset for item in db.query(UserDatasetSubscription).filter_by(user_id=current_user.id)]
+    keywords = [item.keyword for item in db.query(UserKeywordSubscription).filter_by(user_id=current_user.id)]
+    watches = db.query(UserRecordWatch).filter_by(user_id=current_user.id).all()
+    return {"category_ids": sorted(category_ids), "canton_keys": sorted(canton_keys), "datasets": sorted(datasets),
+            "keywords": sorted(keywords), "watches": [{"dataset": watch.dataset, "record_id": watch.record_id} for watch in watches],
+            "active": bool(category_ids or canton_keys or keywords or watches)}
+
+
+@router.put("/watches/{dataset}/{record_id}", status_code=201)
+def watch_record(dataset: str, record_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.email_verified:
+        raise HTTPException(403, "Email verification required.")
+    if dataset not in ENTITIES or record_id <= 0:
+        raise HTTPException(422, "Invalid record reference.")
+    if db.get(ENTITIES[dataset].model, record_id) is None:
+        raise HTTPException(404, "Record not found.")
+    key = (current_user.id, dataset, record_id)
+    if db.get(UserRecordWatch, key) is None:
+        db.add(UserRecordWatch(user_id=current_user.id, dataset=dataset, record_id=record_id))
+        db.commit()
+    return {"dataset": dataset, "record_id": record_id}
+
+
+@router.delete("/watches/{dataset}/{record_id}", status_code=204)
+def unwatch_record(dataset: str, record_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    watch = db.get(UserRecordWatch, (current_user.id, dataset, record_id))
+    if watch is not None:
+        db.delete(watch)
+        db.commit()
 
 
 @router.get(

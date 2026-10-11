@@ -6,6 +6,9 @@ from sqlalchemy import select
 
 from app.db.database import SessionLocal
 from app.models.change_event import ChangeEvent
+from app.models.change_event_affair import ChangeEventAffair
+from app.models.dataset_subscription import UserDatasetSubscription
+from app.core.config import settings
 from app.models.entities import Affair, Body
 from app.models.notification import Notification
 from app.models.subscription import (
@@ -102,7 +105,8 @@ def send_pending_notifications(
 
     for notification_id in notification_ids:
         with SessionLocal() as db:
-            notification = db.get(Notification, notification_id)
+            notification = db.scalar(select(Notification).where(Notification.id == notification_id)
+                                     .with_for_update(skip_locked=True))
 
             if (
                 notification is None
@@ -121,43 +125,36 @@ def send_pending_notifications(
                 or not user.is_active
                 or not user.email_verified
                 or event is None
-                or event.affair_id is None
             ):
                 notification.status = "cancelled"
                 db.commit()
                 continue
 
-            affair = db.get(Affair, event.affair_id)
-
-            if affair is None:
+            from app.services.monitoring_match_service import event_subjects, matching_subject
+            subject = matching_subject(db, user.id, event.dataset, event_subjects(db, event))
+            if subject is None:
                 notification.status = "cancelled"
                 db.commit()
                 continue
+            from app.services.entity_registry import ENTITIES
+            from app.services.entity_relations import entity_key
+            spec = ENTITIES[event.dataset]
+            source_entity = db.get(spec.model, event.source_id)
+            title = next((getattr(source_entity, field) for field in spec.title_fields
+                          if source_entity is not None and getattr(source_entity, field)),
+                         f"{event.dataset} {event.source_id}")
+            title = " ".join(title.split())[:500]
 
-            # Recheck the user's current subscriptions before sending.
-            if not user_still_subscribed(db, user.id, affair):
-                notification.status = "cancelled"
-                db.commit()
-                continue
-
-            title = (
-                affair.title_de
-                or affair.title_fr
-                or affair.title_it
-                or affair.title_rm
-                or f"Affair {affair.id}"
-            )
-
-            action = (
-                "New political affair"
-                if event.change_type == "created"
-                else "Political affair updated"
-            )
+            action = f"{event.dataset}: " + ("New record" if event.change_type == "created" else "Record updated")
 
             body = (
                 f"{action}\n\n"
                 f"{title}\n\n"
-                f"Affair ID: {affair.id}\n"
+                f"Related affair: {event.affair_id or '?'}\n"
+                f"Dataset: {event.dataset}\n"
+                f"Record: {event.source_id}\n"
+                f"{event.description or ''}\n\n"
+                f"{settings.verification_base_url}/?dataset={event.dataset}&record={event.source_id}\n"
             )
 
             try:

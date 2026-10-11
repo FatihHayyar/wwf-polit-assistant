@@ -25,6 +25,14 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql+psycopg://polit_assistant:polit_assistant_dev@postgres:5432/polit_assistant
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-WWF Polit-Assistant}
+      VERIFICATION_BASE_URL: ${VERIFICATION_BASE_URL:-http://localhost:8000}
       TZ: Europe/Zurich
     depends_on:
       postgres:

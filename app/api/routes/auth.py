@@ -4,7 +4,7 @@ from __future__ import annotations
 from html import escape
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
@@ -47,17 +47,7 @@ def authentication_result_page(
     token_section = ""
 
     if access_token is not None:
-        token_section = f"""
-            <h2>Access Token</h2>
-            <textarea
-                style="width: 700px; max-width: 95%; height: 150px;"
-                readonly
-            >{escape(access_token)}</textarea>
-            <p>
-                Copy this token and use it in Swagger
-                for authenticated endpoint testing.
-            </p>
-        """
+        token_section = '<p><a href="/">Zur Anwendung</a></p>'
 
     return HTMLResponse(
         content=f"""
@@ -177,11 +167,11 @@ def verify_email(
 
     access_token = create_access_token(user.id)
 
-    return authentication_result_page(
-        title="Successfully verified",
-        message="Your email address has been verified successfully.",
-        access_token=access_token,
-    )
+    result = RedirectResponse("/?signed_in=1", status_code=303)
+    result.set_cookie("access_token", access_token, httponly=True, samesite="lax",
+                      secure=settings.verification_base_url.startswith("https://"),
+                      max_age=settings.jwt_expire_minutes * 60)
+    return result
 
 
 @router.post(
@@ -288,11 +278,21 @@ def verify_login(
 
     access_token = create_access_token(user.id)
 
-    return authentication_result_page(
-        title="Successfully logged in",
-        message="You have successfully signed in.",
-        access_token=access_token,
-    )
+    result = RedirectResponse("/?signed_in=1", status_code=303)
+    result.set_cookie("access_token", access_token, httponly=True, samesite="lax",
+                      secure=settings.verification_base_url.startswith("https://"),
+                      max_age=settings.jwt_expire_minutes * 60)
+    return result
+
+
+@router.get("/me")
+def my_account(current_user: User = Depends(get_current_user)):
+    return {"email": current_user.email, "email_verified": current_user.email_verified}
+
+
+@router.post("/logout", status_code=204)
+def logout(response: Response):
+    response.delete_cookie("access_token", path="/")
 
 
 @router.delete(

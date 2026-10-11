@@ -1,5 +1,9 @@
 
 from sqlalchemy import Index
+from app.models.monitoring_subscription import UserKeywordSubscription, UserRecordWatch
+from app.models.change_event_affair import ChangeEventAffair
+from app.models.dataset_subscription import UserDatasetSubscription
+from app.models.entity_classification import EntityClassification
 
 from app.models.change_event import ChangeEvent
 from app.models.classification import (
@@ -56,6 +60,7 @@ Index("idx_memberships_group_id", Membership.group_id)
 Index("idx_interests_person_id", Interest.person_id)
 
 # Meetings
+Index("idx_meetings_group_id", Meeting.group_id)
 Index("idx_meetings_body_id", Meeting.body_id)
 Index("idx_meetings_begin_date", Meeting.begin_date)
 Index("idx_meetings_updated_at", Meeting.updated_at)

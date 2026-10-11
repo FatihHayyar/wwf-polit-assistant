@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WWF Polit-Assistant</title><link rel="stylesheet" href="/assets/style.css"><script src="/assets/i18n.js" defer></script><script src="/assets/app.js" defer></script></head>
+<body>
+<aside><a class="brand" href="/">WWF <span>Polit-Assistant</span></a><p class="eyebrow" data-i18n="monitoring"></p><nav id="datasets" data-i18n-aria="datasets"></nav><div class="side-bottom"><button id="subscriptions-open" data-i18n="subscriptions"></button><button id="sync-open" data-i18n="sync"></button><p><span data-i18n="sourceData"></span><br>OpenParlData · CC BY 4.0</p></div></aside>
+<main>
+<header><div><p class="eyebrow" data-i18n="eyebrow"></p><h1 id="heading"></h1><p data-i18n="intro"></p></div><div class="header-actions"><label class="language-select"><span data-i18n="language"></span><select id="language"><option value="de">Deutsch</option><option value="fr">Français</option><option value="it">Italiano</option><option value="en">English</option></select></label><button id="account-open" data-i18n="login"></button></div></header>
+<section class="filters"><form id="search-form">
+<label class="search"><span data-i18n="keyword"></span><input name="q" type="search" data-i18n-placeholder="searchPlaceholder"></label>
+<label><span data-i18n="topic"></span><select id="category" name="category"></select></label>
+<label><span data-i18n="subtopic"></span><select id="subcategory" name="subcategory"></select></label>
+<label><span data-i18n="canton"></span><select id="canton" name="canton"></select></label>
+<label><span data-i18n="from"></span><input name="date_from" type="date"></label><label><span data-i18n="to"></span><input name="date_to" type="date"></label>
+<button class="primary" data-i18n="search"></button><button type="reset" data-i18n="reset"></button></form></section>
+<section id="subscription-section" class="subscription-banner"><div><p class="eyebrow" data-i18n="stayInformed"></p><h2 data-i18n="subscriptionPitch"></h2><p data-i18n="subscriptionBenefit"></p><p id="membership-summary" aria-live="polite"></p></div><div class="subscription-actions"><button id="membership-login" class="primary" data-i18n="login"></button><button id="membership-register" data-i18n="register"></button><button id="membership-view" data-i18n="viewSubscriptions"></button><p data-i18n="publicBrowsing"></p></div></section>
+<div id="context-navigation" hidden></div>
+<div class="result-bar"><p id="result-count" aria-live="polite"></p><span data-i18n="classificationBasis"></span></div><p id="message" role="status" hidden></p><section id="results" data-i18n-aria="search"></section><div class="pagination"><button id="previous" data-i18n="previous"></button><span id="page-label"></span><button id="next" data-i18n="next"></button></div>
+</main>
+<dialog id="detail-dialog"><div class="dialog-header"><h2 id="detail-title"></h2><button data-close="detail-dialog" data-i18n-aria="close">✕</button></div><div id="detail-content"></div></dialog>
+<dialog id="account-dialog"><div class="dialog-header"><h2 id="account-title" data-i18n="login"></h2><button data-close="account-dialog" data-i18n-aria="close">✕</button></div><p id="account-help" data-i18n="loginHelp"></p><p id="account-summary" hidden></p><form id="account-form"><label><span data-i18n="email"></span><input name="email" type="email" required autocomplete="email"></label><label><span data-i18n="action"></span><select name="action"><option value="login" data-i18n="loginLink"></option><option value="register" data-i18n="register"></option></select></label><button class="primary" data-i18n="sendLink"></button></form><p id="account-message" role="status"></p><button id="logout" data-i18n="logout" hidden></button></dialog>
+<dialog id="subscription-dialog"><div class="dialog-header"><h2 data-i18n="subscriptions"></h2><button data-close="subscription-dialog" data-i18n-aria="close">✕</button></div><p data-i18n="subscriptionHelp"></p><form id="subscription-form">
+<fieldset><legend data-i18n="topics"></legend><div id="subscription-categories" class="choices"></div></fieldset>
+<fieldset><legend data-i18n="cantons"></legend><div id="subscription-cantons" class="choices"></div></fieldset>
+<fieldset><legend data-i18n="datasets"></legend><p data-i18n="datasetSubscriptionHelp"></p><div id="subscription-datasets" class="choices"></div></fieldset>
+<fieldset><legend data-i18n="keywords"></legend><label><span data-i18n="onePerLine"></span><textarea id="subscription-keywords" rows="4" maxlength="4020"></textarea></label><p data-i18n="keywordHelp"></p></fieldset>
+<fieldset><legend data-i18n="watched"></legend><div id="subscription-watches"></div><p data-i18n="watchHelp"></p></fieldset>
+<button class="primary" data-i18n="save"></button><button type="button" id="unsubscribe" data-i18n="stopAll"></button></form><p id="subscription-message" role="status"></p></dialog>
+<dialog id="sync-dialog"><div class="dialog-header"><h2 data-i18n="syncTitle"></h2><button data-close="sync-dialog" data-i18n-aria="close">✕</button></div><p data-i18n="syncHelp"></p><form id="sync-form"><label><span data-i18n="adminKey"></span><input id="sync-key" type="password" required autocomplete="off"></label><button class="primary" data-i18n="updateAll"></button></form><p id="sync-message" role="status"></p><div id="sync-status"></div></dialog>
+</body></html>

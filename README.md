@@ -12,6 +12,16 @@ The platform combines OpenParlData, WWF-specific topic classification, canton fi
 
 AI-based functionality is optional and is not required for the initial MVP.
 
+The local frontend provides public search across affairs, meetings, groups and
+interest declarations. Related agendas, events, voting results, documents and
+texts appear within their political context. All nine datasets remain supported
+by synchronization and the API. A separate stay-informed section provides
+email login and subscription management with grouped main themes and subtopics. Meaningful changes in related datasets
+are connected to affair monitoring. See [monitoring setup and behavior](docs/monitoring.md)
+for startup, historical classification and daily/manual synchronization instructions.
+See the [WWF requirements review](docs/wwf-requirements.md) for keyword subscriptions,
+individual record monitoring and open taxonomy, dataset and Azure decisions.
+
 ## Current Status — 8 October 2026
 
 The FastAPI backend, PostgreSQL integration, initial data import, classification pipeline, affair search and subscription infrastructure are implemented.
@@ -38,7 +48,8 @@ The following functionality is available:
 - A notification was created for the matching subscriber.
 - A real notification email was successfully received.
 
-**Important limitation:** Changes in related datasets such as agendas, meetings, votings, documents, events and texts are not yet fully connected to affair-based notifications.
+The status above records the 8 October baseline. Related-dataset monitoring and
+the local frontend have since been implemented; see the monitoring guide above.
 
 ## Architecture
 
@@ -210,11 +221,12 @@ POST /api/v1/auth/login
 GET  /api/v1/auth/verify-login
 ```
 
-Authentication and subscription management are backend features. The frontend user experience is still under development.
+Authentication and subscription management are available in the local frontend.
 
 ## Subscriptions
 
-Users can subscribe to WWF topics and Swiss cantons.
+Users can subscribe to WWF topics, Swiss cantons, individual keywords and datasets,
+or follow specific records. See the monitoring guide for their combined behavior.
 
 Subscription matching follows these rules:
 
@@ -224,7 +236,7 @@ Subscription matching follows these rules:
 - A selected parent topic includes its descendant categories.
 - No selected topics means all topics, provided at least one canton is selected.
 - No selected cantons means all cantons, provided at least one topic is selected.
-- Both selections empty means no active notification subscription.
+- Empty topic/canton selections can still support keyword subscriptions or explicit record watches.
 
 Examples:
 
@@ -255,7 +267,7 @@ The subscription update process also supports email confirmation.
 
 ## Incremental Synchronization
 
-The backend contains seven incremental synchronization modules:
+The backend contains nine synchronization modules:
 
 | Dataset | Module |
 |---|---|
@@ -266,6 +278,8 @@ The backend contains seven incremental synchronization modules:
 | Events | `scripts.sync.events_sync` |
 | Documents | `scripts.sync.docs_sync` |
 | Texts | `scripts.sync.texts_sync` |
+| Groups | `scripts.sync.groups_sync` |
+| Interest declarations | `scripts.sync.interests_sync` |
 
 The synchronization process uses checkpoints to resume incremental processing.
 
@@ -510,18 +524,14 @@ Raw exports and database snapshots should not be committed to Git.
 - Subscription matching
 - Affair change events and notifications
 - SMTP notification delivery
-- Seven incremental sync modules
+- Nine sync modules, keyword subscriptions and individual record watches
 - Sync execution and result APIs
 
 ### Next
 
-- Connect agenda changes to related affair notifications
-- Connect meeting changes to related affair notifications
-- Extend the same mechanism to votings, events, documents and texts
-- Include meaningful change details in notification emails
-- Reclassify existing affairs when relevant thematic content changes
-- Improve synchronization and notification failure recovery
-- Implement the frontend for search, affair details and subscription management
+- Complete browser visual verification and deployment checks
+- Run historical entity classification for standalone records
+- Measure and optimize full-scan synchronization on the complete source
 
 ### Later / Optional
 
@@ -533,12 +543,12 @@ Raw exports and database snapshots should not be committed to Git.
 
 ## Known MVP Limitations
 
-- Related-dataset changes are not yet fully propagated to affair notifications.
-- Updated affairs are not automatically reclassified in every relevant scenario.
-- Notification emails currently provide limited change details.
-- Full parliamentary-text and document-content search is not implemented.
+- Four datasets require full scans because upstream update timestamps are unreliable.
+- Historical standalone records need entity-classification backfill.
+- Affair reclassification handles title and linked text changes; other related records have their own classifications.
+- External document attachments are not downloaded or indexed for full-text search.
 - Harmonized affair state coverage is limited.
-- The frontend is not yet implemented.
+- The local UI supports German, French, Italian and English; source content is not machine-translated.
 - Local JSON sync results are not a replacement for production-grade job monitoring.
 - The system is a development MVP, not a production-ready deployment.
 

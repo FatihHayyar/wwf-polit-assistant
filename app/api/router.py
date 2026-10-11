@@ -1,5 +1,6 @@
 ﻿
 from fastapi import APIRouter
+from app.api.routes.entities import router as entities_router
 
 from app.api.routes.affair_types import router as affair_types_router
 from app.api.routes.affairs import router as affairs_router
@@ -11,6 +12,7 @@ from app.api.routes.subscriptions import router as subscriptions_router
 from app.api.routes.sync import router as sync_router
 
 api_router = APIRouter()
+api_router.include_router(entities_router)
 
 api_router.include_router(health_router)
 api_router.include_router(affairs_router)

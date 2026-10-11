@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from pydantic import BaseModel
+from pydantic import Field
+from typing import Any
 
 
 class AffairDetailClassificationResponse(BaseModel):
@@ -55,3 +57,5 @@ class AffairDetailResponse(BaseModel):
 
     # Official source
     original_url: str | None = None
+    related: dict[str, Any] = Field(default_factory=dict)
+    changes: list[dict[str, Any]] = Field(default_factory=list)

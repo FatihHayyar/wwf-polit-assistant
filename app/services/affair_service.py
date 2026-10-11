@@ -79,6 +79,8 @@ def _apply_filters(
         )
 
     # Affair type filter
+    if filters.state:
+        statement = statement.where(Affair.state_name_harmonized_de.ilike(filters.state.strip()))
     #
     # Case-insensitive:
     # motion / Motion / MOTION all match "Motion".
@@ -157,6 +159,7 @@ def get_affairs(
 
     statement = (
         statement
+        .distinct()
         .order_by(
             Affair.begin_date.desc().nullslast(),
             Affair.id.desc(),
@@ -306,6 +309,7 @@ def get_affair_detail(
         for text in parliamentary_texts
     ]
 
+    from app.services.entity_service import affair_related_data, affair_changes
     return AffairDetailResponse(
         id=affair.id,
         number=affair.number,
@@ -334,4 +338,6 @@ def get_affair_detail(
         texts=texts,
 
         original_url=affair.url_external_de,
+        related=affair_related_data(db, affair.id),
+        changes=affair_changes(db, affair.id),
     )

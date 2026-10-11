@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 from datetime import datetime, timezone
 
 import httpx
@@ -9,13 +11,14 @@ from sqlalchemy import text
 
 from app.db.database import SessionLocal
 from app.models.entities import Agenda
+from app.services.change_event_service import create_change_event
 
 
 API_URL = "https://api.openparldata.ch/v1/agendas/"
 DATASET = "agendas"
 PAGE_SIZE = 500
 
-# Daha once kontrol ettigimiz DB max Agenda ID.
+# Mevcut veritabanindan belirlenen baslangic ID'si.
 INITIAL_LAST_ID = 431492
 
 FIELDS = (
@@ -42,6 +45,13 @@ DATE_FIELDS = {
     "item_date",
     "created_at",
 }
+
+# Kaydin gercek icerigini temsil eden alanlar.
+# created_at fingerprint'e dahil edilmez.
+FINGERPRINT_FIELDS = tuple(
+    field for field in FIELDS
+    if field != "created_at"
+)
 
 
 def parse_datetime(value):
@@ -77,6 +87,33 @@ def map_agenda(record: dict) -> dict:
     return values
 
 
+def normalize_for_hash(value):
+    if isinstance(value, datetime):
+        return value.isoformat()
+
+    return value
+
+
+def calculate_fingerprint(agenda: Agenda) -> str:
+    payload = {
+        field: normalize_for_hash(
+            getattr(agenda, field)
+        )
+        for field in FINGERPRINT_FIELDS
+    }
+
+    serialized = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+
+    return hashlib.sha256(
+        serialized.encode("utf-8")
+    ).hexdigest()
+
+
 def get_checkpoint() -> int:
     with SessionLocal() as db:
         row = db.execute(
@@ -93,7 +130,6 @@ def get_checkpoint() -> int:
         if row is not None:
             return int(row[0] or 0)
 
-        # Ilk calismada mevcut DB max ID'den basla.
         db.execute(
             text(
                 """
@@ -215,7 +251,24 @@ def sync_one_agenda(record: dict) -> str:
             )
 
             if agenda is None:
-                db.add(Agenda(**values))
+                agenda = Agenda(**values)
+                db.add(agenda)
+                db.flush()
+
+                fingerprint = calculate_fingerprint(
+                    agenda
+                )
+
+                create_change_event(
+                    db,
+                    dataset=DATASET,
+                    source_id=agenda.id,
+                    affair_id=agenda.item_affair_id,
+                    change_type="created",
+                    fingerprint=fingerprint,
+                    description="New agenda detected.",
+                )
+
                 db.commit()
                 return "NEW"
 
@@ -230,6 +283,23 @@ def sync_one_agenda(record: dict) -> str:
                     changed_fields.append(field)
 
             if changed_fields:
+                fingerprint = calculate_fingerprint(
+                    agenda
+                )
+
+                create_change_event(
+                    db,
+                    dataset=DATASET,
+                    source_id=agenda.id,
+                    affair_id=agenda.item_affair_id,
+                    change_type="updated",
+                    fingerprint=fingerprint,
+                    description=(
+                        "Changed fields: "
+                        + ", ".join(changed_fields)
+                    ),
+                )
+
                 db.commit()
 
                 return (
@@ -246,161 +316,8 @@ def sync_one_agenda(record: dict) -> str:
 
 
 def run_sync(recheck: bool = False) -> None:
-    original_checkpoint = get_checkpoint()
-
-    counts = {
-        "NEW": 0,
-        "CHANGED": 0,
-        "UNCHANGED": 0,
-        "ERROR": 0,
-    }
-
-    offset = 0
-    pages = 0
-    scanned = 0
-    newest_id = original_checkpoint
-
-    # Ilk sayfanin en yuksek ID'si.
-    # Sync sirasinda yeni gelen kayitlari
-    # sonraki calismaya birakiyoruz.
-    run_upper_id = None
-
-    print("=" * 64, flush=True)
-    print("AGENDA INCREMENTAL SYNC", flush=True)
-    print("=" * 64, flush=True)
-    print(
-        f"Mod: {'FULL RECHECK' if recheck else 'NEW RECORDS'}",
-        flush=True,
-    )
-    print(
-        f"Baslangic checkpoint: {original_checkpoint}",
-        flush=True,
-    )
-
-    try:
-        with httpx.Client(
-            timeout=60,
-            follow_redirects=True,
-        ) as client:
-            while True:
-                records = fetch_page(
-                    client,
-                    offset,
-                )
-
-                pages += 1
-
-                if not records:
-                    break
-
-                if run_upper_id is None:
-                    run_upper_id = int(records[0]["id"])
-
-                print(
-                    f"\n[SAYFA {pages}] "
-                    f"offset={offset}, "
-                    f"kayit={len(records)}",
-                    flush=True,
-                )
-
-                reached_checkpoint = False
-
-                for record in records:
-                    agenda_id = int(record["id"])
-                    scanned += 1
-
-                    if agenda_id > run_upper_id:
-                        continue
-
-                    if (
-                        not recheck
-                        and agenda_id <= original_checkpoint
-                    ):
-                        reached_checkpoint = True
-                        break
-
-                    status = sync_one_agenda(record)
-                    status_key = status.split(":")[0]
-                    counts[status_key] += 1
-
-                    if agenda_id > newest_id:
-                        newest_id = agenda_id
-
-                    print(
-                        f"Agenda {agenda_id}: {status}",
-                        flush=True,
-                    )
-
-                    processed = (
-                        counts["NEW"]
-                        + counts["CHANGED"]
-                        + counts["UNCHANGED"]
-                    )
-
-                    if processed % 100 == 0:
-                        print(
-                            "--- ILERLEME: "
-                            f"islenen={processed}, "
-                            f"NEW={counts['NEW']}, "
-                            f"CHANGED={counts['CHANGED']}, "
-                            f"UNCHANGED={counts['UNCHANGED']}",
-                            flush=True,
-                        )
-
-                if reached_checkpoint:
-                    break
-
-                if len(records) < PAGE_SIZE:
-                    break
-
-                offset += PAGE_SIZE
-
-    except BaseException as exc:
-        counts["ERROR"] += 1
-
-        save_checkpoint(
-            last_id=original_checkpoint,
-            counts=counts,
-            status="error",
-            error_message=str(exc),
-        )
-
-        print(
-            f"\nSYNC ERROR: {exc}",
-            flush=True,
-        )
-        print(
-            "Checkpoint ilerletilmedi.",
-            flush=True,
-        )
-        raise
-
-    save_checkpoint(
-        last_id=newest_id,
-        counts=counts,
-        status="idle",
-    )
-
-    print("\n" + "=" * 64, flush=True)
-    print("AGENDA SYNC SONUCU", flush=True)
-    print("=" * 64, flush=True)
-    print(f"API sayfalari: {pages}", flush=True)
-    print(f"Taranan: {scanned}", flush=True)
-    print(
-        "Islenen:",
-        counts["NEW"]
-        + counts["CHANGED"]
-        + counts["UNCHANGED"],
-        flush=True,
-    )
-    print(f"NEW: {counts['NEW']}", flush=True)
-    print(f"CHANGED: {counts['CHANGED']}", flush=True)
-    print(f"UNCHANGED: {counts['UNCHANGED']}", flush=True)
-    print(f"ERROR: {counts['ERROR']}", flush=True)
-    print(
-        f"Yeni checkpoint: {newest_id}",
-        flush=True,
-    )
+    from scripts.sync.entity_sync import run_dataset
+    run_dataset("agendas", recheck=recheck)
 
 
 def main() -> None:

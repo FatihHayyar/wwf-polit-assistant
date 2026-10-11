@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import time
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,12 +25,16 @@ SYNC_MODULES = [
     ("Events", "scripts.sync.events_sync"),
     ("Documents", "scripts.sync.docs_sync"),
     ("Texts", "scripts.sync.texts_sync"),
+    ("Groups", "scripts.sync.groups_sync"),
+    ("Interest Declarations", "scripts.sync.interests_sync"),
 ]
 
 SYNC_LOCK_ID = 2026100801
 
-RUN_ID = os.environ.get("SYNC_RUN_ID")
-RESULT_FILE = os.environ.get("SYNC_RESULT_FILE")
+RUN_ID = os.environ.get("SYNC_RUN_ID") or uuid.uuid4().hex
+RESULT_FILE = os.environ.get("SYNC_RESULT_FILE") or str(
+    Path(__file__).resolve().parents[2] / "logs" / f"sync_{RUN_ID}.json"
+)
 
 
 def now_iso() -> str:
@@ -135,6 +140,8 @@ def update_record_totals(
         "Events": "events",
         "Documents": "docs",
         "Texts": "texts",
+        "Groups": "groups",
+        "Interest Declarations": "interests",
     }[dataset_name]
 
     snapshot = checkpoint_snapshot()
@@ -177,6 +184,7 @@ def run_all_syncs(result: dict) -> None:
 
         if process.returncode != 0:
             result["datasets"]["failed"] += 1
+            update_record_totals(result, name)
             result["error_message"] = (
                 f"{name} sync failed "
                 f"(exit code {process.returncode})."
@@ -189,7 +197,7 @@ def run_all_syncs(result: dict) -> None:
                 flush=True,
             )
 
-            raise SystemExit(process.returncode)
+            continue
 
         result["datasets"]["successful"] += 1
 
@@ -268,7 +276,11 @@ def main() -> None:
             run_all_syncs(result)
             send_notification_emails(result)
 
-            result["status"] = "completed"
+            result["status"] = "failed" if result["datasets"]["failed"] else (
+                "completed_with_email_errors" if result["notifications"]["emails_failed"] or result["error_message"] else "completed"
+            )
+            if result["datasets"]["failed"]:
+                raise SystemExit(1)
 
         except BaseException as exc:
             result["status"] = "failed"
