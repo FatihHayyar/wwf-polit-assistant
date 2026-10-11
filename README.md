@@ -1,580 +1,88 @@
 # WWF Polit-Assistant
 
-A political monitoring assistant for WWF Switzerland based on Swiss parliamentary open data.
+Ein MVP für WWF Schweiz zur Suche und Beobachtung parlamentarischer Entwicklungen, entwickelt im Wirtschaftsprojekt der Hochschule Luzern.
 
-Developed as part of the **Wirtschaftsprojekt (WIPRO)** in the BSc Informatik program at Hochschule Luzern (HSLU).
+## Quick Start mit Docker
 
-## Project Goal
+Benötigt werden **Docker Desktop** (gestartet) und **Git**. Alternativ kann das Repository als ZIP heruntergeladen werden. Python und PostgreSQL müssen nicht separat installiert werden; eine `.env` ist für die Demo nicht erforderlich.
 
-The goal is to develop a functional MVP that helps WWF Switzerland search, classify and monitor politically relevant parliamentary activities.
+### 1. Repository herunterladen
 
-The platform combines OpenParlData, WWF-specific topic classification, canton filtering, email-based subscriptions and automated synchronization.
-
-AI-based functionality is optional and is not required for the initial MVP.
-
-The local frontend provides public search across affairs, meetings, groups and
-interest declarations. Related agendas, events, voting results, documents and
-texts appear within their political context. All nine datasets remain supported
-by synchronization and the API. A separate stay-informed section provides
-email login and subscription management with grouped main themes and subtopics. Meaningful changes in related datasets
-are connected to affair monitoring. See [monitoring setup and behavior](docs/monitoring.md)
-for startup, historical classification and daily/manual synchronization instructions.
-See the [WWF requirements review](docs/wwf-requirements.md) for keyword subscriptions,
-individual record monitoring and open taxonomy, dataset and Azure decisions.
-
-## Current Status — 8 October 2026
-
-The FastAPI backend, PostgreSQL integration, initial data import, classification pipeline, affair search and subscription infrastructure are implemented.
-
-The following functionality is available:
-
-- OpenParlData bulk download and validated snapshot import
-- PostgreSQL raw staging and normalized parliamentary data
-- Rule-based hierarchical WWF classification
-- Affair search, filtering, pagination and detail API
-- Email-based registration and passwordless login
-- Email verification and JWT authentication
-- Theme and canton subscription management
-- Change-event and notification creation for affairs
-- SMTP email notification delivery
-- Incremental synchronization for seven datasets
-- API-triggered synchronization with concurrency protection
-- Structured synchronization results and technical logs
-
-**Verified tests:**
-
-- All seven synchronization modules completed successfully in a manual run.
-- A Bern affair classified under *Erneuerbarer Strom* matched a *Klima & Energie* subscription.
-- A notification was created for the matching subscriber.
-- A real notification email was successfully received.
-
-The status above records the 8 October baseline. Related-dataset monitoring and
-the local frontend have since been implemented; see the monitoring guide above.
-
-## Architecture
-
-```text
-OpenParlData
-      |
-      v
-Bulk Import / Incremental Sync
-      |
-      v
-PostgreSQL
-      |
-      v
-Normalized Parliamentary Data
-      |
-      v
-WWF Classification
-      |
-      +----------------------+
-      |                      |
-      v                      v
-Search & Detail API     Change Events
-                             |
-                             v
-                     Subscription Matching
-                             |
-                             v
-                     Notification Queue
-                             |
-                             v
-                         SMTP Email
+```sh
+git clone https://github.com/FatihHayyar/wwf-polit-assistant.git
+cd wwf-polit-assistant
 ```
 
-The initial bulk import and ongoing incremental synchronization are separate processes.
+Bei einem ZIP-Download das Archiv entpacken und ein Terminal im Projektordner öffnen.
 
-## Technology Stack
+### 2. Anwendung starten
 
-- Python 3.13
-- FastAPI and Pydantic
-- SQLAlchemy and Psycopg
-- PostgreSQL 17
-- Alembic
-- Docker and Docker Compose
-- OpenAPI / Swagger
-- SMTP email delivery
-
-## OpenParlData Bootstrap
-
-The initial development snapshot is dated **2026-10-06**.
-
-| Dataset | Initial records |
-|---|---:|
-| Bodies | 2,411 |
-| Persons | 26,864 |
-| Memberships | 121,456 |
-| Groups | 8,885 |
-| Interests | 30,343 |
-| Affairs | 325,691 |
-| Meetings | 33,670 |
-| Agendas | 422,971 |
-| Events | 915,238 |
-| Votings | 77,061 |
-| Docs | 907,736 |
-| Texts | 225,739 |
-| **Total** | **3,098,065** |
-
-The initial import consists of approximately 126 compressed files and 5.91 GB of data.
-
-These figures describe the initial bootstrap snapshot, not necessarily the current database totals.
-
-Individual parliamentary votes are not included in the full local mirror. Aggregate voting information is available through the votings dataset.
-
-## WWF Classification
-
-The MVP uses configurable rule-based classification.
-
-It supports hierarchical topics, subcategories, multilingual rules, weights, scores, confidence values, classification evidence and fallback classification.
-
-Main topic areas:
-
-- Climate & Energy
-- Biodiversity & Landscape
-- Sustainable Economy & Consumption
-- Environment & Policy
-- Other (fallback)
-
-For the initial bootstrap, all 325,691 affairs were classified.
-
-The original classification baseline included 325,824 classification rows, 7,111 evidence rows and 320,121 fallback rows.
-
-The rule-based approach is retained for the MVP. AI-assisted classification may be introduced later.
-
-## Search and Filtering
-
-The affair search endpoint is:
-
-```http
-GET /api/v1/affairs
+```sh
+docker compose -f docker-compose.demo.yml up --build -d
 ```
 
-Supported filters include keyword, canton, WWF category, subcategory, year, month and parliamentary affair type.
+Docker startet die **Python-/FastAPI-Anwendung**, **PostgreSQL 17**, die **Alembic-Datenbankmigrationen** und **Mailpit** als lokalen Mailserver. Der erste Start benötigt Internet für die Docker-Images und Python-Pakete und kann einige Minuten dauern.
 
-Filters can be combined using AND semantics. Multilingual keyword matching uses OR semantics across supported title fields.
+Eine leere Demo-Datenbank erhält automatisch **500 Beispieldatensätze pro Bereich**: Geschäfte, Traktanden, Sitzungen, Abstimmungen, Ereignisse, Dokumente, Texte, Gruppen und Interessenbindungen. Zusätzlich werden verknüpfte Referenzdatensätze geladen, damit die Detailansichten ihren politischen Kontext zeigen. Deshalb enthalten einige Bereiche mehr als 500 Einträge. Die vorhandenen WWF-Klassifikationen sind enthalten.
 
-Search results use server-side pagination, with a default page size of 10.
+Die Beispieldaten liegen bereits im Repository; ein vollständiger OpenParlData-Import ist nicht notwendig. Bereits vorhandene Demo-Daten werden beim Neustart erhalten. Die Demo verwendet eine eigene Datenbank und startet keine tägliche Synchronisierung.
 
-Example:
+### 3. Anwendung öffnen
 
-```http
-GET /api/v1/affairs?q=Photovoltaik&canton=ZH&year=2026&page=1
-```
-
-Title-based partial search uses PostgreSQL `pg_trgm` indexes.
-
-Full-text search across complete parliamentary texts and document contents remains planned.
-
-### Affair Details
-
-```http
-GET /api/v1/affairs/{affair_id}
-```
-
-The detail response includes available parliamentary metadata, WWF classifications, parliamentary texts and official-source links.
-
-Canton filtering resolves the canton through the parliamentary body:
-
-```text
-affairs.body_id
-      |
-      v
-bodies.id
-      |
-      v
-bodies.canton_key
-```
-
-## Authentication
-
-The backend implements passwordless email authentication.
-
-The supported flow is:
-
-```text
-Register email
-      |
-      v
-Receive verification link
-      |
-      v
-Verify email
-      |
-      v
-Authenticated account
-      |
-      v
-Manage subscriptions
-```
-
-Returning users can request a one-time email login link.
-
-The backend uses JWT authentication and supports account deletion.
-
-Relevant endpoints:
-
-```http
-POST /api/v1/auth/register
-GET  /api/v1/auth/verify-email
-POST /api/v1/auth/login
-GET  /api/v1/auth/verify-login
-```
-
-Authentication and subscription management are available in the local frontend.
-
-## Subscriptions
-
-Users can subscribe to WWF topics, Swiss cantons, individual keywords and datasets,
-or follow specific records. Source persistence and email eligibility are separate:
-technical/formatting-only changes do not notify, and related updates are grouped
-into summaries per user/affair. See the monitoring guide for the per-dataset rules.
-
-Subscription matching follows these rules:
-
-- Multiple selected topics use OR semantics.
-- Multiple selected cantons use OR semantics.
-- Topics and cantons are combined using AND semantics.
-- A selected parent topic includes its descendant categories.
-- No selected topics means all topics, provided at least one canton is selected.
-- No selected cantons means all cantons, provided at least one topic is selected.
-- Empty topic/canton selections can still support keyword subscriptions or explicit record watches.
-
-Examples:
-
-| Topics | Cantons | Meaning |
-|---|---|---|
-| Klima & Energie | BE | Climate and energy affairs in Bern |
-| Klima & Energie | All | Climate and energy affairs in every canton |
-| All | ZH | Affairs across all topics in Zürich |
-
-Subscriptions can be added, removed or replaced through the REST API.
-
-The bulk update endpoint is:
-
-```http
-PUT /api/v1/subscriptions
-```
-
-Example request:
-
-```json
-{
-  "category_ids": [1],
-  "canton_keys": ["BE"]
-}
-```
-
-The subscription update process also supports email confirmation.
-
-## Incremental Synchronization
-
-The backend contains nine synchronization modules:
-
-| Dataset | Module |
+| Dienst | Adresse |
 |---|---|
-| Affairs | `scripts.sync.incremental_sync` |
-| Agendas | `scripts.sync.agendas_sync` |
-| Meetings | `scripts.sync.meetings_sync` |
-| Votings | `scripts.sync.votings_sync` |
-| Events | `scripts.sync.events_sync` |
-| Documents | `scripts.sync.docs_sync` |
-| Texts | `scripts.sync.texts_sync` |
-| Groups | `scripts.sync.groups_sync` |
-| Interest declarations | `scripts.sync.interests_sync` |
+| Polit-Assistant | http://localhost:8081 |
+| Swagger / OpenAPI | http://localhost:8081/docs |
+| Lokale E-Mails (Mailpit) | http://localhost:8025 |
 
-The synchronization process uses checkpoints to resume incremental processing.
+Bei Startproblemen zeigt dieser Befehl die Ausgabe:
 
-For affairs, fingerprints help distinguish actual record changes from unchanged records.
-
-The combined synchronization runner is:
-
-```powershell
-python -m scripts.sync.run_all
+```sh
+docker compose -f docker-compose.demo.yml logs -f app
 ```
 
-The application is configured for a daily synchronization at **03:00 Europe/Zurich**.
+### E-Mails und Abonnements ausprobieren
 
-### Sync API
+In der Anwendung auf **Registrieren** klicken und eine E-Mail-Adresse eingeben. Den Bestätigungslink in **Mailpit** öffnen; anschliessend Themen, Kantone oder Suchbegriffe abonnieren und Abonnements verwalten. Auch spätere Anmeldelinks erscheinen dort.
 
-```http
-POST /api/v1/sync/run
-GET  /api/v1/sync/status
-GET  /api/v1/sync/latest
-GET  /api/v1/sync/runs/{run_id}
-GET  /api/v1/sync/runs/{run_id}/log
+Alle Demo-E-Mails bleiben im lokalen Mailpit. Gmail- oder andere SMTP-Zugangsdaten werden nicht benötigt. Neue parlamentarische Benachrichtigungen entstehen erst bei einer Synchronisierung mit relevanten Änderungen; die Demo startet diese nicht automatisch.
+
+### Container stoppen
+
+```sh
+docker compose -f docker-compose.demo.yml down
 ```
 
-`POST /run` starts a background synchronization and requires the configured sync API key.
+Die Datenbank bleibt im Docker-Volume erhalten.
 
-`GET /status` shows individual dataset checkpoints.
+> `docker compose -f docker-compose.demo.yml down -v` löscht den lokalen Demo-Datenbestand. Nur für einen bewussten Neustart mit den Beispieldaten verwenden.
 
-`GET /latest` returns a structured summary including:
+## Funktionen
 
-- Run status
-- Start and finish timestamps
-- Execution duration
-- Successful and failed dataset counts
-- New, changed and unchanged record counts
-- Record errors
-- Sent and failed notification emails
+- Neun Bereiche in der linken Navigation mit eigener Suche und Filtern nach Thema, Unterthema, Kanton und Datum.
+- Detailansichten mit verknüpften Geschäften, Sitzungen, Traktanden, Abstimmungen, Dokumenten und weiteren verfügbaren Informationen.
+- Oberfläche in Deutsch, Französisch, Italienisch und Englisch. Quelltexte werden nicht automatisch übersetzt.
+- Öffentlicher Zugriff auf Inhalte; ein Konto wird für E-Mail-Abonnements und das Verfolgen einzelner Einträge benötigt.
+- Regelbasierte WWF-Klassifikation mit Hauptthemen und Unterthemen.
+- Speicherung von Änderungen getrennt von ihrer Benachrichtigungsrelevanz: technische und reine FormatÄnderungen sollen keine E-Mails auslösen.
 
-Run summaries and technical logs are stored locally under `logs/`.
+## Entwicklung und laufender Betrieb
 
-The synchronization runner uses a PostgreSQL advisory lock to prevent overlapping full synchronization runs.
+Stack: **Python 3.13, FastAPI, SQLAlchemy, PostgreSQL 17, Alembic, Docker, OpenAPI und SMTP**. Das Frontend wird von derselben Anwendung ausgeliefert.
 
-### Verified Synchronization Result
+Die Demo-Konfiguration dient der lokalen Erprobung. Für den vollständigen Datenbestand, tägliche Synchronisierung, API-Start/-Status/-Abbruch und die Konfiguration eigener SMTP-Zugangsdaten siehe [Betrieb und Monitoring](docs/monitoring.md). Das bestehende `docker-compose.yml` enthält die Entwicklungsdatenbank und den Scheduler; der Quick Start verwendet bewusst `docker-compose.demo.yml`.
 
-On 8 October 2026, a manual run reported:
+Geschäfte werden anhand des Update-Checkpoints geprüft. Andere Datensätze verwenden je nach verfügbaren Quellfeldern eine Änderungsabfrage oder einen vollständigen Bestandsvergleich mit gespeichertem Fortschritt. Relevante Änderungen verknüpfter Datensätze werden den zugehörigen Geschäften zugeordnet und für Abonnenten zusammengefasst.
 
-```text
-Status: completed
-Datasets: 7/7 successful
-Duration: 24.24 seconds
-New records: 0
-Changed records: 0
-Errors: 0
-Emails sent: 0
-Emails failed: 0
-```
+Weitere Dokumentation:
 
-This confirms successful execution of the seven modules for that run. It does not establish that related-dataset notification propagation is complete.
+- [WWF-Anforderungen und offene Abstimmungen](docs/wwf-requirements.md)
+- [Stand und Tagesreview vom 11. Oktober 2026](docs/daily-review-2026-10-11.md)
 
-## Change Events and Notifications
+Die genaue WWF-Taxonomie und die Integration in die interne Azure-Umgebung müssen noch mit WWF abgestimmt werden. Externe Dokumentanhänge werden nicht vollständig heruntergeladen. Der aktuelle Stand ist ein Entwicklungs-MVP.
 
-For new and changed affairs, the backend supports:
+## Daten und Lizenz
 
-```text
-Affair created / updated
-          |
-          v
-      ChangeEvent
-          |
-          v
-   Subscription Match
-          |
-          v
-       Notification
-          |
-          v
-      Pending Queue
-          |
-          v
-       SMTP Email
-```
+Die enthaltenen parlamentarischen Beispieldaten stammen von **OpenParlData.ch**, lizenziert unter **CC BY 4.0**. Die Demo enthält keine bestehenden Benutzerkonten, Abonnements oder Versandwarteschlangen.
 
-The notification service checks whether the user remains active, verified and subscribed before sending.
-
-Failed email attempts remain pending for retry. Notifications that no longer satisfy the subscription conditions can be cancelled.
-
-The email sender processes a limited batch of pending notifications per run.
-
-### Tested Notification Flow
-
-A test used the existing Bern affair:
-
-```text
-Affair ID: 18792
-Title: Komplettierung Solaranlage Schiessanlage Weier
-Canton: BE
-Category: Erneuerbarer Strom
-Parent topic: Klima & Energie
-```
-
-The subscription matcher successfully created a pending notification for the matching account.
-
-A subsequent controlled test successfully delivered a real email through SMTP.
-
-Temporary test change events and notifications were removed afterward.
-
-### Related-Dataset Monitoring — Planned
-
-The next development phase will connect changes in related parliamentary data to the appropriate affairs.
-
-Examples include:
-
-- A new agenda item for an existing affair
-- A new or rescheduled parliamentary meeting
-- A newly published document
-- A new parliamentary text
-- A voting result
-- A new event associated with an affair
-
-The intended flow is:
-
-```text
-Agenda / Meeting / Voting / Event / Document / Text change
-                           |
-                           v
-                  Resolve related affair(s)
-                           |
-                           v
-                      ChangeEvent
-                           |
-                           v
-                  Subscription Matching
-                           |
-                           v
-                    Email Notification
-```
-
-This functionality must be implemented carefully because different datasets have different relationships to affairs.
-
-An affair-level `updated` test alone does not prove that a meeting or agenda change is detected automatically.
-
-## Supporting API Endpoints
-
-```http
-GET /health
-GET /api/v1/categories
-GET /api/v1/cantons
-GET /api/v1/affair-types
-```
-
-`GET /health` checks application and database availability.
-
-The other endpoints provide data for search filters and category selection.
-
-## Local Development
-
-### Requirements
-
-- Python 3.13+
-- Docker and Docker Compose
-- PostgreSQL through the provided Docker configuration
-
-### Create and Activate Virtual Environment
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -e .
-```
-
-### Environment Configuration
-
-Copy `.env.example` to `.env` and configure the required settings.
-
-The local PostgreSQL database is exposed on port `5433`.
-
-Email and sync credentials must remain private. Do not commit `.env`, JWT secrets, SMTP credentials or sync API keys.
-
-### Start Database
-
-```powershell
-docker compose up -d
-```
-
-### Apply Migrations
-
-```powershell
-python -m alembic upgrade head
-```
-
-### Start API
-
-```powershell
-python -m uvicorn app.main:app --reload
-```
-
-Swagger documentation:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-### Initial Bootstrap Commands
-
-Inspect planned downloads:
-
-```powershell
-python scripts/bootstrap/download_openparldata.py --dry-run
-```
-
-Download selected datasets:
-
-```powershell
-python scripts/bootstrap/download_openparldata.py --workers 6
-```
-
-Inspect exports:
-
-```powershell
-python scripts/bootstrap/inspect_exports.py
-```
-
-Import raw data:
-
-```powershell
-python scripts/bootstrap/import_raw.py all
-```
-
-Raw exports and database snapshots should not be committed to Git.
-
-## MVP Roadmap
-
-### Implemented
-
-- Bulk OpenParlData integration
-- PostgreSQL raw staging and normalized models
-- WWF taxonomy and rule-based classification
-- Affair search and detail endpoints
-- Keyword and structured filtering
-- Email registration and verification
-- Passwordless login
-- Theme and canton subscriptions
-- Subscription matching
-- Affair change events and notifications
-- SMTP notification delivery
-- Nine sync modules, keyword subscriptions and individual record watches
-- Sync execution and result APIs
-
-### Next
-
-- Complete browser visual verification and deployment checks
-- Run historical entity classification for standalone records
-- Measure and optimize full-scan synchronization on the complete source
-
-### Later / Optional
-
-- Indexed full-text search across parliamentary content
-- Additional parliamentary entity APIs
-- AI-assisted classification
-- Semantic search
-- Summarization and natural-language queries
-
-## Known MVP Limitations
-
-- Four datasets require full scans because upstream update timestamps are unreliable.
-- Historical standalone records need entity-classification backfill.
-- Affair reclassification handles title and linked text changes; other related records have their own classifications.
-- External document attachments are not downloaded or indexed for full-text search.
-- Harmonized affair state coverage is limited.
-- The local UI supports German, French, Italian and English; source content is not machine-translated.
-- Local JSON sync results are not a replacement for production-grade job monitoring.
-- The system is a development MVP, not a production-ready deployment.
-
-## Azure Compatibility
-
-The architecture is designed with potential integration into WWF's Azure environment in mind.
-
-It prioritizes PostgreSQL, configuration-driven services, container compatibility and minimal infrastructure dependencies.
-
-## Data Source
-
-Parliamentary data is provided by **OpenParlData.ch** under the CC BY 4.0 license.
-
-## Project Context
-
-This project is developed for **WWF Switzerland** as part of the HSLU BSc Informatik Wirtschaftsprojekt.
-
-The goal is a technically sound and testable prototype that can be extended into a broader political monitoring platform.
-
-## License
-
-A project-specific software license has not yet been defined.
-
-
-The public interface has nine dataset sections in the left navigation. Filters apply only to the selected dataset and are remembered separately when switching sections. Every card opens its own details with linked affairs, meetings, agendas and other related records where available. The UI uses the dataset-specific `/api/v1/entities/{dataset}` endpoints; the unified search API remains available for compatibility but is not used by the main page.
-
-Daily implementation/requirements/issue review: [11 October 2026](docs/daily-review-2026-10-11.md).
+Eine projektspezifische Softwarelizenz ist noch nicht festgelegt.

@@ -1,0 +1,40 @@
+name: polit-assistant-demo
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: local-demo
+    volumes:
+      - demo_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d demo"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:8025:8025"
+  app:
+    build: .
+    command: ["python", "-u", "-m", "scripts.demo.start"]
+    ports:
+      - "127.0.0.1:8081:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://demo:local-demo@postgres:5432/demo
+      JWT_SECRET_KEY: local-demo-only-change-for-production-2026
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_STARTTLS: "false"
+      SMTP_FROM_EMAIL: demo@example.org
+      VERIFICATION_BASE_URL: http://localhost:8081
+      FRONTEND_URL: http://localhost:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+volumes:
+  demo_data:

@@ -11,6 +11,7 @@ COPY app ./app
 COPY scripts ./scripts
 COPY migrations ./migrations
 COPY alembic.ini ./
+COPY data/demo ./data/demo
 
 RUN pip install --no-cache-dir .
 

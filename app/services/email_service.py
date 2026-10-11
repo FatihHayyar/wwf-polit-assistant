@@ -42,8 +42,9 @@ def send_email(
         ) as smtp:
             stage = "TLS"
             smtp.ehlo()
-            smtp.starttls()
-            smtp.ehlo()
+            if settings.smtp_starttls:
+                smtp.starttls()
+                smtp.ehlo()
 
             if settings.smtp_username and settings.smtp_password:
                 stage = "authentication"
