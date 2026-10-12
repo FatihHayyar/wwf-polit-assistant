@@ -103,6 +103,120 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(self.count(ChangeEvent),1)
         self.assertEqual(self.db.scalar(text("SELECT status FROM sync_checkpoints WHERE dataset='affairs'")),"idle")
 
+    def test_document_count_gap_reconciles_records_older_than_cursor(self):
+        from scripts.sync.entity_sync import run_dataset
+        self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
+            last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+        self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
+        self.db.add(Document(source_id=10, name="Existing"))
+        self.db.commit()
+        records = [{"id": 11, "name": "Missing historical document", "updated_at": "2026-01-01T00:00:00"},
+                   {"id": 10, "name": "Existing", "updated_at": "2026-01-01T00:00:00"}]
+
+        class Source(MemorySource):
+            def __init__(self):
+                super().__init__(records)
+                self.mode = "api"
+                self.total_records = 2
+
+        source = Source()
+        with patch("scripts.sync.entity_sync.SessionLocal", side_effect=lambda: Session(self.engine, autoflush=False)), patch("scripts.sync.entity_sync.make_source", return_value=source):
+            run_dataset("documents")
+        self.db.expire_all()
+        self.assertEqual(source.mode, "inventory")
+        self.assertEqual(self.db.scalar(select(func.count()).select_from(Document)), 2)
+        self.assertEqual(self.db.scalar(text("SELECT records_new FROM sync_checkpoints WHERE dataset='docs'")), 1)
+        self.assertEqual(self.db.scalar(text("SELECT last_id FROM sync_checkpoints WHERE dataset='docs'")), 99)
+
+    def test_document_gap_reconciliation_resumes_without_skipping_old_records(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        import httpx
+        from scripts.sync.source_batches import BatchSource, atomic_json
+        from scripts.sync.entity_sync import run_dataset
+        self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
+            last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+        self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
+        self.db.add(Document(source_id=10, name="Existing"))
+        self.db.commit()
+        fail = [True]
+        def handler(request):
+            record_id = int(request.url.params.get("id", "12"))
+            if record_id == 11 and fail[0]:
+                raise ValueError("interrupted reconciliation")
+            record = {"id": record_id, "name": "Existing" if record_id == 10 else f"Document {record_id}", "updated_at": "2026-01-01T00:00:00"}
+            return httpx.Response(200, json={"data": [record], "meta": {"total_records": 3, "has_more": "id" not in request.url.params}})
+        with tempfile.TemporaryDirectory() as folder, httpx.Client(transport=httpx.MockTransport(handler)) as client, patch("scripts.sync.source_batches.job_directory", return_value=Path(folder)), patch("scripts.sync.source_batches.PAGE_SIZE", 1), patch("scripts.sync.entity_sync.SessionLocal", side_effect=lambda: Session(self.engine, autoflush=False)), patch("scripts.sync.entity_sync.make_source", side_effect=lambda _, url, dataset, full: BatchSource(client, url, dataset, full)):
+            atomic_json(Path(folder) / "documents_ids.json", [12, 11, 10])
+            with self.assertRaisesRegex(ValueError, "interrupted reconciliation"):
+                run_dataset("documents")
+            state = json.loads((Path(folder) / "documents.json").read_text())
+            self.assertTrue(state["full_scan"])
+            self.assertEqual(state["position"], 1)
+            self.assertEqual(state["reconciliation_ids"], [12, 11])
+            fail[0] = False
+            run_dataset("documents")
+        self.db.expire_all()
+        self.assertEqual(self.db.scalar(select(func.count()).select_from(Document)), 3)
+        self.assertEqual(self.db.scalar(text("SELECT records_new FROM sync_checkpoints WHERE dataset='docs'")), 2)
+
+    def test_new_document_ids_are_found_despite_matching_counts_and_old_dates(self):
+        import httpx
+        from scripts.sync.source_batches import BatchSource
+        from scripts.sync.entity_sync import run_dataset
+        self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
+            last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+        self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
+        self.db.add(Document(source_id=1, name="Existing"))
+        self.db.add(Document(source_id=2, name="Historical record removed upstream"))
+        self.db.commit()
+        calls = []
+        def handler(request):
+            calls.append(request)
+            self.assertEqual(request.url.host, "api.openparldata.ch")
+            ids = [int(value) for value in request.url.params.get("id", "3").split(",")]
+            rows = [{"id": record_id, "name": f"Document {record_id}", "updated_at": "2026-01-01T00:00:00"} for record_id in ids]
+            return httpx.Response(200, json={"data": rows, "meta": {"total_records": 2, "has_more": False}})
+        with httpx.Client(transport=httpx.MockTransport(handler)) as client, patch("scripts.sync.source_batches.job_directory", return_value=None), patch("scripts.sync.entity_sync.SessionLocal", side_effect=lambda: Session(self.engine, autoflush=False)), patch("scripts.sync.entity_sync.make_source", side_effect=lambda _, url, dataset, full: BatchSource(client, url, dataset, full)):
+            run_dataset("documents")
+        self.db.expire_all()
+        self.assertEqual(self.db.scalar(select(func.count()).select_from(Document)), 3)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(calls[-1].url.params["id"], "3")
+
+    def test_document_variants_do_not_trigger_a_false_count_gap(self):
+        import httpx
+        from scripts.sync.source_batches import BatchSource
+        from scripts.sync.entity_sync import run_dataset
+        self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
+            last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+        self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
+        self.db.add_all([Document(source_id=10, affair_id=1), Document(source_id=10, affair_id=2)])
+        self.db.commit()
+        calls = []
+        sources = []
+        def handler(request):
+            calls.append(request)
+            self.assertEqual(request.url.host, "api.openparldata.ch")
+            rows = [{"id": 10, "affair_id": affair_id, "updated_at": "2026-01-01T00:00:00"} for affair_id in [1, 2]]
+            return httpx.Response(200, json={"data": rows[:int(request.url.params["limit"])], "meta": {"total_records": 2, "has_more": False}})
+        with httpx.Client(transport=httpx.MockTransport(handler)) as client, patch("scripts.sync.source_batches.job_directory", return_value=None), patch("scripts.sync.entity_sync.SessionLocal", side_effect=lambda: Session(self.engine, autoflush=False)):
+            def make(_, url, dataset, full):
+                source = BatchSource(client, url, dataset, full)
+                sources.append(source)
+                return source
+            with patch("scripts.sync.entity_sync.make_source", side_effect=make):
+                run_dataset("documents")
+        self.assertEqual(sources[0].mode, "api")
+        self.assertEqual(len(calls), 2)
+        self.db.expire_all()
+        self.assertEqual(self.db.scalar(select(func.count()).select_from(Document)), 2)
+
     def test_interrupted_inventory_restarts_at_committed_batch(self):
         import json,tempfile
         from pathlib import Path

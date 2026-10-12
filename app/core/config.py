@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60 * 24 * 7
+    google_client_id: str | None = None
+    google_client_secret: str | None = None
 
     # Verification başarılı olduktan sonra frontend'e yönlendirme
     frontend_url: str = "http://localhost:3000"

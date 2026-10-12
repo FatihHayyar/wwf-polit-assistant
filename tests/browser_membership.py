@@ -56,13 +56,14 @@ def main():
             assert page.locator("#heading").inner_text()=="Meetings"
             assert page.locator('[name="q"]').input_value()=="saved filter"
             assert not page.locator("#account-dialog").is_visible()
-            page.locator("#membership-view").click()
+            if not page.locator("#subscription-dialog").is_visible():
+                page.locator("#membership-view").click()
             page.locator(".topic-group").first.wait_for()
             assert page.locator(".topic-group").count()==2
             assert page.locator(".topic-group").first.locator(".topic-children label").count()==2
             page.locator(".topic-parent input").first.check()
             assert page.locator(".topic-group").first.locator(".topic-children input").first.is_disabled()
-            page.locator('#subscription-form button[type="submit"], #subscription-form button.primary').click()
+            page.locator('.subscription-toolbar button[type="submit"]').click()
             page.wait_for_function("document.querySelector('#subscription-message').textContent==='Subscriptions saved.'")
             saved=page.request.get("http://127.0.0.1:8766/api/v1/subscriptions").json()
             assert saved["category_ids"]==[1]

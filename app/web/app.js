@@ -61,7 +61,7 @@ const authChannel=typeof BroadcastChannel!=="undefined"?new BroadcastChannel("po
 async function applySignIn(){
   await refreshAccount();if(!state.account)return false;
   if($("account-dialog").open)$("account-dialog").close();
-  status("message",t("signedIn"));return true;
+  status("message","");await openSubscriptions();return true;
 }
 if(authChannel)authChannel.addEventListener("message",async event=>{
   if(event.data?.type==="signed-in"&&await applySignIn()){
@@ -76,7 +76,7 @@ async function announceSignIn(){
     if(event.data?.type==="ack"&&event.data.id===id)window.close();
   });
   try{localStorage.setItem("polit-auth-updated",id);}catch{}
-  authChannel?.postMessage({type:"signed-in",id});status("message",t("signedIn"));
+  authChannel?.postMessage({type:"signed-in",id});status("message","");
 }
 function renderContextNavigation(){
   const container=$("context-navigation");container.replaceChildren();container.hidden=!(state.affairId||state.groupId||state.personId||state.agendaId||state.meetingId);
@@ -150,14 +150,6 @@ function renderDetail(){
   if(!state.detail)return;
   const {dataset,id,data}=state.detail,record=data.record,container=$("detail-content");
   $("detail-title").textContent=names[dataset];container.replaceChildren(el("h3",recordTitle(dataset,{...data,title:data.title||sourceTitle(dataset,record)}),"record-title"));
-  const watchButton=el("button",t("watch"));container.append(watchButton);
-  if(state.account)api("/api/v1/subscriptions").then(current=>{watchButton.textContent=t(current.watches.some(w=>w.dataset===dataset&&w.record_id===id)?"unwatch":"watch");}).catch(()=>{});
-  watchButton.addEventListener("click",async()=>{
-    await refreshAccount();if(!state.account){$("account-dialog").showModal();return;}
-    watchButton.disabled=true;
-    try{const current=await api("/api/v1/subscriptions");const watched=current.watches.some(w=>w.dataset===dataset&&w.record_id===id);await api(`/api/v1/subscriptions/watches/${dataset}/${id}`,{method:watched?"DELETE":"PUT"});watchButton.textContent=t(watched?"watch":"unwatch");}
-    catch(error){container.append(el("p",error.message,"error"));}finally{watchButton.disabled=false;}
-  });
   const detailContext=data.detail||(data.body?{canton:data.body.canton,body_name_de:data.body.name}:null);
   const fields=el("dl",undefined,"detail-fields");for(const [key,value,kind]of ui.detailFields(dataset,record,detailContext,language))fields.append(el("dt",t(key)),el("dd",kind==="date"?formatDate(value):String(value)));container.append(fields);
   if(dataset==="agendas"){
@@ -195,8 +187,10 @@ function renderDetail(){
 }
 async function refreshAccount(){try{state.account=await api("/api/v1/auth/me");}catch{state.account=null;}$("logout").hidden=!state.account;renderMembership();}
 function checkbox(container,name,value,label,checked=false){const wrapper=el("label"),input=el("input");input.type="checkbox";input.name=name;input.value=value;input.checked=checked;wrapper.append(input,document.createTextNode(label));container.append(wrapper);}
-function captureSubscriptions(){const form=new FormData($("subscription-form"));return {...state.subscriptions,category_ids:form.getAll("category_ids").map(Number),canton_keys:form.getAll("canton_keys"),datasets:form.getAll("datasets"),keywords:$("subscription-keywords").value.split(/\r?\n/)};}
+function captureSubscriptions(){const form=new FormData($("subscription-form"));return {...state.subscriptions,recipientOwn:$("recipient-own").checked,recipientText:$("recipient-emails").value,category_ids:form.getAll("category_ids").map(Number),canton_keys:form.getAll("canton_keys"),datasets:form.getAll("datasets"),keywords:$("subscription-keywords").value.split(/\r?\n/)};}
 function renderSubscriptions(current){
+  if(current.recipientOwn!==undefined){$("recipient-own").checked=current.recipientOwn;$("recipient-emails").value=current.recipientText;}
+  $("watch-dataset").replaceChildren();for(const [key,name]of Object.entries(names))option($("watch-dataset"),key,name);
   state.subscriptions=current;$("subscription-keywords").value=current.keywords.join("\n");$("subscription-watches").replaceChildren();
   for(const watch of current.watches){
     const row=el("div"),open=el("button",`${names[watch.dataset]} #${watch.record_id}`),remove=el("button",t("unwatch"));open.type=remove.type="button";
@@ -220,9 +214,14 @@ function renderSubscriptions(current){
   $("subscription-datasets").append(main,support);
 }
 async function saveSubscriptions(clear=false){
+  if(state.saving)return;
+  const emails=[...new Set([...($("recipient-own").checked?[state.account.email]:[]),...$("recipient-emails").value.split(/\r?\n/).map(value=>value.trim().toLowerCase()).filter(Boolean)])];
+  if(!clear&&!emails.length){status("subscription-message",t("recipientRequired"),true);return;}
+  state.saving=true;$("subscription-dialog").querySelectorAll(".subscription-toolbar button").forEach(button=>button.disabled=true);
   const data=captureSubscriptions(),payload={category_ids:clear?[]:data.category_ids,canton_keys:clear?[]:data.canton_keys,datasets:clear?[]:data.datasets,keywords:clear?[]:data.keywords.map(value=>value.trim()).filter(Boolean),clear_watches:clear};
-  try{await api("/api/v1/subscriptions",{method:"PUT",body:JSON.stringify(payload)});state.subscriptions={...data,...payload,watches:clear?[]:data.watches};renderSubscriptions(state.subscriptions);status("subscription-message",t(clear?"stopped":"saved"));}
-  catch(error){status("subscription-message",error.message,true);}
+  try{if(!clear)renderRecipientStatus(await api("/api/v1/subscriptions/recipients",{method:"PUT",body:JSON.stringify({emails})}));await api("/api/v1/subscriptions",{method:"PUT",body:JSON.stringify(payload)});state.subscriptions={...data,...payload,watches:clear?[]:data.watches};renderSubscriptions(state.subscriptions);status("subscription-message",t(clear?"stopped":"saved"));toast(t(clear?"stopped":"saved"));}
+  catch(error){status("subscription-message",error.message,true);toast(error.message,true);}
+  finally{state.saving=false;$("subscription-dialog").querySelectorAll(".subscription-toolbar button").forEach(button=>button.disabled=false);}
 }
 function changeLanguage(value){
   const draft=$("subscription-dialog").open?captureSubscriptions():null;
@@ -235,19 +234,30 @@ $("search-form").addEventListener("reset",()=>{delete state.filterDrafts[state.d
 $("previous").addEventListener("click",()=>{if(state.page>1){state.page--;loadResults();}});
 $("next").addEventListener("click",()=>{if(state.page<state.pages){state.page++;loadResults();}});
 document.querySelectorAll("[data-close]").forEach(button=>button.addEventListener("click",()=>$(button.dataset.close).close()));
-$("account-form").addEventListener("submit",async event=>{event.preventDefault();const data=new FormData(event.target);try{await api(`/api/v1/auth/${data.get("action")}`,{method:"POST",body:JSON.stringify({email:data.get("email")})});status("account-message",t("linkSent"));}catch(error){status("account-message",error.message,true);}});
+$("account-form").addEventListener("submit",async event=>{event.preventDefault();const data=new FormData(event.target);try{await api(`/api/v1/auth/${data.get("action")}`,{method:"POST",body:JSON.stringify({email:data.get("email")})});status("account-message",t("linkSent"));}catch(error){const key=error.message==="This email address is not registered."?"notRegistered":error.message==="This email address is already registered."?"alreadyRegistered":error.message.startsWith("Email verification required")?"verifyFirst":null;status("account-message",key?t(key):error.message,true);if(key==="notRegistered")event.target.elements.action.value="register";if(key==="alreadyRegistered")event.target.elements.action.value="login";}});
 $("logout").addEventListener("click",async()=>{try{await api("/api/v1/auth/logout",{method:"POST"});await refreshAccount();$("account-dialog").close();}catch(error){status("account-message",error.message,true);}});
-async function openSubscriptions(){await refreshAccount();if(!state.account){$("account-dialog").showModal();return;}try{renderSubscriptions(await api("/api/v1/subscriptions"));status("subscription-message","");$("subscription-dialog").showModal();}catch(error){status("message",error.message,true);}}
+async function openSubscriptions(){await refreshAccount();if(!state.account){$("account-dialog").showModal();return;}try{const [current,recipients]=await Promise.all([api("/api/v1/subscriptions"),api("/api/v1/subscriptions/recipients")]);renderSubscriptions(current);if(state.detail){$("watch-dataset").value=state.detail.dataset;$("watch-record").value=state.detail.id;}$("recipient-own").checked=recipients.some(row=>row.email===state.account.email);$("recipient-emails").value=recipients.filter(row=>row.email!==state.account.email).map(row=>row.email).join("\n");renderRecipientStatus(recipients);status("subscription-message","");$("subscription-dialog").showModal();}catch(error){status("message",error.message,true);}}
 $("membership-view").addEventListener("click",openSubscriptions);
 $("membership-logout").addEventListener("click",async()=>{try{await api("/api/v1/auth/logout",{method:"POST"});await refreshAccount();}catch(error){status("message",error.message,true);}});
 $("membership-login").addEventListener("click",()=>{$("account-form").elements.action.value="login";$("account-dialog").showModal();});
 $("membership-register").addEventListener("click",()=>{$("account-form").elements.action.value="register";$("account-dialog").showModal();});
-$("subscription-form").addEventListener("submit",event=>{event.preventDefault();saveSubscriptions();});$("unsubscribe").addEventListener("click",()=>saveSubscriptions(true));
+$("subscription-form").addEventListener("submit",event=>{event.preventDefault();saveSubscriptions();});$("unsubscribe").addEventListener("click",()=>{if(confirm(t("stopConfirm")))saveSubscriptions(true);});
 async function init(){
   translatePage();try{[state.categories,state.cantons]=await Promise.all([api("/api/v1/categories"),api("/api/v1/cantons")]);translatePage();}catch(error){status("message",error.message,true);}
+  try{const providers=await api("/api/v1/auth/providers");$("google-login").hidden=!providers.google;}catch{}
   await refreshAccount();const params=new URLSearchParams(location.search);const linkedDataset=Object.hasOwn(names,params.get("dataset"))?params.get("dataset"):"affairs";
   chooseDataset(linkedDataset);
   if(params.get("record")&&/^\d+$/.test(params.get("record")))showDetail(linkedDataset,Number(params.get("record")));
-  if(params.get("signed_in")==="1"){history.replaceState(null,"","/");await announceSignIn();}
+  if(params.get("recipient_verified")==="1"){toast(t("recipientVerified"));await openSubscriptions();}
+  if(params.get("signed_in")==="1"){history.replaceState(null,"","/");await announceSignIn();await openSubscriptions();}
 }
 window.addEventListener("focus",refreshAccount);init();
+
+let toastTimer;
+function toast(message,error=false){clearTimeout(toastTimer);status("toast",message,error);const toolbar=$("subscription-dialog").querySelector(".subscription-toolbar");$("toast").style.bottom=$("subscription-dialog").open?`${window.innerHeight-toolbar.getBoundingClientRect().top+12}px`:"90px";$("toast").showPopover?.();toastTimer=setTimeout(()=>{$("toast").hidePopover?.();status("toast","");},6000);}
+function renderRecipientStatus(recipients){$("recipient-status").replaceChildren();for(const row of recipients)if(!row.verified)$("recipient-status").append(el("p",t("pendingRecipient",{email:row.email})));}
+$("subscription-logout").addEventListener("click",async()=>{try{await api("/api/v1/auth/logout",{method:"POST"});$("subscription-dialog").close();await refreshAccount();}catch(error){status("subscription-message",error.message,true);}});
+$("delete-account").addEventListener("click",async()=>{if(!confirm(t("deleteConfirm")))return;try{await api("/api/v1/auth/me",{method:"DELETE"});$("subscription-dialog").close();state.subscriptions=null;await refreshAccount();}catch(error){status("subscription-message",error.message,true);toast(error.message,true);}});
+$("watch-add").addEventListener("click",async()=>{const id=Number($("watch-record").value),dataset=$("watch-dataset").value;if(!Number.isInteger(id)||id<=0)return;try{const draft=captureSubscriptions();await api(`/api/v1/subscriptions/watches/${dataset}/${id}`,{method:"PUT"});if(!draft.watches.some(row=>row.dataset===dataset&&row.record_id===id))draft.watches.push({dataset,record_id:id});renderSubscriptions(draft);$("watch-record").value="";toast(t("saved"));}catch(error){status("subscription-message",error.message,true);}});
+
+$("google-login").addEventListener("click",event=>{event.preventDefault();window.open("/api/v1/auth/google","polit-google","popup,width=520,height=700");});

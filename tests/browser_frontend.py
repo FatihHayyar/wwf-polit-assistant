@@ -64,8 +64,9 @@ def main():
             assert page.locator("#account-open").count()==0
             filters=page.locator(".filters").bounding_box()
             card=page.locator("#subscription-section").bounding_box()
-            assert abs(filters["y"]-card["y"])<2
-            assert card["x"]>filters["x"]+filters["width"]
+            assert card["y"]+card["height"] <= filters["y"]
+            assert abs(filters["width"]-card["width"])<2
+            assert abs(filters["x"]-card["x"])<2
             page.screenshot(path=str(Path(__file__).resolve().parents[1]/"logs"/"ui-home-layout.png"))
             page.set_viewport_size({"width":390,"height":844})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")

@@ -10,6 +10,8 @@ from app.api.routes.categories import router as categories_router
 from app.api.routes.health import router as health_router
 from app.api.routes.subscriptions import router as subscriptions_router
 from app.api.routes.sync import router as sync_router
+from app.api.routes.google_auth import router as google_router
+from app.api.routes.recipient_routes import router as recipients_router
 
 api_router = APIRouter()
 api_router.include_router(entities_router)
@@ -22,3 +24,6 @@ api_router.include_router(affair_types_router)
 api_router.include_router(sync_router)
 api_router.include_router(auth_router)
 api_router.include_router(subscriptions_router)
+
+api_router.include_router(google_router)
+api_router.include_router(recipients_router)

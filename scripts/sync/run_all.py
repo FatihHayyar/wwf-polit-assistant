@@ -241,10 +241,13 @@ def run_all_syncs(result: dict) -> None:
         recompute_totals(result)
 
         if returncode != 0:
+            with engine.connect() as db:
+                reason = db.scalar(text("SELECT error_message FROM sync_checkpoints WHERE dataset=:dataset"), {"dataset": DATASET_KEYS[name]})
             result["error_message"] = (
                 f"{name} sync failed "
-                f"(exit code {returncode})."
+                f"(exit code {returncode})." + (f" {reason}" if reason else "")
             )
+            result["dataset_results"][name]["error_message"] = result["error_message"]
             save_result(result)
 
             print(
@@ -264,7 +267,7 @@ def run_all_syncs(result: dict) -> None:
         )
 
     print("\n" + "=" * 70, flush=True)
-    print("ALL DATASET SYNCS COMPLETED", flush=True)
+    print("DATASET SYNCS FINISHED WITH FAILURES" if result["datasets"]["failed"] else "ALL DATASET SYNCS COMPLETED", flush=True)
     print(
         f"Successful: "
         f"{result['datasets']['successful']}/{total}",
@@ -338,7 +341,8 @@ def main() -> None:
         try:
             run_all_syncs(result)
             if result["datasets"]["failed"]:
-                raise RuntimeError("One or more datasets failed. Notifications remain pending until this job is resumed successfully.")
+                failures = [detail.get("error_message", name) for name, detail in result["dataset_results"].items() if detail["status"] == "failed"]
+                raise SystemExit("\n".join(failures) + "\nNotifications remain pending until this job is resumed successfully.")
             check_cancelled()
             result["current_dataset"] = "notifications"
             save_result(result)

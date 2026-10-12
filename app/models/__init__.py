@@ -1,5 +1,6 @@
 
 from sqlalchemy import Index
+from app.models.notification_recipient import NotificationRecipient
 from app.models.monitoring_subscription import UserKeywordSubscription, UserRecordWatch
 from app.models.change_event_affair import ChangeEventAffair
 from app.models.dataset_subscription import UserDatasetSubscription

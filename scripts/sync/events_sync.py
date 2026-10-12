@@ -82,10 +82,22 @@ def map_event(record: dict) -> dict:
             values[field] = parse_datetime(record[field])
 
     for source_field, languages in LANGUAGE_FIELDS.items():
+        # Exports can expose translations as flat fields; the live API returns
+        # title_harmonized as a scalar label instead of a translation object.
+        for language in languages:
+            field = f"{source_field}_{language}"
+            if field in record:
+                values[field] = record[field]
         if source_field not in record:
             continue
 
         translations = record[source_field]
+
+        if source_field == "title_harmonized" and isinstance(translations, str):
+            # Missing translations are unspecified, not deleted. Preserve the
+            # translations already imported from the bulk export. The scalar
+            # label adds no translated content and is not a content change.
+            continue
 
         if translations is None:
             translations = {}
@@ -97,9 +109,9 @@ def map_event(record: dict) -> dict:
             )
 
         for language in languages:
-            values[f"{source_field}_{language}"] = (
-                translations.get(language)
-            )
+            field = f"{source_field}_{language}"
+            if field not in record:
+                values[field] = translations.get(language)
 
     return values
 

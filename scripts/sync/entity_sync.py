@@ -13,7 +13,7 @@ from datetime import datetime
 from importlib import import_module
 
 import httpx
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
 from app.services.sync_normalization import normalize_values
 
 from app.db.database import SessionLocal
@@ -24,7 +24,7 @@ from app.services.reclassification_service import reclassify_affairs
 from app.services.entity_classification_service import classify_entity
 from app.classification.classifier import AffairClassifier
 from app.models.entity_classification import EntityClassification
-from scripts.sync.source_batches import make_source
+from scripts.sync.source_batches import make_source, request
 
 
 ADAPTERS = {
@@ -105,7 +105,7 @@ def sync_record(db, dataset, values, existing=None, classifier=None):
     return "NEW" if new else "CHANGED"
 
 
-def run_dataset(dataset, recheck=False):
+def run_dataset(dataset, recheck=False, backfill_missing_classifications=True):
     module_name, mapper_name, cursor_field = ADAPTERS[dataset]
     adapter = import_module(f"scripts.sync.{module_name}")
     mapper = getattr(adapter, mapper_name)
@@ -156,10 +156,50 @@ def run_dataset(dataset, recheck=False):
                 newest = restore_cursor(source.state["newest"])
                 upper = restore_cursor(source.state["upper"]) if source.state.get("upper") else None
                 counts = dict(source.state["counts"])
+                full_scan = source.state.get("full_scan", full_scan)
                 counts["ERROR"] = 0
                 print(f"{dataset}: RESUME inventory position={source.position}", flush=True)
             while True:
                 records, finished = source.next(sort_by)
+                # Imported cursors prove recency, not completeness. Reconcile
+                # missing source identities before allowing a cursor to skip
+                # historical records (documents may have multiple local rows).
+                if not full_scan and source.mode == "api" and source.position == 0 and isinstance(getattr(source, "total_records", None), int):
+                    source_key = model.source_id if dataset == "documents" else model.id
+                    with SessionLocal() as db:
+                        # Docs metadata counts relationship variants as rows,
+                        # so compare row counts rather than distinct source IDs.
+                        count_expression = func.count() if dataset == "documents" else func.count(func.distinct(source_key))
+                        local_count, local_maximum_id = db.execute(select(count_expression, func.max(source_key))).one()
+                    maximum_id = None
+                    if dataset == "documents" and hasattr(source, "client"):
+                        head = request(source.client, source.url, params={"sort_by": "-id", "offset": 0, "limit": 1}).json()["data"]
+                        maximum_id = int(head[0]["id"]) if head else 0
+                    if local_count < source.total_records or (maximum_id is not None and maximum_id > (local_maximum_id or 0)):
+                        print(f"{dataset}: source has {source.total_records} records, local has {local_count}; identity reconciliation required", flush=True)
+                        full_scan = True
+                        source.mode, source.position = "inventory", 0
+                        # When no source timestamp is newer, the gap is in the
+                        # historical import. Hydrate every missing identity and
+                        # recheck this live page instead of re-downloading all
+                        # unchanged document text. Explicit --recheck still
+                        # performs a full content comparison.
+                        if dataset == "documents" and records and max(cursor(record) for record in records) <= original and hasattr(source, "inventory"):
+                            recent_ids = {int(record["id"]) for record in records}
+                            with SessionLocal() as db:
+                                existing_ids = set(db.scalars(select(model.source_id).distinct()))
+                            if maximum_id is not None and 0 < maximum_id <= source.total_records * 2:
+                                # Dense positive IDs let us probe every absent
+                                # identity with supported ID filters, avoiding
+                                # multi-gigabyte exports just to obtain IDs.
+                                candidates = set(range(1, maximum_id + 1)) - existing_ids
+                                source.reconciliation_ids = sorted(candidates | recent_ids, reverse=True)
+                            else:
+                                source.inventory()
+                                source.reconciliation_ids = [record_id for record_id in source.ids if record_id not in existing_ids or record_id in recent_ids]
+                            source.ids = list(source.reconciliation_ids)
+                            print(f"documents: checking {len(source.ids)} absent/recent identity candidates", flush=True)
+                        continue
                 if not records and finished:
                     break
                 if upper is None and records:
@@ -206,7 +246,7 @@ def run_dataset(dataset, recheck=False):
                             if classifier is None:
                                 classifier = AffairClassifier(db)
                         result = sync_record(db, dataset, values, entity, classifier=classifier)
-                        if result == "UNCHANGED" and missing_classification:
+                        if result == "UNCHANGED" and missing_classification and backfill_missing_classifications:
                             if classifier is None:
                                 classifier = AffairClassifier(db)
                             classify_entity(db, dataset, entity, classifier=classifier)
@@ -221,7 +261,7 @@ def run_dataset(dataset, recheck=False):
                     counts[name] += count
                 state = dict(counts=counts, original=[original[0].isoformat(), original[1]],
                              newest=[newest[0].isoformat(), newest[1]],
-                             upper=[upper[0].isoformat(), upper[1]] if upper else None, complete=False)
+                             upper=[upper[0].isoformat(), upper[1]] if upper else None, complete=False, full_scan=full_scan)
                 source.commit(state)
                 save("running")
                 print(f"{dataset}: mode={source.mode} position={source.position} {counts}", flush=True)
@@ -230,7 +270,7 @@ def run_dataset(dataset, recheck=False):
         save("idle", final=newest)
         if source is not None:
             source.commit(dict(counts=counts, original=[original[0].isoformat(), original[1]],
-                               newest=[newest[0].isoformat(), newest[1]], upper=None, complete=True))
+                               newest=[newest[0].isoformat(), newest[1]], upper=None, complete=True, full_scan=full_scan))
     except BaseException as exc:
         counts["ERROR"] += 1
         save("error", str(exc))

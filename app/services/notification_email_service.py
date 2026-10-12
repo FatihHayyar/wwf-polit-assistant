@@ -1,4 +1,5 @@
 from __future__ import annotations
+from app.services.notification_recipient_service import has_verified_destination, send_notification_email
 
 from datetime import datetime, timezone
 
@@ -134,6 +135,8 @@ def send_pending_individual_notifications(
                 continue
 
             user = db.get(User, notification.user_id)
+            if user and not has_verified_destination(db, user):
+                continue
             event = db.get(
                 ChangeEvent,
                 notification.change_event_id,
@@ -184,8 +187,8 @@ def send_pending_individual_notifications(
             )
 
             try:
-                send_email(
-                    recipient=user.email,
+                send_notification_email(
+                    db, user, send_func=send_email,
                     subject=f"WWF Polit-Assistant: {action}",
                     body=body,
                 )
@@ -244,6 +247,8 @@ def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, 
                 else:query=query.where(ChangeEvent.affair_id.is_(None),ChangeEvent.dataset==group.dataset,ChangeEvent.source_id==group.record_id)
                 notifications=db.scalars(query.order_by(Notification.id).with_for_update(skip_locked=True,of=Notification)).all()
                 user=db.get(User,group.user_id);deliver=[];lines=[]
+                if user and not has_verified_destination(db, user):
+                    continue
                 for notification in notifications:
                     event=db.get(ChangeEvent,notification.change_event_id)
                     if not user or not user.is_active or not user.email_verified or not event or not event_eligible(event) or matching_subject(db,user.id,event.dataset,event_subjects(db,event)) is None:
@@ -268,7 +273,7 @@ def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, 
                 if not any(main_url in line.splitlines() for line in lines):
                     body += f"\n\n{main_url}"
                 body += "\n\nSie erhalten diese Nachricht aufgrund Ihrer Abonnements. Diese k?nnen Sie in der Anwendung verwalten."
-                try:send_email(recipient=user.email,subject=f"WWF: {', '.join(kinds)} ? {title}",body=body,html_body=render_html(body))
+                try:send_notification_email(db,user,send_func=send_email,subject=f"WWF: {', '.join(kinds)} ? {title}",body=body,html_body=render_html(body))
                 except EmailServiceError as exc:
                     for notification in deliver:notification.error_message=str(exc)
                     failed+=1

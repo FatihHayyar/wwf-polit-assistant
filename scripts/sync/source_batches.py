@@ -55,8 +55,13 @@ class BatchSource:
         self.next_position = self.position
         self.api_calls = 0
         self.scanned = 0
+        self.total_records = None
+        self.reconciliation_ids = self.state.get("reconciliation_ids")
 
     def inventory(self):
+        if self.reconciliation_ids is not None:
+            self.ids = list(self.reconciliation_ids)
+            return
         inventory_path = self.directory / f"{self.dataset}_ids.json" if self.directory else None
         groups_path = self.directory / "texts_groups.json" if self.directory and self.dataset == "texts" else None
         if inventory_path and inventory_path.exists() and (self.dataset != "texts" or groups_path.exists()):
@@ -145,6 +150,7 @@ class BatchSource:
                 self.mode, self.position = "inventory", 0
                 return self.next(sort_by)
             self.api_calls += 1
+            self.total_records = data.get("meta", {}).get("total_records")
             rows = data["data"]
             self.next_position = self.position + len(rows)
             self.scanned += len(rows)
@@ -207,6 +213,8 @@ class BatchSource:
         # already committed data; it cannot skip uncommitted records.
         self.position = self.next_position
         self.state = dict(worker_state, mode=self.mode, position=self.position)
+        if self.reconciliation_ids is not None:
+            self.state["reconciliation_ids"] = self.reconciliation_ids
         if self.path:
             atomic_json(self.path, self.state)
 

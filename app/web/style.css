@@ -18,3 +18,25 @@ header{align-items:flex-start;margin-bottom:24px}.header-right{width:auto;flex-s
 .type-tag{display:inline-block;margin-bottom:12px;font-weight:700;background:#e5efdc}.browse-home{display:block;padding:14px;border-radius:12px;background:#e5efdc;color:#19382e;text-decoration:none}
 
 #datasets{overflow-y:auto;min-height:0}#datasets button{flex-shrink:0}
+
+.content-layout{display:flex;flex-direction:column;gap:20px}.browse-content{width:100%;order:2}.content-layout .subscription-banner{width:100%;order:1;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 24px}.content-layout .subscription-banner h2{font-size:19px}.content-layout .subscription-banner p{margin:8px 0}.content-layout .subscription-actions{border:0;padding:0;margin:0;flex:0 1 390px;display:grid;grid-template-columns:1fr 1fr}.subscription-actions button{width:100%;min-height:46px}.subscription-actions p{grid-column:1/-1}
+dialog{padding:0;overflow:auto;isolation:isolate}.dialog-header{position:sticky;top:0;z-index:3;background:#fff;padding:18px 24px;border-bottom:1px solid var(--border)}.dialog-header button{flex-shrink:0}.dialog-header h2{font-size:21px}#detail-content{padding:0 24px 24px}#account-dialog>p,#account-dialog>form,#account-dialog>button,#account-dialog>.provider-button,#subscription-dialog>p{margin:20px 24px}#subscription-form{display:block;margin:0;padding:0 24px}#subscription-form>fieldset{margin:20px 0}.subscription-toolbar{position:sticky;bottom:0;z-index:2;background:#fff;padding:14px 0;border-top:1px solid var(--border);box-shadow:0 -10px 16px #ffffffdd}.subscription-toolbar>div{display:flex;flex-wrap:wrap;gap:8px}.subscription-toolbar button{flex:1;min-height:44px}.subscription-toolbar p{margin:0 0 10px}.delete-account{padding:24px 0;margin-bottom:10px;border-top:1px solid var(--border)}#delete-account{color:#a1462c}.recipient-own{display:flex;align-items:center;margin-bottom:16px}.recipient-own input{width:18px;min-height:18px}.provider-button{display:block;padding:14px;border:1px solid var(--border);border-radius:8px;text-decoration:none;text-align:center;font-weight:600}#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:10;padding:16px 24px;background:#1f6448;color:white;border-radius:10px;box-shadow:0 4px 20px #0003;max-width:calc(100vw - 32px)}#toast.error{background:#fff4dd}
+@media(max-width:750px){.content-layout .subscription-banner{display:block}.content-layout .subscription-actions{margin-top:16px}dialog{max-height:94dvh}.dialog-header{padding:14px 16px}#subscription-form{padding:0 16px}#detail-content{padding:0 16px 16px}.subscription-toolbar button{font-size:13px;padding:10px 8px}.result-bar{flex-wrap:wrap}}
+
+#toast{inset:auto auto 24px 50%;margin:0;border:0}#subscription-dialog #toast{z-index:10}
+
+
+/* Keep the headers and actions outside the independently scrolling content. */
+#detail-dialog[open],#subscription-dialog[open]{display:flex;flex-direction:column;overflow:hidden}
+#detail-dialog .dialog-header,#subscription-dialog .dialog-header{position:static;flex-shrink:0}
+#detail-content,.dialog-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.dialog-body>p{margin:18px 24px}
+#subscription-dialog .subscription-toolbar{position:static;flex-shrink:0;padding:14px 24px;margin:0}
+.subscription-toolbar>div{align-items:stretch}
+.subscription-toolbar button{min-width:0;overflow-wrap:anywhere}
+.content-layout .subscription-banner>div:first-child{flex:1;min-width:0}
+.content-layout .subscription-actions{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+.content-layout .subscription-actions button{height:100%;min-width:0;overflow-wrap:anywhere}
+@media(max-width:750px){#subscription-dialog .subscription-toolbar{padding:12px 16px}.dialog-body>p{margin:16px}}
+.primary:hover:not(:disabled){background:#18563d;color:#fff}
+@media(max-width:620px){.subscription-toolbar>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.subscription-toolbar #unsubscribe{grid-column:1/-1}}

@@ -42,4 +42,18 @@ class SyncControlTests(unittest.TestCase):
         self.assertEqual(result["datasets"]["failed"],0)
         self.assertEqual(result["records"]["new"],5)
 
+    def test_failed_stage_reports_cause_and_does_not_send_notifications(self):
+        with patch("scripts.sync.source_batches.job_directory", return_value=None), patch.object(run_all, "RESUME_FILE", None):
+            result = run_all.initial_result()
+        reason = "Events sync failed (exit code 1). Event 980691: unsupported source value"
+        result["dataset_results"] = {"Events": {"status": "failed", "error_message": reason}}
+        result["datasets"]["failed"] = 1
+        with patch.object(run_all, "engine") as fake_engine, patch.object(run_all, "initial_result", return_value=result), patch.object(run_all, "run_all_syncs"), patch.object(run_all, "save_result"), patch.object(run_all, "send_notification_emails") as send, patch.object(run_all, "notify_parent"):
+            fake_engine.connect.return_value.__enter__.return_value.execute.return_value.scalar_one.return_value = True
+            with self.assertRaises(SystemExit) as error:
+                run_all.main()
+        self.assertIn(reason, str(error.exception))
+        self.assertEqual(result["status"], "failed")
+        send.assert_not_called()
+
 if __name__=='__main__':unittest.main()
