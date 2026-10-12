@@ -1,0 +1,38 @@
+name: Fehler melden
+description: Reproduzierbares Problem in Anwendung, API oder Synchronisierung.
+title: "[Fehler] "
+body:
+  - type: markdown
+    attributes:
+      value: "Keine privaten Daten, Tokens oder Zugangsdaten veröffentlichen. Sicherheitsprobleme nach SECURITY.md privat melden."
+  - type: textarea
+    id: environment
+    attributes:
+      label: Umgebung und Versionsstand
+      description: Commit, Betriebssystem, Browser und Startart (Docker-Demo oder lokale Entwicklung).
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      placeholder: "1. Bereich öffnen ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Tatsächliches Verhalten
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Bereinigte Logs oder Screenshots
+      description: Bei Sync-Problemen betroffenes Dataset und Lauf-ID angeben; personenbezogene Daten entfernen.

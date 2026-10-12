@@ -1,0 +1,21 @@
+name: Verbesserung vorschlagen
+description: Eine fachliche oder technische Erweiterung beschreiben.
+title: "[Vorschlag] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem oder Bedarf
+      description: Wer benötigt die Änderung und in welchem Ablauf?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Gewünschtes Ergebnis
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen und zusätzliche Hinweise

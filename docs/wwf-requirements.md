@@ -7,7 +7,7 @@ about scope and the final taxonomy remain decisions to agree with WWF.
 | --- | --- |
 | New records by canton and WWF topic | Implemented across nine datasets, including parent-category matching. |
 | Individual keywords in subscriptions | Implemented: up to 20 literal, case-insensitive phrases. Any phrase matches; topic, keyword and canton restrictions apply together. |
-| Follow a specific existing affair/meeting | Implemented in record details. Affair watches include related changes; meeting watches include records with that meeting ID. Watches survive changing classifications and general filters. |
+| Follow a specific existing affair/meeting | Implemented; as of 12 October 2026, watches are managed in subscription management. Affair watches include related changes; meeting watches include records with that meeting ID. Watches survive changing classifications and general filters. |
 | Votes | Implemented as `votings`: sync, search, classification and monitoring. |
 | Groups | Implemented: frontend, filters, own/inherited classification, daily/manual sync and record monitoring. Details include related meetings. Group watches include meeting-linked changes. |
 | Interest Declarations | Implemented as `interests`: frontend, filters, own classification, daily/manual sync and record monitoring. Details show the declaring person from the imported data. No direct affair association is assumed. |

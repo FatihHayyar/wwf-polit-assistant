@@ -40,3 +40,6 @@ Thumbs.db
 *.sql.gz
 
 logs/
+
+# Local coursework package: report drafts, correspondence and submission files
+wipro-submission/

@@ -49,9 +49,9 @@ Die Anwendung speichert Quelldatenänderungen getrennt von ihrer Benachrichtigun
 
 ### Aktueller Stand
 
-**Stand: 11. Oktober 2026.** Datenimport, neun Synchronisationsmodule, Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung und Abonnementverwaltung sind implementiert. Die Benachrichtigungspipeline berücksichtigt auch Änderungen an verbundenen Datensätzen.
+**Stand: 12. Oktober 2026.** Datenimport, neun Synchronisationsmodule, Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung und Abonnementverwaltung sind implementiert. Die Benachrichtigungspipeline berücksichtigt auch Änderungen an verbundenen Datensätzen.
 
-60 isolierte Backend-Regressionstests sowie Frontend- und Browserprüfungen wurden erfolgreich ausgeführt. Der Docker-Demostart, alle neun Listen- und Detail-APIs, die E-Mail-Verifikation über Mailpit und die Erhaltung der Daten beim Neustart wurden ebenfalls geprüft. Das ersetzt keine vollständige fachliche Abnahme oder Prüfung unter Produktionsbedingungen.
+71 isolierte Backend-Regressionstests sowie Frontend- und Browserprüfungen wurden erfolgreich ausgeführt. Der Docker-Demostart, alle neun Listen- und Detail-APIs, die E-Mail-Verifikation über Mailpit und die Erhaltung der Daten beim Neustart wurden ebenfalls geprüft. Das ersetzt keine vollständige fachliche Abnahme oder Prüfung unter Produktionsbedingungen.
 
 ## Quick Start mit Docker
 
@@ -255,7 +255,7 @@ Kategorie-IDs werden über die Kategorien-API ermittelt. Ein Hauptthema umfasst 
 | Klima & Energie | Alle | Passende Entwicklungen in allen Kantonen |
 | Alle | ZH | Entwicklungen aller Themen im Kanton Zürich |
 
-Die Anmeldung verwendet JWT und eine HttpOnly-Session-Cookie für die Oberfläche; API-Clients können Bearer-Tokens verwenden. Verwaltungsfunktionen erfordern Anmeldung, Sync-Operationen den konfigurierten Administratorzugang. Kontolöschung ist unterstützt.
+Die Anmeldung verwendet JWT und eine HttpOnly-Session-Cookie für die Oberfläche; API-Clients können Bearer-Tokens verwenden. Verwaltungsfunktionen erfordern Anmeldung, Sync-Operationen den separat konfigurierten Schlüssel im Header `X-Sync-API-Key`. Kontolöschung ist unterstützt.
 
 ## Lokale Entwicklung
 
@@ -284,13 +284,15 @@ Eine leere Entwicklungsdatenbank benötigt anschliessend den Datenimport und die
 
 ### Erstimport und Klassifikation
 
-Der Bootstrap trennt Download, Prüfung und Raw-Import:
+Der Bootstrap lädt Exporte und importiert sie in das normalisierte Schema. Er ist für eine frische Zieldatenbank vorgesehen: vorhandene Tabellen können dabei zurückgesetzt werden. Bestehende Daten vorher sichern.
 
 ```powershell
 python scripts/bootstrap/download_openparldata.py --dry-run
 python scripts/bootstrap/download_openparldata.py --workers 6
-python scripts/bootstrap/inspect_exports.py
-python scripts/bootstrap/import_raw.py all
+python scripts/bootstrap/import_normalized.py all
+python -m scripts.seed_classification
+python -m scripts.classify_affairs
+python -m scripts.classify_entities
 ```
 
 Dies sind Schritte der Importpipeline, keine vollständige Ein-Kommando-Installation des normalisierten Datenbestands. Klassifikationsvorbereitung und historische Entity-Klassifikation sind im [Monitoring-Leitfaden](docs/monitoring.md) dokumentiert. Vollständige Raw-Downloads und Datenbank-Backups werden nicht ins Repository aufgenommen; die kuratierte öffentliche Demo-Stichprobe liegt unter [data/demo](data/demo/README.md).
@@ -323,8 +325,22 @@ Optionale spätere Erweiterungen sind KI-gestützte Klassifikation, semantische 
 
 ## Dokumentation
 
+Die Dokumentation ist nach Projektmanagement, Anforderungen, Architektur, technischen Konzepten, Tests, Übergabe und wissenschaftlicher Einordnung gegliedert. Einstieg: [Dokumentationsindex](docs/README.md). [GitHub-Tracking](docs/01-project-management/github-tracking.md) verknüpft Aufgaben und Milestones.
+
 | Dokument | Inhalt |
 |---|---|
+| [Dokumentationsindex](docs/README.md) | Einstieg in alle Projektunterlagen |
+| [Installation](docs/getting-started.md) | Demo, Entwicklungsumgebung und vollständiger Erstimport |
+| [Benutzerhandbuch](docs/06-handover/user-guide.md) | Recherche, Anmeldung und Abonnements |
+| [Konfiguration](docs/configuration.md) | Umgebungsvariablen, Container und Google-Anmeldung |
+| [Architektur](docs/03-architecture/system-architecture.md) | Komponenten, Datenmodell und Ausführungsgrenzen |
+| [API](docs/api.md) | Öffentliche Recherche und geschützte Verwaltungsrouten |
+| [Tests](docs/05-testing/test-plan.md) | Automatisierte Prüfungen und manuelle Abnahme |
+| [Betrieb](docs/06-handover/deployment-guide.md) | Prozessrollen, Migrationen und Sicherung |
+| [Fehlerbehebung](docs/troubleshooting.md) | Sync-, Anmelde- und Installationsprobleme |
+| [Mitwirken](CONTRIBUTING.md) | Beiträge und Pull Requests |
+| [Sicherheit](SECURITY.md), [Support](SUPPORT.md) | Meldewege und Hilfe |
+| [Änderungsprotokoll](CHANGELOG.md), [Lizenzen](docs/licensing.md) | Arbeitsstand und offene Lizenzentscheidung |
 | [Betrieb und Monitoring](docs/monitoring.md) | Lokaler Start, Klassifikationsvorbereitung, Abonnements, Sync-Steuerung und Benachrichtigungsregeln |
 | [WWF-Anforderungen](docs/wwf-requirements.md) | Zuordnung der Auftraggeberanforderungen und offene fachliche Entscheidungen |
 | [Review vom 11. Oktober 2026](docs/daily-review-2026-10-11.md) | Aufgabenstellung, GitHub-Issues, Teststand und Azure-Bewertung |
@@ -343,4 +359,21 @@ Ein kontrollierter Benachrichtigungstest verwendete das Berner Geschäft **#1879
 
 Parlamentarische Daten stammen von **[OpenParlData.ch](https://openparldata.ch/)** und stehen unter **CC BY 4.0**. Die Demo enthält keine bestehenden Benutzerkonten, Abonnements, E-Mail-Tokens oder Versandwarteschlangen.
 
-Eine projektspezifische **Softwarelizenz** wurde noch nicht festgelegt. Die Lizenz der Quelldaten und die Lizenz des Anwendungscodes sind getrennt zu betrachten.
+Eine projektspezifische **Softwarelizenz** wurde noch nicht festgelegt; der [Lizenzleitfaden](docs/licensing.md) dokumentiert den Status. Die Lizenz der Quelldaten und die Lizenz des Anwendungscodes sind getrennt zu betrachten.
+
+
+## Google-Anmeldung und Benachrichtigungsadressen
+
+Optional `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET` in `.env` setzen.
+In der Google Cloud Console einen OAuth-Client vom Typ Webanwendung erstellen
+und `${VERIFICATION_BASE_URL}/api/v1/auth/google/callback` als erlaubte
+Weiterleitungs-URI eintragen (lokal: `http://localhost:8000/api/v1/auth/google/callback`).
+Nach einem Neustart des Webservers erscheint „Mit Google fortfahren“.
+Ohne diese Konfiguration bleibt die Anmeldung per E-Mail-Link verfügbar.
+Google übernimmt Registrierung und Anmeldung in einem Schritt.
+
+`alembic upgrade head` legt die Tabelle für Benachrichtigungsadressen an.
+Im Abonnementdialog lassen sich das Anmeldekonto und bis zu zehn Adressen
+kombinieren. Andere Adressen erhalten vor dem Versand einen Bestätigungslink.
+Bestehende Konten erhalten bis zur ersten eigenen Auswahl weiterhin Nachrichten
+an ihre Anmeldeadresse. Die Synchronisierung muss dafür nicht beendet werden.

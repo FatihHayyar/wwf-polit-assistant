@@ -1,9 +1,8 @@
 # Search, subscriptions and synchronization
 
-The local frontend is served by FastAPI at `/`. Its main navigation contains affairs, meetings, groups and interests. Agendas,
-events, votes, documents and texts appear in their related affairs or meetings,
-with contextual titles, links and available voting results. All nine datasets
-remain synchronized and accessible through the API and related-list links. Search
+Current setup and user documentation is available in German in the [documentation index](README.md).
+
+The local frontend is served by FastAPI at `/`. All nine public datasets have their own navigation entries and remain available through the API and related-list links. Search
 supports keyword, category/subcategory, canton and date-range filters with
 server-side pagination. Affair details include related records, links to browse
 the complete related lists, and the latest 100 detected changes.
@@ -29,7 +28,7 @@ name when the source has no item title. They show meeting/affair links and the
 official source URL when available. Agenda details include the meeting, group and
 directly attached documents; meeting details list their agenda items. Agenda
 keyword search also searches linked meeting names/descriptions and affair titles.
-Public browsing requires no account. A separate top-right stay-informed card offers
+Public browsing requires no account. A stay-informed section above the results offers
 registration, login and subscription management. Topics are grouped under their
 main themes; selecting a main theme covers all its subtopics. Supporting datasets
 are available under an expandable subscription section. Selecting affairs also
@@ -68,7 +67,7 @@ each up to 200 characters. Any phrase matches; keyword, topic and canton filters
 apply together. The stored fields searched are the same as in keyword search.
 Related records can match their affair's classification alongside their own keywords.
 
-Detail pages offer individual record watches. Affair watches include related
+Subscription management offers individual record watches. Affair watches include related
 changes; meeting watches include records with that meeting ID. Watches operate
 independently of filters and changing classifications. The subscriptions dialog
 lists/removes watches. Saving empty filters leaves watches active; "Alle
@@ -107,7 +106,21 @@ JSON results are written to `logs/sync_<run_id>.json`.
 This command contacts OpenParlData, modifies records and delivers pending
 notification emails. It is separate from the classification preparation job.
 
-Affairs, meetings and documents use timestamp checkpoints. Agendas, votings,
+Affairs, meetings and documents use timestamp checkpoints.
+Before trusting a timestamp checkpoint, the first API page's source count is
+compared with the local record count (distinct identities for other datasets,
+rows including relationship variants for Documents). A source count
+gap triggers source identity reconciliation, including records older than the
+checkpoint. This reconciliation mode is saved with committed batches so a
+resumed job continues checking historical records. When Documents has no timestamps newer
+than its cursor, all missing identities and the latest live page are hydrated.
+Use `--recheck` for a full content audit
+even when identity counts match; matching counts do not prove identical IDs
+or detect historical edits that do not advance the upstream timestamp.
+Documents also checks the highest live source ID, detecting backdated new
+documents even when upstream deletions keep the total record count unchanged.
+
+Agendas, votings,
 events and texts are fully scanned because their upstream update timestamps
 are unavailable or unreliable. Groups and interests also use full scans for
 their smaller datasets to check older records and tolerate missing timestamps.
@@ -141,7 +154,7 @@ Tests use SQLite and mock upstream HTTP/SMTP; they do not send real email.
 The local frontend and API have HTTP smoke checks. Edge browser checks cover all
 four UI languages, the real affair 203543, agenda/meeting links, saved preferences,
 mobile width, cross-tab login, grouped topic selection and subscription persistence.
-The isolated backend suite contains 60 tests.
+The isolated backend suite contains 71 tests (12 October 2026). See the [test guide](testing.md) for current commands and prerequisites.
 A complete live synchronization remains a deployment check. Historical entity
 classification requires the preparation job above. Search covers stored fields;
 it does not download or extract external PDF/document attachments.

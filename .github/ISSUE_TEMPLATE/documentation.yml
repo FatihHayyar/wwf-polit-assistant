@@ -1,0 +1,21 @@
+name: Dokumentation verbessern
+description: Fehlende, falsche oder unklare Dokumentation melden.
+title: "[Dokumentation] "
+body:
+  - type: input
+    id: document
+    attributes:
+      label: Datei oder Abschnitt
+      placeholder: docs/getting-started.md
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Was fehlt oder stimmt nicht?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Vorgeschlagene Verbesserung
