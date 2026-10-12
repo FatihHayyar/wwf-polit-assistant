@@ -10,11 +10,11 @@ Die [Gesamtprüfung vom 12. Oktober](review-2026-10-12.md) dokumentiert den neue
 | JavaScript | Übersetzungs-/Darstellungsprüfung und Syntaxkontrollen erfolgreich | Keine vollständige Browsermatrix |
 | Lokale Browserdiagnosen | Detail-/Verwaltungs-Scrollverhalten, Speicherhinweis und Layout geprüft | Windows/Edge, einzelne Desktop-/Mobile-Grössen |
 | Sync-/Quellprüfung | Wiederaufnahme und aktuelle Quellstichproben dokumentiert; konkrete Mapping-/Dokumentenfehler adressiert | Kein lückenloser historischer Vollständigkeitsbeweis |
-| Docker-Demo | Start, lokale Mailpit-Verifikation und Datenpersistenz historisch geprüft | Lokale Demo, kein Azure-/Produktionsbetrieb |
-| Organisations-SMTP | Historischer Teilversand mit späterem Authentifizierungsabbruch | Keine zuverlässige betriebliche Abnahme |
+| Docker-Demo | Am 12. Oktober Start, Registrierung/Anmeldung, Empfängerverifikation, Abonnements, Logout, Kontolöschung und Datenpersistenz geprüft | Lokale Demo, kein Azure-/Produktionsbetrieb |
+| Lokaler SMTP-Versand | Am 12. Oktober 14 erfolgreiche Versandgruppen ohne Fehler im wiederaufgenommenen Lauf; früherer Authentifizierungsabbruch bleibt historischer Befund | WWF-Organisationsprovider und Produktionslimits nicht geprüft |
 | WWF-Anwendungsfälle | Noch nicht vollständig mit Praxispartner dokumentiert | Offen |
 | Klassifikationsgüte | Keine unabhängige Expertenmessung vorhanden | Kein Precision-/Recall-Ergebnis |
-| Azure und Restore | Kein validierter Zielbetrieb | Offen |
+| Azure und Restore | Anschlussfähige Architektur und Betriebsunterlagen vorhanden; kein validierter WWF-Zielbetrieb | Spätere Integration durch WWF; kein fehlendes Azure-Deployment im MVP |
 
 Aktuelle Befehle und Voraussetzungen stehen im [Testplan](test-plan.md). Bei Abschluss eines technischen Issues die konkrete Version und Prüfung nennen. Fachliche/betriebliche Prüfungen erhalten eigene offene Issues. Geschlossene Implementierung bedeutet keine pauschale Produktionsfreigabe.
 

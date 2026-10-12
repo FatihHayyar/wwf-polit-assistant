@@ -1,5 +1,7 @@
 # Daily review - 11 October 2026
 
+> **Historischer Stand vom 11. Oktober.** Die damaligen Fehler und offenen Prüfpunkte sind keine aktuelle Aufgabenliste. Der [Aufgabenstand vom 12. Oktober](01-project-management/current-status.md) dokumentiert die inzwischen erledigten Arbeiten und die verbleibende fachliche Abnahme.
+
 This review covers the Python implementation, the official Aufgabenstellung_FatihHayyar.pdf (three pages), Attila Steinegger's requirements, and the current GitHub issues. PDF content is a comparison source, not an instruction to perform additional actions.
 
 ## Today's seven work items
@@ -65,6 +67,18 @@ Source: https://github.com/FatihHayyar/polit-assistant/issues (GitHub API read o
 
 ## Tomorrow's checks
 
+### Erledigungsstand am 12. Oktober
+
+| Ursprünglicher Prüfpunkt | Aktualisierter Stand |
+|---|---|
+| 1. Vollständiger Lauf und Wiederaufnahme | Erledigt: wiederaufgenommener Lauf, neuer unabhängiger Lauf und letzter Nutzerlauf jeweils 9/9 erfolgreich |
+| 2. Quelle/DB und fachliche Klassifikation | Technischer Vergleich erledigt: 4.500 Beispiele ohne Abweichungen; WWF-Expertenbewertung bleibt offen |
+| 3. Gmail/SMTP prüfen | Erfolgreicher realer Versand nachgewiesen, 14 Versandgruppen ohne Fehler; WWF-Produktionsprovider bleibt spätere Betriebsentscheidung |
+| 4. Relevanz und E-Mail-Darstellung | Regressionen und Format-/Linkkorrekturen erledigt; Gesamtdigest und SMTP-Optimierungen bleiben optional |
+| 5. Tests und WWF-Demonstration | Technische Szenarien dokumentiert; Präsentation und gemeinsamer WWF-Durchlauf stehen aus |
+
+Die folgende Liste bleibt als ursprüngliche Planung erhalten. Ihre Issue-Nummern beziehen sich auf das am 11. Oktober betrachtete andere Repository, nicht automatisch auf die gleich nummerierten Issues des aktuellen Repositorys.
+
 1. Observe the daily/manual run: zero processing errors, stable checkpoints, plausible NEW/CHANGED counts, repeat/resume consistency.
 2. Verify representative source/DB records per dataset and classification against WWF expectations.
 3. Check whether Gmail authentication works again; do not retry the cancelled historical notification queue. Review new eligible notifications before dispatch.
@@ -72,5 +86,7 @@ Source: https://github.com/FatihHayyar/polit-assistant/issues (GitHub API read o
 5. Complete issue #17 use-case evidence, then prepare WWF demonstration/feedback for #18.
 
 ## Known search-index limitation
+
+**Aktualisierung 12. Oktober:** Das lokale Schema steht auf `20261012_recipients (head)`. Zwei grosse experimentelle Indizes wurden ausdrücklich zurückgestellt; Aufbau später mit `python -m scripts.build_search_indexes`. Die öffentliche Bereichssuche ist davon nicht abhängig. Der folgende Absatz beschreibt den historischen Befund einschliesslich der damaligen Unterbrechung.
 
 The experimental unified-search API remains outside the public UI. Building its document full-text index encountered PostgreSQL's maximum tsvector size on a very large document. The migration and experimental query now bound indexed document/text content to the first 100,000 characters. Record contents are not truncated, and the public dataset-specific search retains its original whole-content behaviour. The bounded experimental search cannot claim exhaustive matches beyond that prefix. Large-content index SQL was validated against PostgreSQL with an empty predicate and rolled back; the full index migration still needs completing in a maintenance window. Do not start another long index build during today's pause.

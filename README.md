@@ -51,7 +51,7 @@ Die Anwendung speichert Quelldatenänderungen getrennt von ihrer Benachrichtigun
 
 Benachrichtigungen besitzen eine HTML-Ansicht mit Inhaltskarten und eine separate Klartextfassung. Der Betreff benennt beispielsweise ein neues Dokument; Dokumentlinks, Geschäftsverlauf und Abonnementverwaltung sind eindeutig beschriftet. Bereits zugestellte E-Mails werden nicht verändert oder automatisch erneut versandt. Eine Aktualisierung ohne passende neue Entwicklung erzeugt keine neue Nachricht.
 
-### Aktueller Stand
+## Aktueller Projektstand – 12. Oktober 2026
 
 **Stand: 12. Oktober 2026.** Datenimport, neun Synchronisationsmodule, Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung und Abonnementverwaltung sind implementiert. Die Benachrichtigungspipeline berücksichtigt auch Änderungen an verbundenen Datensätzen.
 
@@ -59,7 +59,37 @@ Benachrichtigungen besitzen eine HTML-Ansicht mit Inhaltskarten und eine separat
 
 Ein neuer vollständiger Synchronisationslauf verarbeitete **1.682.302 Einträge** und schloss **9/9 Datasets ohne Fehler** ab. Anschliessend wurde auch der zuletzt vom Nutzer gestartete Lauf mit 9/9 erfolgreich beendet. Die jüngsten Quellstichproben umfassten 500 Inhalte je Dataset und zeigten keine fehlenden oder abweichenden Einträge. Diese Befunde gelten für die geprüften Läufe und die Stichprobe; sie sind kein vollständiger historischer Abdeckungsnachweis.
 
-Die jüngsten Korrekturen betreffen vorübergehende Windows-Dateisperren beim Checkpoint-Schreiben, den CLI-Fehlerstatus bei fehlgeschlagenem E-Mail-Versand sowie lesbare und verlinkte Benachrichtigungen. Der lokale Compose-Scheduler wurde auf den aktuellen Code aktualisiert und verwendet eine mit dem Host geteilte, persistente Logablage. Im aktuellen Linux-Image bestanden ebenfalls 81 Tests; die ausschliesslich Windows betreffende Dateisperrprüfung wurde dort übersprungen und unter Windows erfolgreich ausgeführt. Weitere Nachweise: [Gesamtprüfung](docs/05-testing/review-2026-10-12.md) und [Testergebnisse](docs/05-testing/test-results.md).
+Die technische MVP-Umsetzung ist für eine gemeinsame Demonstration vorbereitet. Präsentation, fachliche Bewertung und formale Projektabnahme stehen noch aus. Azure-Bereitstellung und KI/Dialogfunktionen sind keine offenen Implementierungsaufgaben dieses MVP.
+
+### Abgeschlossene Arbeiten und Korrekturen
+
+| Bereich | Umgesetzter und geprüfter Stand |
+|---|---|
+| Recherche und Oberfläche | Neun Bereiche mit eigenen Filtern; breitere Ergebnisfläche; ausgewogene Kontoschaltflächen; überflüssige Anmelde-Erfolgsmeldung und schwebende Konto-Leiste entfernt |
+| Detailansichten | Schliessen bleibt beim Scrollen sichtbar; Verfolgen wird ausschliesslich in der Abonnementverwaltung angeboten; Änderungen zeigen benannte, anklickbare Inhalte statt gleichlautender Zeilen |
+| Konten und Abonnements | Getrennte Registrierung/Anmeldung mit passenden Hinweisen, optionale Google-Anmeldung, bis zu zehn bestätigte Empfänger; erreichbare Verwaltungsaktionen, Speicherbestätigung und Kontolöschung |
+| Datenabgleich | Einheitliches Event-Mapping, Nachholung fehlender Dokumente und Behandlung mehrfacher Dokumentzuordnungen; Batch-Fortschritt, Wiederaufnahme und Schutz vor parallelen Jobs |
+| Windows-Checkpoints | Atomisches Schreiben mit eigenen temporären Dateien und begrenzten Wiederholungen bei vorübergehenden Dateisperren |
+| Benachrichtigungen | Relevanzprüfung statt Nachricht bei jeder technischen Änderung; Gruppierung pro Nutzer/Geschäft; HTML und Klartext, korrekte Sonderzeichen und eindeutig beschriftete Links |
+| Fehlerbehandlung | E-Mail-Fehler ergeben einen erfolglosen CLI-Abschluss; Dataset-Fortschritt bleibt erhalten, ausstehende Nachrichten können erneut verarbeitet werden |
+| Scheduler und Schema | Lokaler Scheduler auf aktuellem Image, gemeinsame persistente Logs und STARTTLS-Konfiguration; Datenbank auf `20261012_recipients (head)` |
+| Dokumentation und Tracking | Sieben Dokumentationsbereiche, Installations-/Betriebs-/Benutzerhandbuch, Anforderungen, Tests und Übergabeunterlagen; GitHub-Issues und Milestones angelegt |
+
+### Nachweise und Grenzen
+
+| Kontrolle vom 12. Oktober | Ergebnis |
+|---|---|
+| Backend unter Windows | 81 Tests erfolgreich |
+| Backend im aktuellen Linux-Image | 81 Tests ausgeführt: 80 erfolgreich, eine Windows-spezifische Prüfung übersprungen |
+| Frontend und Browser | JavaScript-Prüfungen sowie Desktop-/Mobile-Szenarien erfolgreich; verlinkter Geschäftsverlauf geprüft |
+| Docker-Demo / Mailpit | Registrierung, Bestätigung, Anmeldung, Empfängerverifikation, Abonnements, Logout und Kontolöschung geprüft |
+| Neuer vollständiger Sync | 9/9 Datasets, 1.682.302 unveränderte verarbeitete Einträge, keine Dataset- oder Versandfehler |
+| Letzter manueller Nutzerlauf | Ebenfalls 9/9 ohne Fehler; keine weiteren neuen oder geänderten Inhalte |
+| Erneuter direkter Quellenvergleich | 500 Datensätze je Bereich, insgesamt 4.500: keine fehlenden Einträge, Inhaltsabweichungen oder Mappingfehler |
+
+Bei der vorherigen Reparatur wurden **1.158 Dokumente nachgetragen und 32 geändert**. Die späteren Läufe mit `NEW=0` und `CHANGED=0` bedeuten deshalb nicht, dass heute überhaupt nichts aktualisiert wurde. Nachgetragene historische Quelldaten sind ausserdem keine automatisch am heutigen Tag neu publizierten politischen Inhalte.
+
+Weitere Nachweise: [Gesamtprüfung](docs/05-testing/review-2026-10-12.md), [Testergebnisse](docs/05-testing/test-results.md) und [aktueller Aufgabenstand](docs/01-project-management/current-status.md). Automatisierte Tests und Quellenstichproben ersetzen keine WWF-Abnahme und keinen vollständigen historischen Inhaltsvergleich.
 
 ## Quick Start mit Docker
 
@@ -158,7 +188,23 @@ Die konfigurierbare Klassifikation verwendet hierarchische Kategorien, mehrsprac
 
 Der bisherige Themenbaum umfasst Klima & Energie, Biodiversität & Landschaft, nachhaltige Wirtschaft & Konsum, Umwelt & Politik sowie eine Auffangkategorie. Die endgültige Taxonomie und der initiale WWF-Fokus auf Energie & Klima müssen mit den WWF-Fachexperten abgestimmt werden.
 
-### Importbestand
+### Datenbestand
+
+Der erneute Quellenvergleich vom **12. Oktober 2026** ergab folgende lokale Bestände. Die API-Gesamtzahlen stimmten je Bereich mit den lokalen Zeilenzahlen überein. Gleiche Anzahlen allein beweisen jedoch keine identischen Inhalte; dazu wurde zusätzlich die oben beschriebene Stichprobe verglichen.
+
+| Bereich | Lokale Zeilen |
+|---|---:|
+| Geschäfte | 326.124 |
+| Traktanden | 423.161 |
+| Sitzungen | 33.677 |
+| Abstimmungen | 77.144 |
+| Ereignisse | 916.688 |
+| Dokumente | 909.151 |
+| Texte | 226.062 |
+| Gruppen | 8.886 |
+| Interessenbindungen | 30.361 |
+
+Die Dokumenttabelle enthält **902.993 unterschiedliche Quell-IDs**: mehrere Zeilen können unterschiedliche Zuordnungen desselben Quelldokuments repräsentieren. Referenzdaten wie Bodies, Persons und Memberships sowie die separate Demo-Datenbank sind in dieser Tabelle nicht mitgezählt.
 
 Der vollständige Entwicklungsbestand und die kleine Docker-Stichprobe sind getrennte Datenbestände. Die folgenden Zahlen dokumentieren den ursprünglichen **Bootstrap vom 6. Oktober 2026**, nicht die aktuellen Datenbankzahlen.
 
@@ -219,6 +265,20 @@ Der Standardversand besitzt **keine Gesamtgrenze von 100 Nachrichten**. Interne 
 
 Checkpoint-Verhalten, Abbruch, Wiederaufnahme und die Regeln je Dataset sind im [Monitoring-Leitfaden](docs/monitoring.md) beschrieben.
 
+### Warum bleibt das Checkpoint-Datum unverändert?
+
+Ein Checkpoint ist eine **Position in der Datenquelle**, kein Zeitstempel des zuletzt gestarteten Jobs:
+
+| Feld | Bedeutung |
+|---|---|
+| `last_updated_at` + `last_id` | Zuletzt erfolgreich verarbeitete Quellposition bei Geschäften, Sitzungen und Dokumenten |
+| `last_id` bei den anderen sechs Bereichen | ID-Fortschritt; dort gibt es keinen zuverlässig verwendbaren Zeitcursor, deshalb bleibt `last_updated_at` leer |
+| `last_run_at` | Zeitpunkt des letzten gespeicherten Dataset-Abgleichs, auch ohne neue Inhalte; Erfolg zusätzlich über Status und Laufbericht prüfen |
+
+Beispiel aus dem geprüften Bestand: Geschäfte besitzen die Quellposition **11.10.2026, 05:23:12 / ID 341425**, obwohl der letzte Abgleich am **12.10.2026** stattfand. Ohne eine neuere Quellposition bleibt dieser Checkpoint korrekt bestehen. Auch ein Metadaten-Update kann den Quellcursor verändern, ohne eine relevante Inhaltsänderung oder Nachricht zu erzeugen.
+
+Den Quellcursor auf die aktuelle Uhrzeit zu setzen wäre falsch: dadurch könnten später bereitgestellte Inhalte mit älteren Quellzeitstempeln übersprungen werden. Letzte Kontrollzeit, Quellposition und `NEW`/`CHANGED` sind daher getrennt zu lesen. Der aktuelle Befund lautet **keine weiteren Unterschiede in den abgeschlossenen Läufen und der Quellenstichprobe**; er beweist nicht, dass OpenParlData während des gesamten Tages weltweit keine Änderungen hatte.
+
 ## REST API
 
 Die interaktive Dokumentation wird aus der Anwendung erzeugt: **`/docs`**; die OpenAPI-Spezifikation liegt unter **`/openapi.json`**.
@@ -231,11 +291,16 @@ Die interaktive Dokumentation wird aus der Anwendung erzeugt: **`/docs`**; die O
 | Filterwerte | `GET /api/v1/categories`, `GET /api/v1/cantons`, `GET /api/v1/affair-types` |
 | Registrierung und Verifikation | `POST /api/v1/auth/register`, `GET /api/v1/auth/verify-email` |
 | Anmeldung per E-Mail | `POST /api/v1/auth/login`, `GET /api/v1/auth/verify-login` |
+| Optionale Google-Anmeldung | `GET /api/v1/auth/providers`, `GET /api/v1/auth/google`, `GET /api/v1/auth/google/callback` |
+| Konto, Logout und Löschung | `GET /api/v1/auth/me`, `POST /api/v1/auth/logout`, `DELETE /api/v1/auth/me` |
 | Abonnements lesen und ersetzen | `GET /api/v1/subscriptions`, `PUT /api/v1/subscriptions` |
+| Einzelne Inhalte verfolgen | `PUT /api/v1/subscriptions/watches/{dataset}/{record_id}`, `DELETE` auf demselben Pfad |
+| Benachrichtigungsadressen | `GET /api/v1/subscriptions/recipients`, `PUT` auf demselben Pfad; Bestätigung über `/recipients/verify` |
 | Sync starten | `POST /api/v1/sync/run` |
 | Checkpoints und letzter Lauf | `GET /api/v1/sync/status`, `GET /api/v1/sync/latest` |
 | Laufstatus und Logs | `GET /api/v1/sync/runs/{run_id}`, `GET /api/v1/sync/runs/{run_id}/log` |
 | Lauf abbrechen | `POST /api/v1/sync/runs/{run_id}/cancel` |
+| Unfertigen Lauf fortsetzen | `POST /api/v1/sync/runs/{run_id}/resume` |
 | Verfügbarkeit | `GET /health` |
 
 Beispiel einer Bereichssuche:
@@ -280,6 +345,8 @@ Copy-Item .env.example .env
 
 In `.env` Datenbank, JWT, SMTP und `SYNC_API_KEY` konfigurieren. Zugangsdaten bleiben lokal. Das bestehende `docker-compose.yml` stellt die Entwicklungsdatenbank auf Port **5433** und einen separat startbaren Scheduler bereit.
 
+Für die optionale Google-Anmeldung zusätzlich `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET` setzen. Der OAuth-Webclient benötigt `${VERIFICATION_BASE_URL}/api/v1/auth/google/callback` als erlaubte Weiterleitungs-URI, lokal `http://localhost:8000/api/v1/auth/google/callback`. Nach Neustart erscheint die Google-Schaltfläche; ohne Konfiguration bleibt die E-Mail-Anmeldung verfügbar. Weitere Einstellungen: [Konfiguration](docs/configuration.md).
+
 ```powershell
 docker compose up -d postgres
 python -m alembic upgrade head
@@ -307,29 +374,46 @@ Dies sind Schritte der Importpipeline, keine vollständige Ein-Kommando-Installa
 
 ### Tests
 
+Die Backend-Suite verwendet isolierte Fixtures/Mocks. In einem eigenen Testterminal ausführen:
+
 ```powershell
+$env:DATABASE_URL = 'sqlite://'
+$env:JWT_SECRET_KEY = 'isolated-test-key-only'
 python -B -m unittest discover -s tests -q
 node tests/test_frontend.cjs
 node --check app/web/app.js
+node --check app/web/i18n.js
 ```
 
-Die Backend-Tests decken unter anderem Sync-Fortschritt, Beziehungen, Normalisierung, Klassifikation und Benachrichtigungsregeln ab. Zusätzliche Browser-Szenarien liegen unter `tests/`; sie benötigen eine passende Browser-Testumgebung. Live-Sync, SMTP und die WWF-Anwendungsfälle benötigen ergänzende Integrationsprüfungen.
+Das Testterminal danach schliessen oder die beiden Variablen entfernen, bevor die echte Anwendung darin gestartet wird. Voraussetzungen und Browserabläufe: [Testplan](docs/05-testing/test-plan.md).
+
+Die Backend-Tests decken unter anderem Sync-Fortschritt, Beziehungen, Normalisierung, Klassifikation, Kontoeinstellungen und Benachrichtigungsregeln ab. Live-Sync, SMTP und Docker-/Browserabläufe wurden separat geprüft; die gemeinsame fachliche WWF-Abnahme steht aus.
 
 ## Grenzen und nächste Schritte
 
-| Bereich | Noch zu prüfen oder abzustimmen |
+Die behobenen Sync-, Windows-Checkpoint-, SMTP- und Oberflächenprobleme werden nicht mehr als offene Aufgaben geführt. Weitere reguläre Läufe zu beobachten ist laufende Betriebskontrolle, kein Ersatz für die bereits durchgeführten erfolgreichen Prüfungen.
+
+### Vor Präsentation und fachlichem Abschluss
+
+| Aufgabe | Noch ausstehender Schritt |
 |---|---|
-| Fachliche Qualität | WWF-Taxonomie bestätigen und Klassifikationen anhand fachlich bewerteter Beispiele prüfen |
-| Synchronisierung | Nächste tägliche Läufe beobachten, Quell-/Datenbankstichproben vergleichen und Bestandsprüfungen weiter vermessen |
-| E-Mail-Betrieb | Für die spätere Übernahme Organisationsprovider, Limits und Versandvolumen mit WWF abstimmen; jüngster kontrollierter Versand erfolgreich, ein früherer Gmail-Abbruch bleibt historisch dokumentiert |
-| Datenabdeckung | Historische eigenständige Inhalte benötigen gegebenenfalls Klassifikations-Backfill; Beziehungen hängen von den verfügbaren Quelldaten ab |
-| Benutzeroberfläche | Gemeinsamer Durchlauf der WWF-Anwendungsfälle und Rückmeldung zur Bedienbarkeit |
-| Technischer Handover | Container, Konfiguration und Betriebsanforderungen an WWF übergeben; konkrete Azure-Integration erfolgt bei Übernahme durch WWF |
-| Projektabschluss | Ergebnisse, Abnahme und Übergabe dokumentieren |
+| Fachliche Qualität | WWF-Taxonomie und Fokus Energie & Klima bestätigen; Expertenbeispiele bewerten, statt ungemessene Präzision/Recall zu behaupten |
+| Demonstration | Präsentation und nachvollziehbare Beispiele für Suche, Beziehungen, Abonnements und relevante Änderungen vorbereiten |
+| WWF-Feedback und Abnahme | Gemeinsamen Anwendungsfalldurchlauf durchführen; Rückmeldungen und tatsächliche Akzeptanz dokumentieren |
+| Projektabschluss | Vorbereitete Ergebnis-/Übergabeunterlagen prüfen, formalen Kursbericht abschliessen und tatsächliche Übergabe durchführen |
+| Softwarelizenz | Gewünschte Lizenz für den Anwendungscode festlegen |
+
+### Bei einer späteren Übernahme durch WWF
+
+Container, Konfiguration, Migrationen, Sicherung, API und Betriebsrollen sind dokumentiert. WWF muss für seine Umgebung insbesondere erreichbare HTTPS-Links, Organisations-SMTP, Secrets, Monitoring und Wiederherstellung festlegen und prüfen. Lokaler SMTP-Versand wurde erfolgreich nachgewiesen; ein WWF-Produktionsprovider ist damit noch nicht geprüft.
 
 Der MVP liefert mit Python, PostgreSQL, Docker, OpenAPI und Umgebungsvariablen eine Grundlage für die spätere Azure-Integration durch WWF. Ein eigenes Azure-Deployment gehört nicht zum aktuellen Lieferumfang; Kompatibilität mit der konkreten WWF-Umgebung wird nicht als bereits getestet ausgegeben. Lokale JSON-Laufberichte ersetzen kein zentrales Produktionsmonitoring. Harmonisierten Geschäftszuständen und Originalsprachen sind durch die Quellabdeckung Grenzen gesetzt.
 
-Optionale spätere Erweiterungen sind KI-gestützte Klassifikation, semantische Suche, Zusammenfassungen und natürlichsprachliche Abfragen.
+### Optionale Weiterentwicklung
+
+KI-gestützte Klassifikation, semantische Suche, Zusammenfassungen und dialogorientierte Abfragen bleiben Erweiterungen. Das aktuelle MVP bietet strukturierte Suche und Filter, keinen KI-Chat. Ebenso optional sind ein täglicher Sammeldigest, weitergehende SMTP-Optimierungen und Organisations-SSO.
+
+Die beiden grossen Indizes für die experimentelle bereichsübergreifende Suche können mit `python -m scripts.build_search_indexes` in einem Wartungsfenster aufgebaut werden. Die öffentliche Bereichsrecherche benötigt sie nicht. Ein GitHub-Projects-Board ist noch nicht erstellt; dafür fehlt die erforderliche Projects-Berechtigung. Bestehende Issues und Milestones können bereits genutzt werden.
 
 ## Dokumentation
 
@@ -338,6 +422,7 @@ Die Dokumentation ist nach Projektmanagement, Anforderungen, Architektur, techni
 | Dokument | Inhalt |
 |---|---|
 | [Dokumentationsindex](docs/README.md) | Einstieg in alle Projektunterlagen |
+| [Aktueller Aufgabenstand](docs/01-project-management/current-status.md) | Erledigte Prüfungen, verbleibende Abnahme und Abgleich der gestrigen Aufgaben |
 | [Installation](docs/getting-started.md) | Demo, Entwicklungsumgebung und vollständiger Erstimport |
 | [Benutzerhandbuch](docs/06-handover/user-guide.md) | Recherche, Anmeldung und Abonnements |
 | [Konfiguration](docs/configuration.md) | Umgebungsvariablen, Container und Google-Anmeldung |
@@ -351,7 +436,7 @@ Die Dokumentation ist nach Projektmanagement, Anforderungen, Architektur, techni
 | [Änderungsprotokoll](CHANGELOG.md), [Lizenzen](docs/licensing.md) | Arbeitsstand und offene Lizenzentscheidung |
 | [Betrieb und Monitoring](docs/monitoring.md) | Lokaler Start, Klassifikationsvorbereitung, Abonnements, Sync-Steuerung und Benachrichtigungsregeln |
 | [WWF-Anforderungen](docs/wwf-requirements.md) | Zuordnung der Auftraggeberanforderungen und offene fachliche Entscheidungen |
-| [Review vom 11. Oktober 2026](docs/daily-review-2026-10-11.md) | Aufgabenstellung, GitHub-Issues, Teststand und Azure-Bewertung |
+| [Review vom 11. Oktober 2026](docs/daily-review-2026-10-11.md) | Historischer Befund mit aktualisierter Erledigungsübersicht; keine aktuelle offene Fehlerliste |
 | [Demo-Stichprobe](data/demo/README.md) | Herkunft, Umfang und Erneuerung der Beispieldaten |
 
 <details>
@@ -368,20 +453,3 @@ Ein kontrollierter Benachrichtigungstest verwendete das Berner Geschäft **#1879
 Parlamentarische Daten stammen von **[OpenParlData.ch](https://openparldata.ch/)** und stehen unter **CC BY 4.0**. Die Demo enthält keine bestehenden Benutzerkonten, Abonnements, E-Mail-Tokens oder Versandwarteschlangen.
 
 Eine projektspezifische **Softwarelizenz** wurde noch nicht festgelegt; der [Lizenzleitfaden](docs/licensing.md) dokumentiert den Status. Die Lizenz der Quelldaten und die Lizenz des Anwendungscodes sind getrennt zu betrachten.
-
-
-## Google-Anmeldung und Benachrichtigungsadressen
-
-Optional `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET` in `.env` setzen.
-In der Google Cloud Console einen OAuth-Client vom Typ Webanwendung erstellen
-und `${VERIFICATION_BASE_URL}/api/v1/auth/google/callback` als erlaubte
-Weiterleitungs-URI eintragen (lokal: `http://localhost:8000/api/v1/auth/google/callback`).
-Nach einem Neustart des Webservers erscheint „Mit Google fortfahren“.
-Ohne diese Konfiguration bleibt die Anmeldung per E-Mail-Link verfügbar.
-Google übernimmt Registrierung und Anmeldung in einem Schritt.
-
-`alembic upgrade head` legt die Tabelle für Benachrichtigungsadressen an.
-Im Abonnementdialog lassen sich das Anmeldekonto und bis zu zehn Adressen
-kombinieren. Andere Adressen erhalten vor dem Versand einen Bestätigungslink.
-Bestehende Konten erhalten bis zur ersten eigenen Auswahl weiterhin Nachrichten
-an ihre Anmeldeadresse. Die Synchronisierung muss dafür nicht beendet werden.

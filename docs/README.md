@@ -4,6 +4,7 @@
 
 ## 01 – Projektmanagement
 
+- [Aktueller Aufgabenstand und erledigte Prüfungen](01-project-management/current-status.md)
 - [Projektplan](01-project-management/project-plan.md)
 - [Scope und Prioritäten](01-project-management/scope-and-priorities.md)
 - [Risiken](01-project-management/risk-register.md)
