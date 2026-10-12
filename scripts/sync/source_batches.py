@@ -8,6 +8,8 @@ from pathlib import Path
 
 import httpx
 
+from app.core.file_io import atomic_write_json
+
 PAGE_SIZE = 500
 EXPORT_INDEX = "https://files.openparldata.ch/exports/index.json"
 
@@ -28,10 +30,7 @@ def request(client, url, **kwargs):
 
 
 def atomic_json(path, value):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(value), encoding="utf-8")
-    temporary.replace(path)
+    atomic_write_json(path, value)
 
 
 def job_directory():

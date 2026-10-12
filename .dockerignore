@@ -4,5 +4,6 @@
 .env.*
 data/raw
 logs
+wipro-submission
 __pycache__
 *.dump

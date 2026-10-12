@@ -56,4 +56,17 @@ class SyncControlTests(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         send.assert_not_called()
 
+    def test_email_failure_returns_unsuccessful_exit_without_losing_run_status(self):
+        with patch("scripts.sync.source_batches.job_directory", return_value=None), patch.object(run_all, "RESUME_FILE", None):
+            result = run_all.initial_result()
+        def failed_email(_result):
+            _result["notifications"]["emails_failed"] = 1
+        with patch.object(run_all, "engine") as fake_engine, patch.object(run_all, "initial_result", return_value=result), patch.object(run_all, "run_all_syncs"), patch.object(run_all, "save_result"), patch.object(run_all, "send_notification_emails", side_effect=failed_email), patch.object(run_all, "notify_parent"), patch.object(run_all, "check_cancelled"):
+            fake_engine.connect.return_value.__enter__.return_value.execute.return_value.scalar_one.return_value = True
+            with self.assertRaises(SystemExit) as error:
+                run_all.main()
+        self.assertIn("email delivery failed", str(error.exception))
+        self.assertEqual(result["status"], "completed_with_email_errors")
+        self.assertIsNotNone(result["finished_at"])
+
 if __name__=='__main__':unittest.main()

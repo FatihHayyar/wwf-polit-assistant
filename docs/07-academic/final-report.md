@@ -4,7 +4,7 @@
 
 ## Problem und Ziel
 
-Der MVP soll OpenParlData für ein WWF-bezogenes Recherche- und Monitoringverfahren nutzbar machen. Kern sind strukturierte Daten, transparente Themenregeln, kombinierte Filter und die Beobachtung bestehender Inhalte. M365 wurde laut Projektverlauf aus dem aktuellen Umfang genommen; AI ist eine Weiterentwicklung. Eine Dialogformulierung des Auftrags bleibt schriftlich zu klären.
+Der MVP soll OpenParlData für ein WWF-bezogenes Recherche- und Monitoringverfahren nutzbar machen. Kern sind strukturierte Daten, transparente Themenregeln, kombinierte Filter und die Beobachtung bestehender Inhalte. M365 wurde laut Projektverlauf aus dem aktuellen Umfang genommen. AI und Dialogabfragen werden nach der aktuellen Projektklärung als Weiterentwicklung geführt. Azure-Anschlussfähigkeit wird dokumentiert; die konkrete Integration übernimmt WWF bei einer Übernahme.
 
 ## Vorgehen und Ergebnis
 
@@ -12,9 +12,9 @@ Anforderungen wurden iterativ aus Auftrag und Praxisfeedback konkretisiert. Der 
 
 ## Nachweis und Grenzen
 
-Die vorhandene isolierte Suite umfasst 71 erfolgreiche Tests; JavaScript- und lokale Browserprüfungen ergänzen die Evidenz. Fehlerfälle führten zu robusteren Quellmappings und zusätzlichen Dokumenten-Bestandsprüfungen. Diese Ergebnisse gelten für konkrete Arbeitsstände und ersetzen keine fachliche Abnahme.
+Die vorhandene isolierte Suite umfasst 78 erfolgreiche Tests; JavaScript- und lokale Browserprüfungen ergänzen die Evidenz. Fehlerfälle führten zu robusteren Quellmappings und zusätzlichen Dokumenten-Bestandsprüfungen. Diese Ergebnisse gelten für konkrete Arbeitsstände und ersetzen keine fachliche Abnahme.
 
-Offen sind die endgültige Energie-/Klima-Taxonomie, WWF-Szenarien, quantitative Klassifikationsgüte, verlässlicher Organisationsversand und eine tatsächlich geprüfte Azure-Umgebung. Eine gemessene Zeitersparnis oder vollständige historische Quellenabdeckung wird nicht behauptet. Es gibt keinen implementierten Chatbot oder LLM-Dienst.
+Offen sind die endgültige Energie-/Klima-Taxonomie, WWF-Szenarien und quantitative Klassifikationsgüte. Organisationsversand und Zielumgebung sind bei der späteren betrieblichen Übernahme durch WWF zu prüfen. Eine gemessene Zeitersparnis oder vollständige historische Quellenabdeckung wird nicht behauptet. Es gibt keinen implementierten Chatbot oder LLM-Dienst.
 
 ## Empfehlungen
 

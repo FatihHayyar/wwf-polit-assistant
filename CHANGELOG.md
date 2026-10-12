@@ -22,5 +22,9 @@ Dieses Protokoll beginnt mit dem aktuellen Entwicklungsstand. Es rekonstruiert k
 - Ereignismapping berücksichtigt skalare und übersetzte Quelltitel.
 - Dokumentenabgleich prüft zusätzlich Bestands- und ID-Lücken unter Berücksichtigung mehrfacher Zuordnungen.
 - Fehlgeschlagene Gesamtläufe melden die Dataset-Ursache; Diagnosewerkzeuge unterstützen Quellstichproben und gezielte Reparatur.
+- Atomare Statusdateien tolerieren vorübergehende Windows-Dateisperren mit begrenzten Wiederholungen und unabhängigen temporären Dateien.
+- Fehlgeschlagener E-Mail-Versand behält seinen differenzierten Laufstatus und führt zu einem erfolglosen CLI-/Scheduler-Ergebnis.
+- Betreiber können die zwei grossen experimentellen Suchindizes beim Migrieren explizit zurückstellen und später separat aufbauen.
+- Der Compose-Scheduler teilt persistente Lauf-/Jobdateien mit dem Host und erhält die konfigurierte STARTTLS-Einstellung.
 
 Diese Einträge beschreiben Änderungen im Arbeitsstand und behaupten keine bereits veröffentlichte GitHub-Version.

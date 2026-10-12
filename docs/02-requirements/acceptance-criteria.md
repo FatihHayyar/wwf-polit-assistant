@@ -15,6 +15,6 @@ Die folgenden Kriterien konkretisieren die Anforderungen. Sie sind Prüfdefiniti
 | AC09 | R10 | Lange Details und Formulare bleiben auf Desktop/Mobil bedienbar | Browserdurchlauf und Praxisfeedback |
 | AC10 | R11 | Neue Umgebung startet anhand Dokumentation, Grenzen sind bekannt | Unabhängiger Demostart und Handover |
 | AC11 | R12 | Tatsächliche WWF-Beobachtung, Abweichungen und Entscheid dokumentiert | Abnahmeformular; derzeit offen |
-| AC12 | R14 | Zielumgebung, Secrets, SMTP und persistente Jobs tatsächlich getestet | Azure-Integrationsbericht; derzeit offen |
+| AC12 | R14 | Container, Schnittstellen, Konfiguration und Betriebsanforderungen für WWF dokumentiert | Technischer Handover; tatsächlicher Azure-Betrieb ist eine spätere WWF-Integrationsaufgabe |
 
 Ein Implementierungs-Issue kann geschlossen sein, während das zugehörige fachliche oder betriebliche Prüf-Issue offen bleibt. Dieses Vorgehen verhindert eine pauschale Erfolgserklärung durch technischen Abschluss.

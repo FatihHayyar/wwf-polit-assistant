@@ -30,6 +30,12 @@ Beide Google-Variablen müssen im API-Prozess gesetzt sein. API neu starten und 
 
 `python -m alembic current` und `python -m alembic heads` vergleichen. Indexaufbau auf grossen Tabellen kann lange dauern. Den zuständigen PostgreSQL-Prozess und dessen Fortschritt untersuchen, bevor etwas abgebrochen wird; keine fremden Sync- oder DB-Prozesse beenden. Tabellen nicht manuell als Ersatz für reguläre Migrationen anlegen.
 
+Die beiden grossen experimentellen Suchindizes können für einen vorhandenen vollständigen Spiegel explizit zurückgestellt werden; der [Deployment-Leitfaden](06-handover/deployment-guide.md) beschreibt die Option und ihren späteren Aufbau. Das ist kein Überspringen erforderlicher Tabellenmigrationen.
+
+## Windows meldet beim Checkpoint „Access is denied“
+
+Ein kurzzeitig geöffneter Statuspfad kann die atomare Dateiersetzung blockieren, beispielsweise durch Leser oder einen Scanner. Der Writer verwendet eigene temporäre Dateien und wiederholt kurzzeitige Zugriffsfehler begrenzt. Die letzte gültige Datei bleibt bis zur erfolgreichen Ersetzung erhalten. Dauerhafte Berechtigungsfehler werden weiterhin gemeldet; danach Dateizugriff prüfen und den Job wiederaufnehmen, statt seinen Fortschritt zu löschen.
+
 ## Leere Listen nach lokaler Installation
 
 Migrationen laden keine Quellinhalte. Die Docker-Demo verwenden oder den Erstimport aus der [Installationsanleitung](getting-started.md) gegen eine frische Datenbank durchführen. Die historischen Sollzahlen aus `validate_database.py` sind keine aktuellen Sync-Sollwerte.

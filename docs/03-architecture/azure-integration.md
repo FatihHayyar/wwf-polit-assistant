@@ -1,6 +1,6 @@
 # Azure-Integration
 
-**Status: vorbereitet, nicht deployt oder validiert.** Python, Docker, PostgreSQL, OpenAPI und Umgebungsvariablen sind Anschlussbausteine. Kein konkreter Azure-Dienst oder Organisationszugang ist als beschlossen eingetragen.
+**MVP-Lieferumfang: Anschlussfähigkeit und technischer Handover.** Python, Docker, PostgreSQL, OpenAPI und Umgebungsvariablen sind Anschlussbausteine. Die konkrete Azure-Integration übernimmt WWF bei einer Übernahme der Lösung. Ein tatsächliches Azure-Deployment ist kein aktuelles MVP-Abschlusskriterium. Kein konkreter Azure-Dienst oder Organisationszugang ist als beschlossen eingetragen.
 
 | Bereich | Abstimmung / Prüfung |
 |---|---|
@@ -16,4 +16,4 @@
 
 Die API kann mit `python -m uvicorn app.main:app --host 0.0.0.0 --port 8000` aus dem Image starten. Dessen Standardbefehl ist der Scheduler. Migrationen vor der neuen Anwendungsversion koordiniert ausführen. Lokaler `/health`-Erfolg belegt nur die DB-Verbindung und ersetzt keinen Cloudtest.
 
-Abschlussnachweis: tatsächliche Testbereitstellung, erfolgreiche API-/Job-/SMTP-Prüfung, Fehler-/Wiederaufnahmeszenario und Wiederherstellung einer Sicherung. Siehe [Deployment](../06-handover/deployment-guide.md) und [Betrieb](../06-handover/operations-guide.md).
+Für eine spätere betriebliche Übernahme durch WWF sind tatsächliche Testbereitstellung, API-/Job-/SMTP-Prüfung, Fehler-/Wiederaufnahme und Wiederherstellung einer Sicherung zu prüfen. Diese zukünftige Betreiberprüfung wird nicht als noch fehlende Azure-Implementierung des MVP ausgegeben. Siehe [Deployment](../06-handover/deployment-guide.md) und [Betrieb](../06-handover/operations-guide.md).

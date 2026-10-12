@@ -17,7 +17,7 @@ Quellen: **A** bereinigte Aufgabenstellung, **E** WWF-Konkretisierung, **T** tec
 | R11 | A | Technik, Ergebnisse und Weiterentwicklung dokumentieren | Strukturierte Dokumentation; tatsächliche Übergabe offen |
 | R12 | A | Anwendungsfälle und Beispieldaten validieren | Demo vorhanden; WWF-Abnahme offen |
 | R13 | E | Python-Nähe zur WWF-Landschaft | Python/FastAPI, kein Java-Service |
-| R14 | E | Azure-Integration vorbereiten | Architekturbausteine; kein validierter Cloudbetrieb |
+| R14 | E | Azure-Anschlussfähigkeit und technischen Handover bereitstellen | Architekturbausteine und Betriebshinweise vorhanden; konkrete Integration bei Übernahme durch WWF |
 | R15 | E | Votes, Groups und Interessen berücksichtigen | Unter neun öffentlichen Bereichen implementiert |
 | R16 | E | Initiale Energie-/Klima-Themen abstimmen | Fachliche Freigabe offen |
 | R17 | T | Mehrere bestätigte Benachrichtigungsadressen | Bis zu zehn Adressen |

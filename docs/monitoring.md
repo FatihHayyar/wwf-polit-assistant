@@ -154,7 +154,7 @@ Tests use SQLite and mock upstream HTTP/SMTP; they do not send real email.
 The local frontend and API have HTTP smoke checks. Edge browser checks cover all
 four UI languages, the real affair 203543, agenda/meeting links, saved preferences,
 mobile width, cross-tab login, grouped topic selection and subscription persistence.
-The isolated backend suite contains 71 tests (12 October 2026). See the [test guide](testing.md) for current commands and prerequisites.
+The isolated backend suite contains 78 tests (12 October 2026). See the [test guide](testing.md) for current commands and prerequisites.
 A complete live synchronization remains a deployment check. Historical entity
 classification requires the preparation job above. Search covers stored fields;
 it does not download or extract external PDF/document attachments.

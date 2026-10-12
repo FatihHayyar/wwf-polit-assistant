@@ -27,6 +27,14 @@ Vor Änderungen einen Datenbank-Backup erstellen und Wiederherstellung in einer 
 
 Migrationen koordiniert ausführen und ihren Abschluss mit `python -m alembic current` prüfen. Danach API und Scheduler mit derselben Codeversion und Konfiguration starten. In der Demo startet das Startskript Migrationen automatisch; dieses Verhalten ist keine allgemeine Produktionsstrategie.
 
+Bei einem bereits vollständig befüllten Spiegel können die zwei grössten Indizes für die experimentelle, öffentlich nicht verwendete bereichsübergreifende Suche explizit zurückgestellt werden:
+
+```powershell
+python -m alembic -x skip_large_search_indexes=true upgrade head
+```
+
+Dies überspringt ausschliesslich deren Dokument-/Textindexaufbau und wendet die übrigen Schemaänderungen an. Bereichslisten, deren bestehende Suche und gespeicherte Inhalte bleiben verfügbar. Für die spätere Indexerstellung in einem Wartungsfenster `python -m scripts.build_search_indexes` ausführen. Ohne `-x` bleibt das bisherige vollständige Migrationsverhalten bestehen. Ein bereits angewendeter Migrationsstand wird durch diese Option nicht rückwirkend neu aufgebaut.
+
 Ein Code-Rollback nach einer Schemaänderung muss separat geprüft werden. Datenbankänderungen oder bereits versandte E-Mails werden durch einen Git-Rollback nicht zurückgenommen.
 
 ## Sicherung und Wiederherstellung

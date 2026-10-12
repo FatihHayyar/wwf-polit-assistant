@@ -12,6 +12,7 @@ from pathlib import Path
 from sqlalchemy import text
 
 from app.db.database import engine
+from app.core.file_io import atomic_write_json
 from app.services.notification_email_service import (
     send_pending_notifications,
 )
@@ -78,15 +79,7 @@ def save_result(result: dict) -> None:
     if not RESULT_FILE:
         return
 
-    path = Path(RESULT_FILE)
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    temporary_path = path.with_suffix(".tmp")
-    temporary_path.write_text(
-        json.dumps(result, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    temporary_path.replace(path)
+    atomic_write_json(Path(RESULT_FILE), result, indent=2)
 
 
 def notify_parent(message: str) -> None:
@@ -312,6 +305,7 @@ def send_notification_emails(result: dict) -> None:
 
 
 def main() -> None:
+    email_processing_failed = False
     os.environ.setdefault("SYNC_RUN_ID", RUN_ID)
     os.environ.setdefault("SYNC_JOB_ID", RUN_ID)
     with engine.connect() as connection:
@@ -352,6 +346,7 @@ def main() -> None:
             result["status"] = "failed" if result["datasets"]["failed"] else (
                 "completed_with_email_errors" if result["notifications"]["emails_failed"] or result["error_message"] else "completed"
             )
+            email_processing_failed = result["status"] == "completed_with_email_errors"
             if result["datasets"]["failed"]:
                 raise SystemExit(1)
 
@@ -389,6 +384,11 @@ def main() -> None:
             connection.commit()
 
             print("SYNC LOCK RELEASED", flush=True)
+
+    if email_processing_failed:
+        # Preserve the detailed run status, but do not tell the scheduler/CLI
+        # that a run with failed email delivery completed successfully.
+        raise SystemExit("Datasets completed, but email delivery failed. See the run report; notifications remain pending.")
 
 
 if __name__ == "__main__":

@@ -6,6 +6,8 @@ Der Betreiber benötigt Datenbank, API, genau einen zuständigen Scheduler, SMTP
 
 Der separat gestartete Scheduler führt den Runner täglich um 03:00 Europe/Zurich aus. Alternativ ist `python -m scripts.sync.run_all` ein manueller Lauf. Die API kann einen geschützten Hintergrundlauf starten; diese Operationen benötigen `X-Sync-API-Key`, keine gewöhnliche Benutzeranmeldung.
 
+Der Entwicklungs-Compose-Scheduler bindet `./logs` nach `/app/logs` ein. Dadurch bleiben Jobdateien beim Ersetzen des Containers erhalten und die lokale API kann dessen Laufberichte lesen. Bei einer bestehenden Installation vor dem ersten Umstellen auf diesen Mount alte Container-Logs separat sichern. Die SMTP-STARTTLS-Einstellung wird ebenfalls an den Scheduler durchgereicht.
+
 `/health` bestätigt nur die DB-Verbindung. Zusätzlich letzten erfolgreichen vollständigen Sync, Dataset-Fehler, ausstehende Zustellungen, Speicherbedarf und SMTP-Probleme kontrollieren. Lokale JSON-Laufberichte ersetzen keine zentrale Betriebsalarmierung.
 
 ## Fehler und Wiederaufnahme

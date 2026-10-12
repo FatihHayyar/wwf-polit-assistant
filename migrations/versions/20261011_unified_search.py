@@ -1,5 +1,5 @@
 """Index unified searches across all nine datasets."""
-from alembic import op
+from alembic import context, op
 import sqlalchemy as sa
 revision = "20261011_unified_search"
 down_revision = "20261011_notification_policy"
@@ -10,8 +10,14 @@ STATEMENTS = ['CREATE INDEX IF NOT EXISTS idx_affairs_content_search ON "affairs
 
 def upgrade():
     op.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm")
+    # The experimental unified-search endpoint is not used by the public UI.
+    # Operators can defer only its two largest indexes while applying required
+    # schema changes to an existing full parliamentary mirror.
+    skip_large = context.get_x_argument(as_dictionary=True).get("skip_large_search_indexes", "false").lower() == "true"
     with op.get_context().autocommit_block():
         for statement in STATEMENTS:
+            if skip_large and any(name in statement for name in ("idx_documents_content_search", "idx_texts_content_search")):
+                continue
             index_name = statement.split()[5]
             valid = op.get_bind().scalar(sa.text("SELECT indisvalid FROM pg_index WHERE indexrelid=to_regclass(:name)"), {"name": index_name})
             if valid is False:
