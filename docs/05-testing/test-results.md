@@ -6,7 +6,7 @@ Die [Gesamtprüfung vom 12. Oktober](review-2026-10-12.md) dokumentiert den neue
 
 | Prüfung | Befund | Grenze |
 |---|---|---|
-| Isolierte Backend-Suite | 78 Tests erfolgreich | Fixtures/Mocks; keine vollständige Live- oder Fachabnahme |
+| Isolierte Backend-Suite | 81 Tests erfolgreich | Fixtures/Mocks; keine vollständige Live- oder Fachabnahme |
 | JavaScript | Übersetzungs-/Darstellungsprüfung und Syntaxkontrollen erfolgreich | Keine vollständige Browsermatrix |
 | Lokale Browserdiagnosen | Detail-/Verwaltungs-Scrollverhalten, Speicherhinweis und Layout geprüft | Windows/Edge, einzelne Desktop-/Mobile-Grössen |
 | Sync-/Quellprüfung | Wiederaufnahme und aktuelle Quellstichproben dokumentiert; konkrete Mapping-/Dokumentenfehler adressiert | Kein lückenloser historischer Vollständigkeitsbeweis |

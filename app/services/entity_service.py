@@ -212,9 +212,27 @@ def affair_changes(db, affair_id, limit=100):
     related = select(ChangeEventAffair.change_event_id).where(ChangeEventAffair.affair_id == affair_id)
     events = db.scalars(select(ChangeEvent).where(ChangeEvent.change_type != "ignored", or_(ChangeEvent.affair_id == affair_id, ChangeEvent.id.in_(related)))
                        .order_by(ChangeEvent.detected_at.desc(), ChangeEvent.id.desc()).limit(limit)).all()
-    return [jsonable_encoder(dict(id=event.id, dataset=event.dataset, source_id=event.source_id,
-                                 change_type=event.change_type, description=event.description, detected_at=event.detected_at))
-            for event in events]
+    from app.services.notification_content import change_identity
+    entities = {}
+    for dataset in {event.dataset for event in events if event.dataset in ENTITIES}:
+        model = ENTITIES[dataset].model
+        primary = model.pk if dataset == "documents" else model.id
+        ids = [event.source_id for event in events if event.dataset == dataset]
+        entities[dataset] = {getattr(row, "pk" if dataset == "documents" else "id"): row
+                             for row in db.scalars(select(model).where(primary.in_(ids)))}
+    result, seen = [], set()
+    for event in events:
+        entity = entities.get(event.dataset, {}).get(event.source_id)
+        identity = change_identity(event, entity)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        title = next((getattr(entity, field) for field in ENTITIES[event.dataset].title_fields
+                      if entity is not None and getattr(entity, field, None)), None) if event.dataset in ENTITIES else None
+        result.append(jsonable_encoder(dict(id=event.id, dataset=event.dataset, source_id=event.source_id,
+                      title=title, available=entity is not None, change_type=event.change_type,
+                      description=event.description, detected_at=event.detected_at)))
+    return result
 
 
 def search_all_entities(db, datasets=None, *, page=1, page_size=10, **filters):

@@ -270,7 +270,7 @@ class MonitoringTests(unittest.TestCase):
         self.db.expire_all();self.assertEqual(self.db.scalar(select(func.count()).select_from(Notification).where(Notification.status=="pending")),3)
         with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)),patch("app.services.notification_email_service.send_email") as send:
             self.assertEqual(send_pending_notifications(batch_size=1),(1,0));send.assert_called_once()
-            self.assertIn("3 Neuigkeiten",send.call_args.kwargs["body"])
+            self.assertIn("3 neue Entwicklungen",send.call_args.kwargs["body"])
         self.db.expire_all();self.assertEqual(self.db.scalar(select(func.count()).select_from(Notification).where(Notification.status=="sent")),3)
 
     def test_legacy_technical_notification_is_cancelled_before_delivery(self):

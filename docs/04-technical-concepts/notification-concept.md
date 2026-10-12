@@ -16,6 +16,8 @@ Datasetbezogene Regeln bewerten substantive Änderungen. Metadaten, Formatierung
 
 Verfügbare Beziehungen ordnen Änderungen einem Geschäft zu. Der Versand fasst pro Nutzer und Geschäft beziehungsweise eigenständigem Inhalt zusammen. Es gibt weder eine allgemeine Grenze von 100 Nachrichten noch einen implementierten Anspruch auf genau eine tägliche E-Mail je Nutzer.
 
+Mehrfache Zuordnungen desselben Quelldokuments werden in der Darstellung gebündelt; verschiedene Quelldokumente oder inhaltliche Änderungen bleiben getrennt. Klartext enthält normale beschriftete URLs, HTML zeigt Inhaltskarten mit eigenen Dokument-/Eintragslinks und gegebenenfalls einen gesonderten Geschäftslink. Quelltexte werden im HTML escaped. Bereits versandte Nachrichten werden nicht verändert oder automatisch erneut versandt.
+
 ## Empfänger
 
 Bis zu zehn Benachrichtigungsadressen werden verwaltet. Die Anmeldeadresse ist bereits bestätigt; andere Adressen erhalten einen zeitlich begrenzten Bestätigungslink. Monitoring sendet nur an bestätigte Ziele. Bestehende Konten ohne eigene Auswahl verwenden weiterhin die Anmeldeadresse.

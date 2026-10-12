@@ -217,7 +217,7 @@ def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, 
     if batch_size < 1 or (limit is not None and limit < 1):
         raise ValueError("limits must be positive")
     from app.services.notification_policy import event_eligible
-    from app.services.notification_content import NAMES, entry, render_html
+    from app.services.notification_content import change_identity, render_digest
     from app.services.monitoring_match_service import event_subjects, matching_subject
     from app.services.entity_registry import ENTITIES
     standalone_dataset=case((ChangeEvent.affair_id.is_(None),ChangeEvent.dataset),else_=None)
@@ -246,7 +246,7 @@ def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, 
                 if group.affair_id is not None:query=query.where(ChangeEvent.affair_id==group.affair_id)
                 else:query=query.where(ChangeEvent.affair_id.is_(None),ChangeEvent.dataset==group.dataset,ChangeEvent.source_id==group.record_id)
                 notifications=db.scalars(query.order_by(Notification.id).with_for_update(skip_locked=True,of=Notification)).all()
-                user=db.get(User,group.user_id);deliver=[];lines=[]
+                user=db.get(User,group.user_id);deliver=[];items=[];seen=set()
                 if user and not has_verified_destination(db, user):
                     continue
                 for notification in notifications:
@@ -255,25 +255,20 @@ def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, 
                         notification.status="cancelled";notification.error_message="No longer eligible under notification policy/subscription."
                         continue
                     deliver.append(notification)
-                    if len(lines)<30:
-                        entity=db.get(ENTITIES[event.dataset].model,event.source_id)
+                    entity=db.get(ENTITIES[event.dataset].model,event.source_id)
+                    identity=change_identity(event,entity)
+                    if identity not in seen:
+                        seen.add(identity)
                         title=next((getattr(entity,f) for f in ENTITIES[event.dataset].title_fields if entity is not None and getattr(entity,f,None)),event.dataset)
-                        title=" ".join(title.split())[:250]
-                        lines.append(entry(event, entity, title))
+                        items.append((event,entity," ".join(title.split())[:250]))
                 if not deliver:db.commit();continue
                 dataset="affairs" if group.affair_id is not None else group.dataset
                 record_id=group.affair_id if group.affair_id is not None else group.record_id
                 entity=db.get(ENTITIES[dataset].model,record_id)
                 title=next((getattr(entity,f) for f in ENTITIES[dataset].title_fields if entity is not None and getattr(entity,f,None)),dataset)
                 title=" ".join(title.split())[:200]
-                kinds = sorted({NAMES.get(db.get(ChangeEvent, n.change_event_id).dataset, "Inhalt") for n in deliver})
-                body=f"{len(deliver)} Neuigkeiten zu: {title}\nBereiche: {', '.join(kinds)}\n\n"+"\n\n".join(lines)
-                if len(deliver)>len(lines):body+=f"\n\n{len(deliver)-len(lines)} weitere ?nderungen finden Sie im ?nderungsverlauf des Eintrags."
-                main_url = f"{settings.verification_base_url.rstrip('/')}/?dataset={dataset}&record={record_id}"
-                if not any(main_url in line.splitlines() for line in lines):
-                    body += f"\n\n{main_url}"
-                body += "\n\nSie erhalten diese Nachricht aufgrund Ihrer Abonnements. Diese k?nnen Sie in der Anwendung verwalten."
-                try:send_notification_email(db,user,send_func=send_email,subject=f"WWF: {', '.join(kinds)} ? {title}",body=body,html_body=render_html(body))
+                subject,body,html_body=render_digest(title,dataset,record_id,items)
+                try:send_notification_email(db,user,send_func=send_email,subject=subject,body=body,html_body=html_body)
                 except EmailServiceError as exc:
                     for notification in deliver:notification.error_message=str(exc)
                     failed+=1

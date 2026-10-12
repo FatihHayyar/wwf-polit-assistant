@@ -16,6 +16,9 @@ Dieses Protokoll beginnt mit dem aktuellen Entwicklungsstand. Es rekonstruiert k
 - Einzelinhalte werden in der Abonnementverwaltung beobachtet; Detailansichten besitzen einen beim Scrollen erreichbaren Schliessen-Bereich.
 - Breitere Ergebnislisten, abgestimmte Kontoschaltflächen und dauerhaft erreichbare Aktionen im Verwaltungsdialog.
 - Sichtbare Speicherbestätigung und aktualisierte Asset-Auslieferung gegen veraltete Browserdateien.
+- Benachrichtigungen besitzen getrennte Klartext-/HTML-Layouts, lesbare Betreffzeilen und eindeutig beschriftete Links.
+- Änderungsverläufe zeigen Inhaltstitel und öffnen vorhandene Einträge; gleiche Dokumentzuordnungen werden zusammengefasst, unterschiedliche Quellen und Änderungen bleiben erhalten.
+- Beschädigte Unicode-Akzente und Fragezeichen als Verknüpfungsseparatoren korrigiert.
 
 ### Synchronisierung
 

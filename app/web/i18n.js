@@ -24,7 +24,7 @@ window.PolitUI = (() => {
     ["allTypesHelp","Keine Auswahl: alle neun Inhaltstypen. Mehrfachauswahl möglich.","Sans sélection : les neuf types. Plusieurs choix possibles.","Nessuna selezione: tutti i nove tipi. Puoi selezionarne più di uno.","No selection: all nine content types. Select any combination."],
 
     ["stayInformed","AUF DEM LAUFENDEN BLEIBEN","RESTER INFORMÉ","RESTA INFORMATO","STAY INFORMED"],
-    ["subscriptionPitch","Neue Entwicklungen zu deinen Themen?","Des nouveaut?s sur vos th?mes ?","Novit? sui tuoi temi?","New developments on your topics?"],
+    ["subscriptionPitch","Neue Entwicklungen zu deinen Themen?","Des nouveautés sur vos thèmes ?","Novità sui tuoi temi?","New developments on your topics?"],
     ["subscriptionBenefit","Erhalte E-Mails zu neuen Geschäften und echten Änderungen – passend zu deinen Themen, Kantonen und Suchbegriffen.","Recevez des e-mails sur les nouveaux objets et leurs modifications selon vos thèmes, cantons et mots-clés.","Ricevi e-mail su nuovi oggetti e modifiche in base a temi, cantoni e parole chiave.","Get emails about new affairs and meaningful changes matching your topics, cantons and keywords."],
     ["publicBrowsing","Alle Inhalte sind ohne Konto zugänglich. Ein Konto brauchst du nur für E-Mail-Benachrichtigungen.","Les contenus sont accessibles sans compte. Un compte est nécessaire uniquement pour les notifications par e-mail.","I contenuti sono accessibili senza account. Un account serve solo per le notifiche e-mail.","Browse all content without an account. An account is only needed for email notifications."],
     ["viewSubscriptions","Abonnements ansehen und verwalten","Voir et gérer les abonnements","Visualizza e gestisci gli abbonamenti","View and manage subscriptions"],
@@ -144,7 +144,7 @@ window.PolitUI = (() => {
     ["email","E-Mail-Adresse","Adresse e-mail","Indirizzo e-mail","Email address"],
     ["action","Aktion","Action","Azione","Action"],
     ["loginLink","Anmeldelink senden","Envoyer un lien de connexion","Invia un link di accesso","Send sign-in link"],
-    ["register","Registrieren","Cr?er un compte","Registrati","Sign up"],
+    ["register","Registrieren","Créer un compte","Registrati","Sign up"],
     ["sendLink","Link senden","Envoyer le lien","Invia il link","Send link"],
     ["loginHelp","Erhalte einen einmaligen Link per E-Mail. Öffne ihn und kehre danach zu dieser Seite zurück.","Recevez un lien unique par e-mail. Ouvrez-le puis revenez sur cette page.","Ricevi un link monouso via e-mail. Aprilo e torna a questa pagina.","Get a one-time email link. Open it, then return to this page."],
     ["linkSent","Der Link wurde versendet. Öffne ihn und kehre danach zu dieser Seite zurück.","Le lien a été envoyé. Ouvrez-le puis revenez sur cette page.","Link inviato. Aprilo e torna a questa pagina.","Link sent. Open it, then return to this page."],

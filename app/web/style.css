@@ -39,4 +39,6 @@ dialog{padding:0;overflow:auto;isolation:isolate}.dialog-header{position:sticky;
 .content-layout .subscription-actions button{height:100%;min-width:0;overflow-wrap:anywhere}
 @media(max-width:750px){#subscription-dialog .subscription-toolbar{padding:12px 16px}.dialog-body>p{margin:16px}}
 .primary:hover:not(:disabled){background:#18563d;color:#fff}
+.change-item{display:flex;flex-direction:column;gap:8px;text-align:left;width:100%}
+.change-title{font-weight:600;overflow-wrap:anywhere}
 @media(max-width:620px){.subscription-toolbar>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.subscription-toolbar #unsubscribe{grid-column:1/-1}}

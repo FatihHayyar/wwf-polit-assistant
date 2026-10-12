@@ -161,7 +161,7 @@ function renderDetail(){
   }
   if(data.agendas)renderRelated(container,"agendas",data.agendas,{meetingId:id});
   if(data.related)for(const [key,result]of Object.entries(data.related))renderRelated(container,key,result,{meetingId:id});
-  if(data.agenda){const button=el("button",`${names.agendas} ? ${data.agenda.title||data.agenda.id}`,"related-item");button.addEventListener("click",()=>showDetail("agendas",data.agenda.id));container.append(button);}
+  if(data.agenda){const button=el("button",`${names.agendas} · ${data.agenda.title||data.agenda.id}`,"related-item");button.addEventListener("click",()=>showDetail("agendas",data.agenda.id));container.append(button);}
   if(dataset!=="agendas"&&data.meeting){const button=el("button",data.meeting.title||t("openMeeting"),"related-item");button.addEventListener("click",()=>showDetail("meetings",data.meeting.id));container.append(button);}
   if(dataset!=="agendas"&&data.group){const button=el("button",data.group.title||t("groups"));button.addEventListener("click",()=>showDetail("groups",data.group.id));container.append(button);}
   if(dataset==="votings"){
@@ -176,13 +176,13 @@ function renderDetail(){
   const urls=new Set([ui.localized(record,"url_external",language),record.item_url,record.url,record.details_url,record.declaration_doc_url,data.detail?.original_url].filter(Boolean));
   for(const url of urls){const href=safeLink(url);if(!href)continue;const link=el("a",t("officialSource"),"source-link");link.href=href;link.target="_blank";link.rel="noopener noreferrer";container.append(link);}
   container.append(el("p",t("sourceLanguage"),"source-language"));
-  if(dataset!=="affairs")for(const affair of data.linked_affairs||data.affair_ids.map(id=>({id}))){const button=el("button",`${t("linkedAffair",{id:affair.id})}${affair.title?` ? ${affair.title}`:""}`,"related-item");button.addEventListener("click",()=>showDetail("affairs",affair.id));container.append(button);}
+  if(dataset!=="affairs")for(const affair of data.linked_affairs||data.affair_ids.map(id=>({id}))){const button=el("button",`${t("linkedAffair",{id:affair.id})}${affair.title?` · ${affair.title}`:""}`,"related-item");button.addEventListener("click",()=>showDetail("affairs",affair.id));container.append(button);}
   if(data.person){container.append(el("h3",t("person")),el("p",`${data.person.fullname||t("person")}${data.person.party?` · ${data.person.party}`:""}`));const button=el("button",t("personInterests"));button.addEventListener("click",()=>browseRelated("interests",{personId:data.person.id}));container.append(button);}
   if(data.meetings)renderRelated(container,"meetings",data.meetings,{groupId:id},"groupMeetings");
   if(data.detail){
     if(data.detail.classifications.length){const section=el("section",undefined,"related-section");section.append(el("h3",t("classification")));const tags=el("div",undefined,"tags");for(const item of data.detail.classifications)tags.append(el("span",categoryName(item),"tag"));section.append(tags);container.append(section);}
     for(const [relatedDataset,result]of Object.entries(data.detail.related))renderRelated(container,relatedDataset,result,{affairId:id});
-    if(data.detail.changes.length){const section=el("section",undefined,"related-section");section.append(el("h3",t("changes")));for(const change of data.detail.changes)section.append(el("p",`${formatDate(change.detected_at)} · ${names[change.dataset]||change.dataset} · ${t(change.change_type)}`,"change"));container.append(section);}
+    if(data.detail.changes.length){const section=el("section",undefined,"related-section");section.append(el("h3",t("changes")));for(const change of data.detail.changes){const row=el(change.available?"button":"p",undefined,change.available?"related-item change-item":"change");row.append(el("span",change.title||names[change.dataset]||change.dataset,"change-title"),el("span",`${formatDate(change.detected_at)} · ${names[change.dataset]||change.dataset} · ${t(change.change_type)}`,"card-meta"));if(change.available)row.addEventListener("click",()=>showDetail(change.dataset,change.source_id));section.append(row);}container.append(section);}
   }
 }
 async function refreshAccount(){try{state.account=await api("/api/v1/auth/me");}catch{state.account=null;}$("logout").hidden=!state.account;renderMembership();}
