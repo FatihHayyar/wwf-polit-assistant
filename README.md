@@ -25,6 +25,8 @@ Die Themenklassifikation erfolgt regelbasiert. KI, semantische Suche und dialogo
 
 Jeder Bereich besitzt eine eigene Liste und eigene Filter. Beim Wechsel bleiben die jeweiligen Filter erhalten. Ein Klick auf einen Eintrag öffnet seine Details und die verfügbaren Verbindungen zu anderen Datensätzen.
 
+Der Änderungsverlauf eines Geschäfts zeigt die Titel der betroffenen Inhalte und öffnet vorhandene Einträge direkt. Mehrfache Zuordnungen desselben Quelldokuments werden zusammengefasst; unterschiedliche Dokumente und inhaltliche Aktualisierungen bleiben getrennt sichtbar. Die Schliessen-Schaltfläche langer Detailansichten bleibt beim Scrollen erreichbar.
+
 | Bereich | Inhalt und Zusammenhang |
 |---|---|
 | **Geschäfte** (`affairs`) | Parlamentarische Vorstösse und Geschäfte mit Status, Klassifikation und zugehörigen Vorgängen |
@@ -41,17 +43,23 @@ Die Suche kombiniert **Suchbegriff, Hauptthema, Unterthema, Kanton und Datumsber
 
 ### Abonnements und E-Mail-Monitoring
 
-Die Recherche ist ohne Konto zugänglich. Für Benachrichtigungen registrieren sich Nutzer per E-Mail und melden sich über einen zeitlich begrenzten Link an.
+Die Recherche ist ohne Konto zugänglich. Für Benachrichtigungen registrieren sich Nutzer per E-Mail und melden sich über einen zeitlich begrenzten Link an. Optional steht eine konfigurierte Google-Anmeldung zur Verfügung. In der Abonnementverwaltung können bis zu zehn Benachrichtigungsadressen ausgewählt werden; zusätzliche Adressen benötigen eine Bestätigung.
 
 Abonnements können WWF-Themen, Kantone, Suchbegriffe und Datenbereiche kombinieren. Zusätzlich lassen sich einzelne Einträge verfolgen. Hauptthemen schliessen ihre Unterthemen ein. Mehrere Werte innerhalb einer Filtergruppe gelten als Alternativen; Einschränkungen verschiedener Gruppen müssen gemeinsam passen.
 
 Die Anwendung speichert Quelldatenänderungen getrennt von ihrer Benachrichtigungsrelevanz. Technische Metadaten, reine Formatänderungen und bestimmte geringfügige Textkorrekturen sollen keine E-Mail auslösen. Relevante Updates werden pro Nutzer und Geschäft beziehungsweise eigenständigem Eintrag zusammengefasst.
+
+Benachrichtigungen besitzen eine HTML-Ansicht mit Inhaltskarten und eine separate Klartextfassung. Der Betreff benennt beispielsweise ein neues Dokument; Dokumentlinks, Geschäftsverlauf und Abonnementverwaltung sind eindeutig beschriftet. Bereits zugestellte E-Mails werden nicht verändert oder automatisch erneut versandt. Eine Aktualisierung ohne passende neue Entwicklung erzeugt keine neue Nachricht.
 
 ### Aktueller Stand
 
 **Stand: 12. Oktober 2026.** Datenimport, neun Synchronisationsmodule, Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung und Abonnementverwaltung sind implementiert. Die Benachrichtigungspipeline berücksichtigt auch Änderungen an verbundenen Datensätzen.
 
 81 isolierte Backend-Regressionstests sowie Frontend- und Browserprüfungen wurden erfolgreich ausgeführt. Der Docker-Demostart, alle neun Listen- und Detail-APIs, die E-Mail-Verifikation über Mailpit und die Erhaltung der Daten beim Neustart wurden ebenfalls geprüft. Das ersetzt keine vollständige fachliche Abnahme oder Prüfung unter Produktionsbedingungen.
+
+Ein neuer vollständiger Synchronisationslauf verarbeitete **1.682.302 Einträge** und schloss **9/9 Datasets ohne Fehler** ab. Anschliessend wurde auch der zuletzt vom Nutzer gestartete Lauf mit 9/9 erfolgreich beendet. Die jüngsten Quellstichproben umfassten 500 Inhalte je Dataset und zeigten keine fehlenden oder abweichenden Einträge. Diese Befunde gelten für die geprüften Läufe und die Stichprobe; sie sind kein vollständiger historischer Abdeckungsnachweis.
+
+Die jüngsten Korrekturen betreffen vorübergehende Windows-Dateisperren beim Checkpoint-Schreiben, den CLI-Fehlerstatus bei fehlgeschlagenem E-Mail-Versand sowie lesbare und verlinkte Benachrichtigungen. Der lokale Compose-Scheduler wurde auf den aktuellen Code aktualisiert und verwendet eine mit dem Host geteilte, persistente Logablage. Im aktuellen Linux-Image bestanden ebenfalls 81 Tests; die ausschliesslich Windows betreffende Dateisperrprüfung wurde dort übersprungen und unter Windows erfolgreich ausgeführt. Weitere Nachweise: [Gesamtprüfung](docs/05-testing/review-2026-10-12.md) und [Testergebnisse](docs/05-testing/test-results.md).
 
 ## Quick Start mit Docker
 
@@ -203,7 +211,7 @@ Verarbeitete Batches werden gespeichert. Fortschritt und abgeschlossene Dataset-
 python -m scripts.sync.run_all
 ```
 
-Der separat gestartete Scheduler führt den Job täglich um **03:00 Europe/Zurich** aus. Die Entwicklungsphase unterstützt ausserdem einen geschützten API-Start im Hintergrund, Statusabfragen, Logs und Abbruch. Laufberichte und Logs werden lokal unter `logs/` gespeichert.
+Der separat gestartete Scheduler führt den Job täglich um **03:00 Europe/Zurich** aus. Die Entwicklungsphase unterstützt ausserdem einen geschützten API-Start im Hintergrund, Statusabfragen, Logs und Abbruch. Laufberichte und Logs werden lokal unter `logs/` gespeichert. Der Compose-Scheduler bindet dieses Verzeichnis als `/app/logs` ein, damit Fortschritt und Berichte beim Ersetzen des Containers erhalten bleiben und von der lokalen API gelesen werden können.
 
 Relevante Änderungen an Traktanden, Sitzungen, Abstimmungen, Ereignissen, Dokumenten und Texten werden den verbundenen Geschäften zugeordnet. Der Versand erfolgt nach erfolgreichem Abschluss der Dataset-Schritte. Vor dem Senden werden Konto und Abonnement erneut geprüft. Fehlgeschlagene Sendungen bleiben zur erneuten Verarbeitung ausstehend; nicht mehr passende Benachrichtigungen können verworfen werden.
 
@@ -313,13 +321,13 @@ Die Backend-Tests decken unter anderem Sync-Fortschritt, Beziehungen, Normalisie
 |---|---|
 | Fachliche Qualität | WWF-Taxonomie bestätigen und Klassifikationen anhand fachlich bewerteter Beispiele prüfen |
 | Synchronisierung | Nächste tägliche Läufe beobachten, Quell-/Datenbankstichproben vergleichen und Bestandsprüfungen weiter vermessen |
-| E-Mail-Betrieb | SMTP-Authentifizierung, Provider-Limits und Zusammenfassungsvolumen absichern; ein Gmail-Test brach nach 77 zugestellten E-Mails ab |
+| E-Mail-Betrieb | Für die spätere Übernahme Organisationsprovider, Limits und Versandvolumen mit WWF abstimmen; jüngster kontrollierter Versand erfolgreich, ein früherer Gmail-Abbruch bleibt historisch dokumentiert |
 | Datenabdeckung | Historische eigenständige Inhalte benötigen gegebenenfalls Klassifikations-Backfill; Beziehungen hängen von den verfügbaren Quelldaten ab |
 | Benutzeroberfläche | Gemeinsamer Durchlauf der WWF-Anwendungsfälle und Rückmeldung zur Bedienbarkeit |
-| Deployment | Azure-Integration, Secrets, Scheduler-Betrieb, zentrale Logs und dauerhaftes Job-Monitoring validieren |
+| Technischer Handover | Container, Konfiguration und Betriebsanforderungen an WWF übergeben; konkrete Azure-Integration erfolgt bei Übernahme durch WWF |
 | Projektabschluss | Ergebnisse, Abnahme und Übergabe dokumentieren |
 
-Die Architektur verwendet Python, PostgreSQL, Docker, OpenAPI und Umgebungsvariablen als Grundlage für Azure. Ein validiertes Azure-Deployment existiert noch nicht. Lokale JSON-Laufberichte ersetzen kein zentrales Produktionsmonitoring. Harmonisierten Geschäftszuständen und Originalsprachen sind durch die Quellabdeckung Grenzen gesetzt.
+Der MVP liefert mit Python, PostgreSQL, Docker, OpenAPI und Umgebungsvariablen eine Grundlage für die spätere Azure-Integration durch WWF. Ein eigenes Azure-Deployment gehört nicht zum aktuellen Lieferumfang; Kompatibilität mit der konkreten WWF-Umgebung wird nicht als bereits getestet ausgegeben. Lokale JSON-Laufberichte ersetzen kein zentrales Produktionsmonitoring. Harmonisierten Geschäftszuständen und Originalsprachen sind durch die Quellabdeckung Grenzen gesetzt.
 
 Optionale spätere Erweiterungen sind KI-gestützte Klassifikation, semantische Suche, Zusammenfassungen und natürlichsprachliche Abfragen.
 
