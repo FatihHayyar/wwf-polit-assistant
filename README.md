@@ -41,6 +41,16 @@ Der Änderungsverlauf eines Geschäfts zeigt die Titel der betroffenen Inhalte u
 
 Die Suche kombiniert **Suchbegriff, Hauptthema, Unterthema, Kanton und Datumsbereich**. Ergebnisse werden serverseitig paginiert. Die Oberfläche unterstützt **Deutsch, Französisch, Italienisch und Englisch**; parlamentarische Originaltexte werden nicht automatisch übersetzt.
 
+Themenetiketten zeigen **Hauptthema / Unterthema**, beispielsweise **Klima & Energie / Sonstiges**. Dieses lokale Sonstiges bezeichnet einen passenden Hauptbereich ohne spezifisches Unterthema; das globale Sonstiges bezeichnet Inhalte ohne erkannte WWF-Zuordnung.
+
+In der Bereichs- und bereichsübergreifenden Suche werden Geschäfte mit gleichem normalisiertem Titel, gleicher Körperschaft und gleichem Kalendertag als eine Ergebniskarte zusammengefasst. Beispielsweise bleiben Regierungsbotschaft und Gesetzesentwurf über getrennte Schaltflächen erreichbar. Die Originaldatensätze, IDs und Detailansichten bleiben erhalten; Trefferzahl und Pagination zählen die Gruppen. Das ist eine Darstellungsregel und keine nachgewiesene fachliche Identität der Quellen. Andere Tage oder Körperschaften bleiben getrennt.
+
+### Konfigurierbare WWF-Themen
+
+Die vier Hauptbereiche **Klima & Energie**, **Biodiversität & Landschaft**, **Nachhaltige Wirtschaft & Konsum** und **Umwelt & Politik** besitzen jeweils eine Sonstiges-Unterkategorie. Namen, Hierarchie, Synonyme, Regeln und Schwellenwerte werden in [taxonomy.json](app/classification/taxonomy.json) gepflegt. Die Oberfläche übernimmt die konfigurierten Namen aus der Kategorien-API.
+
+Die aktuelle Version `rule-based-v7` erkennt eindeutige Titelbegriffe auch in Zusammensetzungen und mit Buchstaben-Endungen. Generische Begriffe benötigen einen ausdrücklichen Umweltbezug. Mehrere Themen können gleichzeitig passen; spezifische Unterthemen verdrängen den lokalen Fallback ihres Hauptthemas. Übersetzungen und Synonyme zählen als ein Konzept. Details und Befehle: [Klassifikationskonzept](docs/04-technical-concepts/classification-concept.md) und [Konfiguration](docs/configuration.md#regelbasierte-klassifikation).
+
 ### Abonnements und E-Mail-Monitoring
 
 Die Recherche ist ohne Konto zugänglich. Für Benachrichtigungen registrieren sich Nutzer per E-Mail und melden sich über einen zeitlich begrenzten Link an. Optional steht eine konfigurierte Google-Anmeldung zur Verfügung. In der Abonnementverwaltung können bis zu zehn Benachrichtigungsadressen ausgewählt werden; zusätzliche Adressen benötigen eine Bestätigung.
@@ -51,13 +61,17 @@ Die Anwendung speichert Quelldatenänderungen getrennt von ihrer Benachrichtigun
 
 Benachrichtigungen besitzen eine HTML-Ansicht mit Inhaltskarten und eine separate Klartextfassung. Der Betreff benennt beispielsweise ein neues Dokument; Dokumentlinks, Geschäftsverlauf und Abonnementverwaltung sind eindeutig beschriftet. Bereits zugestellte E-Mails werden nicht verändert oder automatisch erneut versandt. Eine Aktualisierung ohne passende neue Entwicklung erzeugt keine neue Nachricht.
 
-## Aktueller Projektstand – 12. Oktober 2026
+## Aktueller Projektstand – 13. Oktober 2026
 
-**Stand: 12. Oktober 2026.** Datenimport, neun Synchronisationsmodule, Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung und Abonnementverwaltung sind implementiert. Die Benachrichtigungspipeline berücksichtigt auch Änderungen an verbundenen Datensätzen.
+**Stand: 13. Oktober 2026.** Datenimport, neun Synchronisationsmodule, konfigurierbare regelbasierte Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung und Abonnementverwaltung sind implementiert. Die Benachrichtigungspipeline berücksichtigt auch Änderungen an verbundenen Datensätzen. Ollama ist nicht eingebunden; LLM und Chatbot bleiben mögliche spätere Erweiterungen.
 
-81 isolierte Backend-Regressionstests sowie Frontend- und Browserprüfungen wurden erfolgreich ausgeführt. Der Docker-Demostart, alle neun Listen- und Detail-APIs, die E-Mail-Verifikation über Mailpit und die Erhaltung der Daten beim Neustart wurden ebenfalls geprüft. Das ersetzt keine vollständige fachliche Abnahme oder Prüfung unter Produktionsbedingungen.
+91 isolierte Backend-Regressionstests sowie JavaScript-Prüfungen wurden erfolgreich ausgeführt. Die Browser-, Docker-Demo-, Mailpit- und Neustartprüfungen stammen vom 12. Oktober und wurden für die jüngsten Änderungen nicht vollständig wiederholt. Das ersetzt keine vollständige fachliche Abnahme oder Prüfung unter Produktionsbedingungen.
 
-Ein neuer vollständiger Synchronisationslauf verarbeitete **1.682.302 Einträge** und schloss **9/9 Datasets ohne Fehler** ab. Anschliessend wurde auch der zuletzt vom Nutzer gestartete Lauf mit 9/9 erfolgreich beendet. Die jüngsten Quellstichproben umfassten 500 Inhalte je Dataset und zeigten keine fehlenden oder abweichenden Einträge. Diese Befunde gelten für die geprüften Läufe und die Stichprobe; sie sind kein vollständiger historischer Abdeckungsnachweis.
+Am 13. Oktober wurden **2.951.254 vorhandene Datensätze in allen neun Bereichen** mit `rule-based-v7` neu klassifiziert. Eine unabhängige schreibgeschützte Abfrage bestätigte **0 fehlende und 0 veraltete Zuordnungen**. Der Backfill änderte keine Quelldaten und erzeugte keine Benachrichtigungen. Dies ist ein technischer Abdeckungsnachweis, keine Aussage über die Richtigkeit aller Kategorien.
+
+Ein gemischtes Entwicklungsset mit 50 realen Beispielen erreichte **40/50 mit den vorherigen Regeln und 50/50 mit den neuen Regeln**: 20 eindeutige WWF-Themen, 20 fachfremde und 10 unklare oder mehrthematische Beispiele. Die Erwartungen wurden anhand der Quellen unabhängig festgelegt; eine WWF-Expertenabnahme und ein unabhängiges, ungesehenes Prüfset stehen aus. Nachweise: [Prüfung vom 13. Oktober](docs/05-testing/review-2026-10-13.md), [Qualitätsbericht](rule_quality_report_tr.md) und [Backfill-Abdeckung](rule_backfill_status.json).
+
+Am 12. Oktober verarbeitete ein vollständiger Synchronisationslauf **1.682.302 Einträge** und schloss **9/9 Datasets ohne Fehler** ab. Anschliessend wurde auch der damals zuletzt vom Nutzer gestartete Lauf mit 9/9 erfolgreich beendet. Die Quellstichproben vom 12. Oktober umfassten 500 Inhalte je Dataset und zeigten keine fehlenden oder abweichenden Einträge. Diese Befunde gelten für die geprüften Läufe und die Stichprobe; sie sind kein vollständiger historischer Abdeckungsnachweis. Der Klassifikations-Backfill vom 13. Oktober war kein erneuter Quellenabgleich.
 
 Die technische MVP-Umsetzung ist für eine gemeinsame Demonstration vorbereitet. Präsentation, fachliche Bewertung und formale Projektabnahme stehen noch aus. Azure-Bereitstellung und KI/Dialogfunktionen sind keine offenen Implementierungsaufgaben dieses MVP.
 
@@ -66,13 +80,15 @@ Die technische MVP-Umsetzung ist für eine gemeinsame Demonstration vorbereitet.
 | Bereich | Umgesetzter und geprüfter Stand |
 |---|---|
 | Recherche und Oberfläche | Neun Bereiche mit eigenen Filtern; breitere Ergebnisfläche; ausgewogene Kontoschaltflächen; überflüssige Anmelde-Erfolgsmeldung und schwebende Konto-Leiste entfernt |
+| Themen und Ergebnisgruppen | Konfigurierbarer Themenbaum mit vier lokalen Fallbacks; Haupt-/Unterthema sichtbar; gleichnamige Geschäftsquellen desselben Tages und derselben Körperschaft in einer Karte mit getrennten Detailzugängen |
+| Regelqualität und Backfill | Titelzusammensetzungen, Umwelt-Kontextprüfung und robuste Textnormalisierung; 50-Beispiele-Entwicklungstest; resumierbarer Backfill über alle neun Bereiche mit Qualitätsschranke und Sync-Sperre |
 | Detailansichten | Schliessen bleibt beim Scrollen sichtbar; Verfolgen wird ausschliesslich in der Abonnementverwaltung angeboten; Änderungen zeigen benannte, anklickbare Inhalte statt gleichlautender Zeilen |
 | Konten und Abonnements | Getrennte Registrierung/Anmeldung mit passenden Hinweisen, optionale Google-Anmeldung, bis zu zehn bestätigte Empfänger; erreichbare Verwaltungsaktionen, Speicherbestätigung und Kontolöschung |
 | Datenabgleich | Einheitliches Event-Mapping, Nachholung fehlender Dokumente und Behandlung mehrfacher Dokumentzuordnungen; Batch-Fortschritt, Wiederaufnahme und Schutz vor parallelen Jobs |
 | Windows-Checkpoints | Atomisches Schreiben mit eigenen temporären Dateien und begrenzten Wiederholungen bei vorübergehenden Dateisperren |
 | Benachrichtigungen | Relevanzprüfung statt Nachricht bei jeder technischen Änderung; Gruppierung pro Nutzer/Geschäft; HTML und Klartext, korrekte Sonderzeichen und eindeutig beschriftete Links |
 | Fehlerbehandlung | E-Mail-Fehler ergeben einen erfolglosen CLI-Abschluss; Dataset-Fortschritt bleibt erhalten, ausstehende Nachrichten können erneut verarbeitet werden |
-| Scheduler und Schema | Lokaler Scheduler auf aktuellem Image, gemeinsame persistente Logs und STARTTLS-Konfiguration; Datenbank auf `20261012_recipients (head)` |
+| Scheduler und Schema | Scheduler-Konfiguration mit persistenten Logs und STARTTLS; Datenbank auf `20261012_recipients (head)`. Beim letzten Prozesscheck am 13. Oktober lief nur PostgreSQL; API/Scheduler müssen separat gestartet werden |
 | Dokumentation und Tracking | Sieben Dokumentationsbereiche, Installations-/Betriebs-/Benutzerhandbuch, Anforderungen, Tests und Übergabeunterlagen; GitHub-Issues und Milestones angelegt |
 
 ### Nachweise und Grenzen
@@ -235,6 +251,8 @@ Alle 325.691 ursprünglichen Geschäfte wurden klassifiziert. Der damalige Stand
 
 ## Synchronisierung und Benachrichtigungen
 
+Regelanpassungen und historische Neuberechnung sind vom Sync getrennt: `python -m scripts.reclassify_rules` ist eine schreibgeschützte Vorschau; `--apply` verarbeitet den Bestand nach bestandenem Entwicklungsset. `--dataset`, `--limit` und `--workers` begrenzen Umfang und Parallelität. Nach Taxonomieänderungen `--force` verwenden. Die Qualitätsschranke benötigt Git-Historie mit dem festgelegten Baseline-Commit; ein ZIP ohne `.git` reicht dafür nicht. Weitere Voraussetzungen und die älteren Einzeljobs stehen in der [Konfiguration](docs/configuration.md#regelbasierte-klassifikation).
+
 Alle neun Bereiche besitzen eigene Sync-Module:
 
 | Dataset | Modul | Abgleich |
@@ -366,8 +384,9 @@ python scripts/bootstrap/download_openparldata.py --dry-run
 python scripts/bootstrap/download_openparldata.py --workers 6
 python scripts/bootstrap/import_normalized.py all
 python -m scripts.seed_classification
-python -m scripts.classify_affairs
-python -m scripts.classify_entities
+python -m scripts.rule_quality
+python -m scripts.reclassify_rules --apply
+python -m scripts.rule_backfill_status
 ```
 
 Dies sind Schritte der Importpipeline, keine vollständige Ein-Kommando-Installation des normalisierten Datenbestands. Klassifikationsvorbereitung und historische Entity-Klassifikation sind im [Monitoring-Leitfaden](docs/monitoring.md) dokumentiert. Vollständige Raw-Downloads und Datenbank-Backups werden nicht ins Repository aufgenommen; die kuratierte öffentliche Demo-Stichprobe liegt unter [data/demo](data/demo/README.md).
@@ -425,7 +444,7 @@ Die Dokumentation ist nach Projektmanagement, Anforderungen, Architektur, techni
 | [Aktueller Aufgabenstand](docs/01-project-management/current-status.md) | Erledigte Prüfungen, verbleibende Abnahme und Abgleich der gestrigen Aufgaben |
 | [Installation](docs/getting-started.md) | Demo, Entwicklungsumgebung und vollständiger Erstimport |
 | [Benutzerhandbuch](docs/06-handover/user-guide.md) | Recherche, Anmeldung und Abonnements |
-| [Konfiguration](docs/configuration.md) | Umgebungsvariablen, Container und Google-Anmeldung |
+| [Konfiguration](docs/configuration.md) | Umgebungsvariablen, Container, Google-Anmeldung und editierbare Klassifikation |
 | [Architektur](docs/03-architecture/system-architecture.md) | Komponenten, Datenmodell und Ausführungsgrenzen |
 | [API](docs/api.md) | Öffentliche Recherche und geschützte Verwaltungsrouten |
 | [Tests](docs/05-testing/test-plan.md) | Automatisierte Prüfungen und manuelle Abnahme |

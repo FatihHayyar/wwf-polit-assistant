@@ -4,6 +4,10 @@
 
 Alle Inhalte sind ohne Konto zugänglich. Links einen der neun Bereiche auswählen und Suchbegriff, Thema, Unterthema, Kanton oder Datum setzen. Die Ergebnisse werden seitenweise geladen. Beim Bereichswechsel bleiben die jeweiligen Filter erhalten.
 
+Themenetiketten zeigen Hauptthema und Unterthema, etwa **Klima & Energie / Sonstiges**. Dieser Treffer gehört zum Klimabereich, besitzt aber kein spezifisch erkanntes Unterthema. Globales **Sonstiges** ohne Hauptthema bedeutet keine erkannte WWF-Zuordnung. Ein Hauptthemenfilter umfasst auch seine lokale Sonstiges-Unterkategorie.
+
+Geschäfte mit gleichem normalisiertem Titel, gleicher Körperschaft und gleichem Kalendertag erscheinen als eine Karte. Die getrennten Quellaufzeichnungen, etwa **Message** und **Projet de loi**, sind über ihre Schaltflächen erreichbar. Es werden keine Quelldaten gelöscht. Trefferzahl und Seiten zählen diese Gruppen; diese Darstellung beweist nicht, dass die Quellen fachlich identisch sind.
+
 Ein Klick auf einen Treffer öffnet die Detailansicht mit Quellenlinks und vorhandenen Beziehungen. Die Schliessen-Schaltfläche bleibt sichtbar, während der Inhalt gescrollt wird. Einzelne Inhalte werden im Bereich **Abonnements verwalten** zum Monitoring hinzugefügt.
 
 Die Sprache lässt sich oben zwischen Deutsch, Französisch, Italienisch und Englisch wechseln. Originaltexte werden in einer verfügbaren Quellsprache angezeigt und nicht automatisch übersetzt.

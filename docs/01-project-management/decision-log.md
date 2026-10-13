@@ -16,3 +16,5 @@ Datums- und Personenangaben werden hier nicht ergänzt. Retrospektiv beschrieben
 | D10 | Kursabgabe privat halten, technische Dokumentation öffentlich strukturieren | Unterschiedliche Zwecke und personenbezogene Originale | `wipro-submission/` bleibt ignoriert |
 
 Neue Entscheidungen benötigen Kontext, betrachtete Alternativen, Ergebnis und Folgen. Änderungen an der Taxonomie können eine Migration bestehender Abonnements und eine historische Neuklassifikation erfordern.
+
+Am 13. Oktober wurde D5 bestätigt: Der getestete lokale Ollama-Ansatz verbesserte die Klassifikation nicht ausreichend und benötigte bereits für kleine Testmengen erhebliche Zeit. Er wurde verworfen; JSON-konfigurierbare Regeln und ein geprüfter Backfill bilden weiterhin die MVP-Basis. Eine eigene lokale LLM-/Chatbot-Lösung kann bei Fortsetzung im zweiten Semester separat evaluiert werden; sie ist derzeit weder implementiert noch beauftragt. Der Regel-Entwicklungstest und seine Grenzen sind in der [Prüfung vom 13. Oktober](../05-testing/review-2026-10-13.md) dokumentiert.

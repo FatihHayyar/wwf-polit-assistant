@@ -43,6 +43,8 @@ Bei Dokumenten ist die externe `source_id` nicht eindeutig: mehrere lokale Zeile
 
 Mehrsprachige Regeln ordnen Inhalte hierarchischen WWF-Themen zu. Scores und Evidenz ermöglichen die Nachvollziehbarkeit. Die Taxonomie ist fachlich noch abzustimmen; die Auffangkategorie ist keine nachgewiesene hohe Klassifikationsqualität.
 
+Der Themenbaum ist in `app/classification/taxonomy.json` konfiguriert. Lokales Sonstiges erhält eine erkannte Hauptzuordnung, globales Sonstiges dient fachfremden Inhalten. `rule-based-v7` verarbeitet Titelzusammensetzungen und verlangt bei generischen Kontextbegriffen zusätzliche Umwelt-Qualifier. Die batchweise Neuberechnung über alle neun Bereiche ist durch Entwicklungsset und gemeinsame Sync-Sperre geschützt. Ergebnisgruppen in der Suche sind eine separate Darstellungslogik: mehrere gleichnamige Geschäftsquellen desselben Tages/derselben Körperschaft behalten ihre eigenen IDs und Details.
+
 Gespeicherte Inhaltsänderung und Benachrichtigungsrelevanz sind getrennte Entscheidungen. Relevante Änderungen werden mit aktiven Filtern oder Einzel-Watches abgeglichen und als ausstehende Benachrichtigungen gespeichert. Vor dem Versand werden Konto, Abonnements und bestätigte Empfänger erneut geprüft.
 
 ## Ausführung und Fehlergrenzen

@@ -15,9 +15,14 @@ function status(id,text,error=false){$(id).textContent=text;$(id).classList.togg
 function option(select,value,label){const node=el("option",label);node.value=value;select.append(node);}
 function categoryName(item){
   const code=item.code||item.category_code;
-  if(ui.translations[code])return t(code);
   const category=state.categories.flatMap(parent=>[parent,...parent.subcategories]).find(row=>row.code===code);
   return ui.localized(category||item,"name",language)||item.category_name_de||item.name||code;
+}
+function categoryPath(item){
+  const code=item.code||item.category_code;
+  const parent=state.categories.find(row=>row.subcategories.some(child=>child.code===code));
+  const parentName=parent?categoryName(parent):item.parent_category_name_de;
+  return parentName?`${parentName} / ${categoryName(item)}`:categoryName(item);
 }
 function updateSubcategories(preserve=false){
   const previous=preserve?$("subcategory").value:"";
@@ -118,8 +123,13 @@ function renderResults(result,dataset=state.dataset){
       const heading=el("h2"),link=el("button",recordTitle(dataset,item));link.addEventListener("click",()=>showDetail(dataset,item.id));heading.append(link);card.append(heading);
       const context=[item.body?.name,item.kind,item.state,item.person?.fullname,item.role,item.group?.title,item.location,item.decision].filter(Boolean);
       if(context.length)card.append(el("p",context.join(" · "),"card-context"));
-      const tags=el("div",undefined,"tags");for(const category of item.categories)tags.append(el("span",categoryName(category),"tag"));
+      const tags=el("div",undefined,"tags");for(const category of item.categories)tags.append(el("span",categoryPath(category),"tag"));
       if(!item.categories.length&&dataset!=="agendas")tags.append(el("span",t("noClassification"),"tag"));card.append(tags);
+      if(item.record_variants?.length){
+        const variants=el("div",undefined,"agenda-links");
+        for(const variant of item.record_variants){const button=el("button",[variant.kind,variant.number].filter(Boolean).join(" · ")||variant.title);button.addEventListener("click",()=>showDetail(dataset,variant.id));variants.append(button);}
+        card.append(variants);
+      }
       {
         const links=el("div",undefined,"agenda-links");
         if(item.meeting){const button=el("button",item.title_origin==="meeting"?t("openMeeting"):item.meeting.title||t("meetings"));button.addEventListener("click",()=>showDetail("meetings",item.meeting.id));links.append(button);}
@@ -180,7 +190,7 @@ function renderDetail(){
   if(data.person){container.append(el("h3",t("person")),el("p",`${data.person.fullname||t("person")}${data.person.party?` · ${data.person.party}`:""}`));const button=el("button",t("personInterests"));button.addEventListener("click",()=>browseRelated("interests",{personId:data.person.id}));container.append(button);}
   if(data.meetings)renderRelated(container,"meetings",data.meetings,{groupId:id},"groupMeetings");
   if(data.detail){
-    if(data.detail.classifications.length){const section=el("section",undefined,"related-section");section.append(el("h3",t("classification")));const tags=el("div",undefined,"tags");for(const item of data.detail.classifications)tags.append(el("span",categoryName(item),"tag"));section.append(tags);container.append(section);}
+    if(data.detail.classifications.length){const section=el("section",undefined,"related-section");section.append(el("h3",t("classification")));const tags=el("div",undefined,"tags");for(const item of data.detail.classifications)tags.append(el("span",categoryPath(item),"tag"));section.append(tags);container.append(section);}
     for(const [relatedDataset,result]of Object.entries(data.detail.related))renderRelated(container,relatedDataset,result,{affairId:id});
     if(data.detail.changes.length){const section=el("section",undefined,"related-section");section.append(el("h3",t("changes")));for(const change of data.detail.changes){const row=el(change.available?"button":"p",undefined,change.available?"related-item change-item":"change");row.append(el("span",change.title||names[change.dataset]||change.dataset,"change-title"),el("span",`${formatDate(change.detected_at)} · ${names[change.dataset]||change.dataset} · ${t(change.change_type)}`,"card-meta"));if(change.available)row.addEventListener("click",()=>showDetail(change.dataset,change.source_id));section.append(row);}container.append(section);}
   }

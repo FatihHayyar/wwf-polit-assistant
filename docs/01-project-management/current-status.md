@@ -1,8 +1,19 @@
-# Aktueller Aufgabenstand – 12. Oktober 2026
+# Aktueller Aufgabenstand – 13. Oktober 2026
 
 Dieser Stand ersetzt die offenen technischen Prüfpunkte aus dem [Review vom 11. Oktober](../daily-review-2026-10-11.md). Historische Ergebnisse bleiben dort erhalten. Der Entwicklungs-MVP ist technisch demonstrierbar; eine gemeinsame WWF-Abnahme wurde noch nicht durchgeführt.
 
-## Abgleich der gestrigen Aufgaben
+## Ergänzungen vom 13. Oktober
+
+- Ollama-Experimente verworfen; regelbasierte Klassifikation als MVP-Basis bestätigt. LLM und Chatbot bleiben mögliche spätere Semesterarbeiten ohne aktuellen Implementierungsauftrag.
+- Taxonomie in JSON konfigurierbar, je Hauptthema lokales Sonstiges, klar erkennbare Titelzusammensetzungen, Umwelt-Qualifier und robuste Textnormalisierung.
+- Gemischtes Entwicklungsset: bisherige Regeln 40/50, neue Regeln 50/50; unabhängige WWF-Expertenevaluation bleibt offen.
+- 2.951.254 Datensätze in neun Bereichen neu klassifiziert; unabhängige Abfrage bestätigt 0 fehlende/alte Zuordnungen. Quelldaten und Benachrichtigungen unverändert.
+- Haupt-/Unterthema auf Karten sichtbar. Gleichnamige Geschäftsquellen derselben Körperschaft/desselben Tages gruppiert, alle Originalzugänge erhalten; Anzahl und Pagination berücksichtigen die Gruppen.
+- 91 Backend-Tests und Frontend-Checks erfolgreich. Neue Browser-/Docker-Abnahme nicht behauptet. Beim letzten Prozesscheck lief nur PostgreSQL, kein API-/Scheduler-Dienst. Änderungen noch nicht gepusht; externe GitHub-Statusangaben wurden nicht aktualisiert.
+
+Nachweise: [Prüfung vom 13. Oktober](../05-testing/review-2026-10-13.md), [Konfiguration](../configuration.md) und [Klassifikationskonzept](../04-technical-concepts/classification-concept.md). Die folgenden Angaben dokumentieren den 12. Oktober.
+
+## Abgleich der Aufgaben am 12. Oktober
 
 | Bisherige Aufgabe | Ergebnis am 12. Oktober | Was tatsächlich offen bleibt |
 |---|---|---|
@@ -12,7 +23,7 @@ Dieser Stand ersetzt die offenen technischen Prüfpunkte aus dem [Review vom 11.
 | Aussagekräftige Änderungen und Nachrichten prüfen | Relevanzregeln und Regressionen geprüft; HTML/Klartext überarbeitet, Links benannt, Sonderzeichen korrigiert, mehrfache Dokumentzuordnungen zusammengefasst | Ein täglicher Gesamtdigest und weitergehende SMTP-Optimierungen sind optionale Erweiterungen |
 | MVP-Szenarien dokumentieren | Backend, Frontend, Desktop/Mobile, neun Listen-/Detail-APIs und Docker-/Mailpit-Kontoablauf geprüft; Nachweise verlinkt | Gemeinsamer WWF-Durchlauf und fachliche Akzeptanz bleiben offen |
 
-## Weitere heute abgeschlossene Arbeiten
+## Weitere am 12. Oktober abgeschlossene Arbeiten
 
 - Event-Mapping vereinheitlicht und Dokumentabgleich repariert: 1.158 Dokumente nachgetragen, 32 geändert. Diese Zahlen belegen lokale Reparaturen, keine ausschliesslich heute veröffentlichten Quellinhalte.
 - Windows-Dateisperren beim atomischen Checkpoint-Schreiben behandelt und unter Windows reproduzierbar geprüft.

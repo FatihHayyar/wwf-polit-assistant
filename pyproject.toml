@@ -29,4 +29,4 @@ build-backend = "setuptools.build_meta"
 include = ["app*", "scripts*"]
 
 [tool.setuptools.package-data]
-app = ["web/*.html", "web/*.css", "web/*.js"]
+app = ["classification/*.json", "web/*.html", "web/*.css", "web/*.js"]

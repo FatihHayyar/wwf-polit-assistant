@@ -521,7 +521,7 @@ def main() -> None:
                 ClassificationCategory
             ).where(
                 ClassificationCategory.active.is_(True),
-                ClassificationCategory.is_fallback.is_(True),
+                ClassificationCategory.parent_id.is_(None), ClassificationCategory.is_fallback.is_(True),
             )
         )
 

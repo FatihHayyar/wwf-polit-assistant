@@ -3,7 +3,7 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.classification.taxonomy import TAXONOMY
+from app.classification.taxonomy import load_taxonomy
 from app.db.database import SessionLocal
 from app.models import (
     ClassificationCategory,
@@ -46,6 +46,8 @@ def get_or_create_category(
     parent_id: int | None,
     sort_order: int,
     is_fallback: bool = False,
+    threshold: float = DEFAULT_THRESHOLD,
+    descriptions: dict | None = None,
 ) -> ClassificationCategory:
     category = db.scalar(
         select(ClassificationCategory).where(
@@ -67,7 +69,9 @@ def get_or_create_category(
     category.sort_order = sort_order
     category.active = True
     category.is_fallback = is_fallback
-    category.classification_threshold = DEFAULT_THRESHOLD
+    category.classification_threshold = threshold
+    for language in SUPPORTED_LANGUAGES:
+        setattr(category, "description_" + language, (descriptions or {}).get(language))
 
     db.flush()
 
@@ -138,6 +142,7 @@ def upsert_rule(
     scope: str,
     rule_type: str,
     weight: float,
+    match_type: str = "phrase",
 ) -> ClassificationRule:
     key = make_rule_key(
         category_id=category_id,
@@ -165,7 +170,7 @@ def upsert_rule(
     rule.concept_code = concept_code
     rule.language = language
     rule.term = term
-    rule.match_type = "phrase"
+    rule.match_type = match_type
     rule.scope = scope
     rule.rule_type = rule_type
     rule.weight = weight
@@ -239,6 +244,7 @@ def add_category_rules(
         if rule_type not in {
             "strong",
             "context",
+            "qualifier",
         }:
             raise ValueError(
                 f"Invalid rule_type "
@@ -316,6 +322,9 @@ def add_category_rules(
                     content_weight = (
                         CONTENT_CONTEXT_WEIGHT
                     )
+                elif rule_type == "qualifier":
+                    title_weight = TITLE_STRONG_WEIGHT
+                    content_weight = DEFAULT_THRESHOLD - CONTENT_CONTEXT_WEIGHT
                 else:
                     title_weight = (
                         TITLE_STRONG_WEIGHT
@@ -336,6 +345,7 @@ def add_category_rules(
                     term=term,
                     scope="title",
                     rule_type=rule_type,
+                    match_type=concept.get("match_type", "phrase"),
                     weight=title_weight,
                 )
 
@@ -351,6 +361,7 @@ def add_category_rules(
                     term=term,
                     scope="content",
                     rule_type=rule_type,
+                    match_type=concept.get("match_type", "phrase"),
                     weight=content_weight,
                 )
 
@@ -358,180 +369,143 @@ def add_category_rules(
 
     return count
 
-def seed() -> None:
-    db = SessionLocal()
+def seed_taxonomy(db: Session, taxonomy=None):
+    taxonomy = taxonomy if taxonomy is not None else load_taxonomy()
+    existing_rules = (
+        load_existing_rules(db)
+    )
 
-    try:
-        existing_rules = (
-            load_existing_rules(db)
+    configured_rule_ids: set[int] = set()
+    configured_category_codes: set[str] = set()
+
+    category_count = 0
+    configured_rule_count = 0
+
+    for (
+        main_position,
+        main,
+    ) in enumerate(
+        taxonomy,
+        start=1,
+    ):
+        main_code = main["code"]
+
+        configured_category_codes.add(
+            main_code
         )
 
-        configured_rule_ids: set[int] = set()
-        configured_category_codes: set[str] = set()
+        parent = get_or_create_category(
+            db,
+            code=main_code,
+            names=main["names"],
+            threshold=main.get("threshold", DEFAULT_THRESHOLD),
+            descriptions=main.get("descriptions"),
+            parent_id=None,
+            sort_order=main.get(
+                "sort_order",
+                main_position * 10,
+            ),
+            is_fallback=main.get(
+                "fallback",
+                False,
+            ),
+        )
 
-        category_count = 0
-        configured_rule_count = 0
+        category_count += 1
 
         for (
-            main_position,
-            main,
+            child_position,
+            child,
         ) in enumerate(
-            TAXONOMY,
+            main.get(
+                "children",
+                [],
+            ),
             start=1,
         ):
-            main_code = main["code"]
+            child_code = child["code"]
 
             configured_category_codes.add(
-                main_code
+                child_code
             )
 
-            parent = get_or_create_category(
-                db,
-                code=main_code,
-                names=main["names"],
-                parent_id=None,
-                sort_order=main.get(
-                    "sort_order",
-                    main_position * 10,
-                ),
-                is_fallback=main.get(
-                    "fallback",
-                    False,
-                ),
+            category = (
+                get_or_create_category(
+                    db,
+                    code=child_code,
+                    names=child["names"],
+                    threshold=child.get("threshold", DEFAULT_THRESHOLD),
+                    descriptions=child.get("descriptions"),
+                    parent_id=parent.id,
+                    sort_order=(
+                        child.get("sort_order", child_position * 10)
+                    ),
+                    is_fallback=child.get(
+                        "fallback",
+                        False,
+                    ),
+                )
             )
 
             category_count += 1
 
-            for (
-                child_position,
-                child,
-            ) in enumerate(
-                main.get(
-                    "children",
-                    [],
-                ),
-                start=1,
-            ):
-                child_code = child["code"]
-
-                configured_category_codes.add(
-                    child_code
+            configured_rule_count += (
+                add_category_rules(
+                    db,
+                    category=category,
+                    category_code=child_code,
+                    concepts=child.get(
+                        "concepts",
+                        [],
+                    ),
+                    existing_rules=(
+                        existing_rules
+                    ),
+                    configured_rule_ids=(
+                        configured_rule_ids
+                    ),
                 )
-
-                category = (
-                    get_or_create_category(
-                        db,
-                        code=child_code,
-                        names=child["names"],
-                        parent_id=parent.id,
-                        sort_order=(
-                            child_position * 10
-                        ),
-                        is_fallback=child.get(
-                            "fallback",
-                            False,
-                        ),
-                    )
-                )
-
-                category_count += 1
-
-                configured_rule_count += (
-                    add_category_rules(
-                        db,
-                        category=category,
-                        category_code=child_code,
-                        concepts=child.get(
-                            "concepts",
-                            [],
-                        ),
-                        existing_rules=(
-                            existing_rules
-                        ),
-                        configured_rule_ids=(
-                            configured_rule_ids
-                        ),
-                    )
-                )
-
-        categories = db.scalars(
-            select(
-                ClassificationCategory
-            )
-        ).all()
-
-        for category in categories:
-            category.active = (
-                category.code
-                in configured_category_codes
             )
 
-        all_rules = db.scalars(
-            select(
-                ClassificationRule
-            )
-        ).all()
+    categories = db.scalars(
+        select(
+            ClassificationCategory
+        )
+    ).all()
 
-        deactivated_rule_count = 0
+    for category in categories:
+        category.active = (
+            category.code
+            in configured_category_codes
+        )
 
-        for rule in all_rules:
-            if (
-                rule.id
-                not in configured_rule_ids
-            ):
-                if rule.active:
-                    deactivated_rule_count += 1
+    all_rules = db.scalars(
+        select(
+            ClassificationRule
+        )
+    ).all()
 
-                rule.active = False
+    deactivated_rule_count = 0
 
+    for rule in all_rules:
+        if (
+            rule.id
+            not in configured_rule_ids
+        ):
+            if rule.active:
+                deactivated_rule_count += 1
+
+            rule.active = False
+
+    return {"categories": category_count, "rules": configured_rule_count,
+            "deactivated_rules": deactivated_rule_count}
+
+
+def seed():
+    with SessionLocal() as db:
+        result = seed_taxonomy(db)
         db.commit()
-
-        active_rules = db.scalars(
-            select(
-                ClassificationRule
-            ).where(
-                ClassificationRule.active.is_(
-                    True
-                )
-            )
-        ).all()
-
-        active_concepts = {
-            rule.concept_code
-            for rule in active_rules
-        }
-
-        print()
-        print(
-            "CLASSIFICATION TAXONOMY SEEDED"
-        )
-        print(
-            f"Categories:       "
-            f"{category_count}"
-        )
-        print(
-            f"Configured rules: "
-            f"{configured_rule_count}"
-        )
-        print(
-            f"Active rules:     "
-            f"{len(active_rules)}"
-        )
-        print(
-            f"Active concepts:  "
-            f"{len(active_concepts)}"
-        )
-        print(
-            f"Deactivated:      "
-            f"{deactivated_rule_count}"
-        )
-
-    except Exception:
-        db.rollback()
-        raise
-
-    finally:
-        db.close()
+        print("Classification taxonomy synchronized:", result)
 
 
 if __name__ == "__main__":

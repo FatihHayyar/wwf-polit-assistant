@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
 from app.models.classification import ClassificationCategory
@@ -12,7 +12,7 @@ def get_categories(
         select(ClassificationCategory)
         .where(
             ClassificationCategory.active.is_(True),
-            ClassificationCategory.is_fallback.is_(False),
+            or_(ClassificationCategory.parent_id.is_not(None), ClassificationCategory.is_fallback.is_(False)),
         )
         .order_by(
             ClassificationCategory.sort_order,

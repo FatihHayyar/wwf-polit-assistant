@@ -1,0 +1,1515 @@
+{
+  "annotation_method": "Independent source-based expectations, not model outputs.",
+  "records": [
+    {
+      "dataset": "affairs",
+      "id": 2160,
+      "group": "wwf",
+      "title": "Photovoltaikanlage Schulanlage Spitz",
+      "input": {
+        "affair": {
+          "title_de": "Photovoltaikanlage Schulanlage Spitz",
+          "title_long_de": "Bericht und Antrag Nr. 1504 Photovoltaikanlage Schulanlage Spitz",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "renewable_electricity"
+        ],
+        "optional": [],
+        "reason": "Okul binası üzerindeki fotovoltaik tesis doğrudan yenilenebilir elektrik konusudur."
+      },
+      "sampling_main": "climate_energy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 37526,
+      "group": "wwf",
+      "title": "Stillstand bei der Windenergie-Nutzung im Kanton Bern?",
+      "input": {
+        "affair": {
+          "title_de": "Stillstand bei der Windenergie-Nutzung im Kanton Bern?",
+          "title_long_de": null,
+          "title_fr": "Energie éolienne: un temps d`arrêt dans le canton de Berne?",
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "renewable_electricity"
+        ],
+        "optional": [],
+        "reason": "Rüzgâr enerjisinin kullanımı açıkça belirtiliyor."
+      },
+      "sampling_main": "climate_energy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 3895,
+      "group": "wwf",
+      "title": "Mehr Transparenz bei der Energieeffizienz städtischer Liegenschaften",
+      "input": {
+        "affair": {
+          "title_de": "Mehr Transparenz bei der Energieeffizienz städtischer Liegenschaften",
+          "title_long_de": "Motion 124 Mehr Transparenz bei der Energieeffizienz städtischer Liegenschaften",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "building_efficiency"
+        ],
+        "optional": [
+          "public_sector"
+        ],
+        "reason": "Belediye taşınmazlarının enerji verimliliği açıkça konu ediliyor; kamu çevre performansı ikincil olabilir."
+      },
+      "sampling_main": "climate_energy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 8598,
+      "group": "wwf",
+      "title": "Synergien nutzen bei der Bereitstellung von Ladeinfrastruktur für die E-Mobilität",
+      "input": {
+        "affair": {
+          "title_de": "Synergien nutzen bei der Bereitstellung von Ladeinfrastruktur für die E-Mobilität",
+          "title_long_de": "Synergien nutzen bei der Bereitstellung von Ladeinfrastruktur für die E-Mobilität",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "sustainable_mobility"
+        ],
+        "optional": [],
+        "reason": "Elektrikli ulaşım için şarj altyapısı açıkça belirtiliyor."
+      },
+      "sampling_main": "climate_energy"
+    },
+    {
+      "dataset": "documents",
+      "id": 68618,
+      "source_id": 925781,
+      "group": "wwf",
+      "title": "Antrag Stadtrat - 2026.96W",
+      "url": "https://parlament.winterthur.ch/_doc/7249858",
+      "input": {
+        "affair": {
+          "title_de": "Antrag Stadtrat - 2026.96W",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": [
+          {
+            "text_de": "Winterthur, 16.09.2026 \n Parl-Nr. 2026.96 \n \n \n \nAn das Stadtparlament \n \n \n\nW i n t e r t h u r \n \n \n \nTeilrevision räumlicher kommunaler Energieplan für die Wärmeversorgung  \n \n \n \nReferendum: fakultativ \n \nAusgabenbremse: nein \n \nFinanzierung: steuerfinanziert \n \n \nAntrag: \n \n1. Die Teilrevision des räumlichen kommunalen Energieplans (bestehend aus Energieplankarte \n\nim Mst. 1:40'000 vom 19. August 2026, Erläuterungsbericht mit Energieplankarte und Mass-\nnahmenkatalog vom 19. August 2026) wird genehmigt. \n\n2. Der Stadtrat wird eingeladen, die Genehmigung durch die Baudirektion Kanton Zürich einzu-\nholen. \n\n3. Die Änderung der räumlichen kommunalen Energieplanung tritt mit der Publikation des Ge-\nnehmigungsentscheids der Baudirektion in Kraft. \n\n4. Der Stadtrat bzw. die Leitung der Abteilung Energie und Technik wird ermächtigt, bei nicht \nwesentlichen Änderungen (gemäss Tabelle 1 im Kapitel 5 der Weisung) Anpassungen in der \nEnergieplanung in eigener Zuständigkeit vorzunehmen.  \n\n \nWeisung: \n \nI. Zusammenfassung \n\n \nDer kommunale Energieplan legt behördenverbindlich fest, in welchen Gebieten städtische Wär-\nmenetze in Betrieb, in Planung oder in Prüfung sind (sogenannte Verbundgebiete) und wo indivi-\nduelle, erneuerbare Heizlösungen zum Einsatz kommen (sogenannte Eignungsgebiete). Er bildet \ndie planerischen Grundlagen für eine sichere und auf die energie- und klimapolitischen Ziele der \nStadt Winterthur ausgerichtete Wärmeversorgung. Die letzte Revision des Energieplanes wurde \nam 20. Januar 2023 von der Baudirektion des Kantons Zürich genehmigt und ist seither rechts-\nkräftig (SRS 7.6-1). \n \nAuf Grundlage der Masterplanstudien («Wärmeverbunde und Netze Winterthur») hat der Stadtrat \ndie noch offen gelassenen Prioritäten beim Ausbau der städtischen Wärmenetze am 23. Oktober \n2024 festgelegt (SR.24.707-1: «Studie Wärmeverbunde und Netze Winterthur (Masterplan Teil 2) \n\n\n\n - 2 - \n\nund «Präzisierung zur Umsetzung des kommunalen Energieplans betreffend Wärmenetzaus-\nbau»). Parallel dazu hat der Kanton Zürich mit dem kantonalen Geodatenmodell (KGDM) neue \nVorgaben für die einheitliche Darstellung der kommunalen Energieplanungen eingeführt. \n \nIn Dispositivziffer 3 SR.24.707-1 vom 23. Oktober 2024 wurde das Departement Bau und Mobili-\ntät zusammen mit dem Departement Technische Betriebe daher beauftragt, den kommunalen \nEnergieplan vom 25. Mai 2022 (Parl.-Nr. 2022.65) im Sinne einer Teilrevision zu überarbeiten. \nMit der Planung und Projektleitung wurde die Abteilung Energie und Technik des Departements \nBau und Mobilität beauftragt. \n \nMit der vorliegenden Teilrevision werden diese Erkenntnisse und Entscheide in den Energieplan \nüberführt. Im Unterschied zur Revision von 2022 handelt es sich hierbei um eine Teilrevision: Die \nfachlichen Grundlagen wie z.B. der Wärmebedarf, die Energiepotenziale und der Zielpfad Wär-\nmeversorgung behalten ihre Gültigkeit. Angepasst werden die Gebietsfestlegungen auf der Ener-\ngieplankarte, deren Darstellung gemäss dem neuen kantonalen Geodatenmodell sowie der  \nMassnahmenkatalog. \n \nGemäss Masterplanstudien soll die Abwärme des privaten Rechenzentrums in Hegi schrittweise \nfür die städtische Wärmeversorgung genutzt werden. Aufgrund der fehlenden Wirtschaftlichkeit \nwird zudem auf die Nutzung der Abwärme aus dem gereinigten Abwasser der Abwasserreini-\ngungsanlage (ARA) und auf Wärmenetze in weiteren Gebieten mit geringer Energiedichte ver-\nzichtet. Folglich werden die Wärmeversorgungsgebiete Wülflingen (V5), Binzhof (V16), Matten-\nbach, Spital West und Inneres Lind (V18), Hegi (V19) sowie Teilgebiete des Eichliackers (V3) neu \nals Eignungsgebiete statt Verbundgebiete ausgewiesen. Dort steht der Eigentümerschaft je nach \nStandort unter anderem als Alternative die Nutzung der Erdwärme, des Grundwassers oder der \nUmgebungsluft mittels Wärmepumpe zur Verfügung. \n \nMit der Überführung in das KGDM werden die Verbundgebiete neu anhand von drei Status «in \nBetrieb», «in Planung» und «in Prüfung» unterteilt. Bei Gebieten «in Planung» ist der Kredit für \ndie Erschliessung bereits rechtskräftig bewilligt. Damit ist kantonsweit einheitlich und digital er-\nsichtlich, wie weit fortgeschritten der Netzausbau in einem Gebiet bereits ist. \n \nDer Massnahmenkatalog wird neu in einen statischen und einen flexiblen Teil für das laufende \nControlling gegliedert. Im statischen Teil, resp. Massnahmenkatalog, werden pro Gebiet Mass-\nnahmen mit Zielsetzung, Energieträger, Gasstilllegungsperiode, Risiken und Herausforderungen \nsowie Zuständigkeiten festgelegt. Der flexible Teil wird separat geführt und laufend der Fortschritt, \naktuelle Schnittstellen und Risiken der einzelnen Massnahmen aktualisiert. Die flankierenden \nMassnahmen wurden zudem geprüft und werden, soweit weiterhin relevant, künftig in das Klima-\nCockpit der Stadt Winterthur überführt. \n \nKünftige kleinere Anpassungen wie Status-Wechsel von einzelnen Gebieten sollen in Zukunft \nvom Stadtrat beschlossen werden, um den administrativen Aufwand gering zu halten. Mit Verab-\nschiedung der Masterplanstudien sind aktuell keine grösseren Anpassungen vorgesehen. Sollten \ntrotzdem wesentliche Änderungen wie das Ausscheiden neuer Verbundgebiete oder das Wegfal-\nlen von bestehenden Verbundgebieten für die Wärmeversorgung nötig sein, wird dies weiterhin \ndurch das Stadtparlament beschlossen. \n \n \nII.  Detaillierte Ausführungen \n \n1. Planungsrechtliche Grundlagen \n \nDie rechtliche Basis für den kommunalen Energieplan bildet § 7 des kantonalen Energiegesetzes \n(EnerG). Der erste Energieplan der Stadt Winterthur wurde 1998 erlassen und 2013, sowie 2022 \n\n\n\n - 3 - \n\nrevidiert. Die geltende, umfassend revidierte Energieplanung hat das Stadtparlament am 20. Ja-\nnuar 2023 beschlossen. Sie ist nach Genehmigung durch die Baudirektion seither in Kraft. Ände-\nrungen der kommunalen Energieplanung folgen demselben Verfahren wie ihr Erlass und bedür-\nfen somit ebenfalls der Genehmigung durch die Baudirektion. \n \n2. Anlass und Gegenstand der Teilrevision \n \nAufbauend auf den Planungsgrundlagen und unter Berücksichtigung der übergeordneten Vorga-\nben wurde im Rahmen der Energieplanung 2022 der Zielpfad für den Winterthurer Wärmesektor \ndefiniert, welcher kongruent ist mit dem Netto-Null-Ziel 2040 gemäss Energie- und Klimakonzept \n(EKK) und somit weiterhin Bestand hat. Die Überarbeitung des kommunalen Energieplans (E1.1) \nist als wichtige Grundlage für das EKK 2040 und Schlüsselmassnahme zur Reduktion der Treib-\nhausgase weiterzuführen. \n \nDie Energieplanung 2022 hielt in der flankierenden Massnahme M1 fest, dass die Priorisierung \nder Wärmenetze in einem Masterplan zu konkretisieren sei. Stadtwerk Winterthur hat diesen Auf-\ntrag mit den Masterplanstudien «Studie Wärmeverbunde und Netze Winterthur (Masterplan Teil \n2) und «Präzisierung zur Umsetzung des kommunalen Energieplans betreffend Wärmenetzaus-\nbau») erfüllt. Die Studien klärten die technisch nutzbaren Energiepotenziale, die Etappierung und \ndie zeitlichen Abhängigkeiten der Wärmenetz-Bauprojekte sowie die Wirtschaftlichkeit der Ver-\nbundgebiete. \n \nDer Stadtrat hat die Ergebnisse am 23. Oktober 2024 zur Kenntnis genommen und die Prioritäten \nbeim Ausbau der städtischen Wärmenetze festgelegt (SR.24.707-1). Diese Priorisierung führt \ndazu, dass einzelne der 2022 vorgesehenen Verbundgebiete nicht realisiert werden, während \nneue Wärmequellen – insbesondere die Abwärme des Rechenzentrums in Hegi – hinzukommen. \nDamit weicht die rechtskräftige Energieplankarte in mehreren Gebieten von der beschlossenen \nAusbaustrategie ab. \n \nParallel dazu hat der Kanton Zürich das kantonale Geodatenmodell (KGDM) für kommunale \nEnergieplanungen eingeführt. Dieses gibt Kategorien und Attribute vor, mit denen die Energie-\nplanungen aller Zürcher Gemeinden einheitlich dargestellt und digital verfügbar gemacht werden. \n \nGegenstand der Teilrevision sind entsprechend: die Aktualisierung der räumlichen Festlegungen \ngestützt auf die Masterplanstudien und den Stadtratsentscheid, die Überführung der Energieplan-\nkarte in das KGDM sowie die Überarbeitung der zugehörigen Massnahmen. Eine Neuerarbeitung \nder fachlichen Grundlagen ist nicht Gegenstand der Teilrevision. Für deren Erarbeitung hat die \nAbteilung Energie und Technik ein externes Büro beigezogen. \n \n3. Inhalt der Teilrevision \n \n3.1 Aktualisierte Gebietsfestlegungen \nDas Rechenzentrum in Neuhegi wird voraussichtlich 2029 den geplanten Vollausbau erreicht ha-\nben. Die Abwärme des Rechenzentrums soll dann schrittweise für die städtische Wärmeversor-\ngung genutzt werden. Da die verfügbare Menge der Abwärme auf Prognosen beruht, sieht der \nMasterplan ein etappiertes Vorgehen zur Risikominimierung vor. Die Abwärme kann aufgrund \ndes Temperaturniveaus nicht direkt in das vor Ort bestehende Wärmenetz eingespeist werden \nund muss daher in die neu zu erstellende Energiezentrale geführt, dort mit Wärmepumpen auf \ndas benötigte Temperaturniveau angehoben und in ein neu zu erstellendes Wärmenetz einge-\nspeist werden. Es wird gemäss Masterplanstudien von einer Wärmeleistung von rund 16 MW \nausgegangen. Die geschätzte Abwärme-Menge muss mit gewisser Vorsicht betrachtet werden, \nda dies nicht von der Betreiberin garantiert wurde. \n \nAuf die Nutzung der Abwärme aus dem gereinigten Abwasser der ARA wird verzichtet. Der Stand-\nort der ARA ist abgelegen, auf dem Gelände fehlt wegen des Baus der fünften Reinigungsstufe \n\n\n\n - 4 - \n\nder Platz für eine Wärmezentrale, und die Erschliessung würde lange, teilweise durch Waldgebiet \nführende Leitungen erfordern. Die Investitionskosten samt Wärmeverteilnetz wurden auf über 120 \nMillionen Franken geschätzt, während das betroffene Versorgungsgebiet Wülflingen (V5) eine \nlockere Siedlungsstruktur mit geringer Energiedichte aufweist. Das Potenzial bleibt langfristig be-\nstehen und könnte bei veränderten Rahmenbedingungen erneut geprüft werden. \n \nAusserdem werden die ehemaligen Verbundgebiete Mattenbach, Spital West und Inneres Lind \n(V18), Binzhof (V16), sowie Hegi (V19) gemäss dem Stadtratsbeschluss (SR.24.707-1) nicht an \nein städtisches Wärmenetz angeschlossen. Dies wegen der zu geringen Energiedichte und der \nfehlenden Wirtschaftlichkeit. Auch ein Teil des Eichliacker (V3) wird nicht erschlossen, da dort die \nBedingungen für individuelle Wärmepumpen-Heizungen vorhanden sind. \n \nEntsprechend werden diese Gebiete neu als Eignungsgebiete ausgewiesen, in denen individu-\nelle, erneuerbare Heizlösungen zum Einsatz kommen. Im Fokus stehen insbesondere Wärme-\npumpen, die Umweltwärme aus Grundwasser, Erdreich oder Luft nutzen. Die Energieplankarte \nwurde in der vorliegenden Teilrevision entsprechend angepasst. Die Priorisierung der Energie-\nquellen der Eignungsgebiete entspricht derselben wie in der Energieplanung von 2022. Die Eig-\nnungsgebiete stellen dabei nur Empfehlungen für den Energieträger dar und ersetzen keine \nMachbarkeitsstudie vor Ort. \n \n3.2 Energieplankarte und kantonales Geodatenmodell \nDie Energieplankarte wird in das KGDM überführt. In der Energieplanung 2022 wurde in Ver-\nbundgebieten zwischen «bestehende Wärmenetzen» (P) und «vorgesehene Wärmenetzen» (V), \nunterschieden. Diese Unterteilung entfällt mit der Teilrevision. Bei den Verbundgebieten wird neu \ngemäss KGDM zwischen drei Status unterschieden: «in Betrieb» für bestehende Netze, «in Pla-\nnung» für Gebiete, deren Erschliessung finanziell gesichert ist, und «in Prüfung» für Gebiete, in \ndenen Machbarkeit und Wirtschaftlichkeit noch konkretisiert werden. Bei den ursprünglich vorge-\nsehenen Wärmenetzen gibt es damit eine zusätzliche Ausbaustufe. Damit wird für Wärmebezü-\ngerinnen und -bezüger auf einen Blick ersichtlich, wie verbindlich der Netzausbau im jeweiligen \nGebiet bereits ist. Die bisherige Nummerierung mit den entsprechenden Buchstaben (P, V, E) \nbleibt zur Wiedererkennung der Teilgebiete in der Teilrevision erhalten. \n \nDie Energieplankarte ist sowohl im Stadtplan Winterthur als auch im Geoportal des Kantons Zü-\nrich digitaleinsehbar. Aufgrund der Anpassung an das KGDM wird auf die Begrifflichkeit «Quar-\ntierwärmeverbund» (in der Energieplanung 2022 verwendet) verzichtet und es werden nur noch \ndie Begriffe «Verbundgebieten» oder «Wärmeverbund» verwendet. Einige Verbundgebiete wur-\nden namentlich angepasst. Die Benennung kann dem Erläuterungsbericht entnommen werden. \n \n3.3 Einstellung der flächendeckenden Gasversorgung \nDie Gasversorgung bleibt für die Spitzendeckung von Wärmeverbünden sowie für Prozessener-\ngie erhalten. Die Nutzung von Gas für die reine Raumwärmeversorgung ist nicht mehr vorgese-\nhen und das Gasnetz wird im Hinblick auf die städtischen Klimaziele etappenweise stillgelegt. \nDamit die betroffene Eigentümerschaft ihren Heizungsersatz planen kann, wird die Einstellung \nder flächendeckenden Gasversorgung pro Gebiet mit einem Zeitraum festgelegt und in der Regel \nmindestens zehn Jahre im Voraus angekündigt. Die Gasstilllegung erfolgt koordiniert mit dem \nAusbau der Wärmeverbunde innerhalb von vier verschiedenen Etappen: 2030, 2033, 2037 und \n2040. Die Teilrevision führt die Etappe 2037 für die Gebiete ein, die neu vom einem Verbundge-\nbiet den Eignungsgebieten zugewiesen werden. Damit steht der Eigentümerschaft in diesen Ge-\nbieten der zehnjährige Planungshorizont für die Umstellung auf eine individuelle, erneuerbare \nHeizlösung zur Verfügung. Die Gasstilllegungszeiträume sind sowohl digital in der Energieplan-\nkarte, als auch in der zusätzlich erstellten Gasstilllegungskarte einsehbar. \n \n  \n\n\n\n - 5 - \n\n3.4 Massnahmenkatalog und Controlling \nDer Massnahmenkatalog wurde innerhalb der Teilrevision überprüft: Bereits umgesetzte oder \nüberholte Massnahmen wurden bereinigt, die weiterhin gültigen aktualisiert. Der Katalog wird zu-\ndem neu in einen statischen und einen flexiblen Teil gegliedert. Im statischen Teil sind pro Gebiet \nder Status, die Zielsetzung, die aktuellen, mittelfristigen und längerfristigen Energieträger, die \nGasstilllegungszeiträume, die Massnahmen sowie Verantwortung und Risiken festgelegt. Der \nstatische Teil ist Bestandteil der Genehmigungsinhalte und wird erst bei der nächsten Teilrevision \nüberarbeitet. Der flexible Teil enthält die veränderlichen Informationen, insbesondere den Umset-\nzungsstand der einzelnen Massnahmen. Er wird regelmässig durch die Arbeitsgruppe Wärme-\nnetze nachgeführt, in der Stadtwerk Winterthur und die Stadt Winterthur vertreten sind, und ist \nnicht Bestandteil der Genehmigungsinhalte. \n \nDie flankierenden Massnahmen werden, soweit weiterhin relevant, in das Klima-Cockpit \n(https://stadt.winterthur.ch/klima-cockpit) der Stadt Winterthur überführt. Damit sind sie öffentlich \neinsehbar und werden im jährlichen Controlling des Energie- und Klimakonzepts mitgeführt. Die \nAnpassungen im Klima-Cockpit erfolgen im Rahmen der nächsten jährlichen Berichterstattung \nzum EKK-Massnahmenplan. Neu aufgenommen werden soll die Massnahme «Energiemix Wär-\nmeverbunde entwickeln»: Sie soll aufzeigen, wie die Spitzenlast und die Redundanz der Wärme-\nverbunde bis 2040 ohne fossile Brennstoffe gedeckt werden können und welche finanziellen Aus-\nwirkungen damit verbunden sind. Die offenen Fragestellungen und der sich daraus ergebende \nAuftrag werden unter der Federführung von Stadtwerk Winterthur, begleitet durch die Arbeits-\ngruppe Wärmenetze, erarbeitet. \n \n3.5 Abgrenzung \nDer Wärmebedarf, die Energiepotenziale und der Zielpfad Wärmeversorgung wurden in der Ener-\ngieplanung 2022 erhoben und behalten ihre Gültigkeit. Sie werden in gekürzter Form im aktuellen \nErläuterungsbericht zusammenfassend und mit entsprechender Deklaration wiedergegeben. Die \nfachlichen Erkenntnisse aus den Masterplanstudien im Sinne des Stadtentscheids (SR.24.707-\n1) wurden in die Teilrevision bzw. in die Energieplanung übernommen. Es wurden somit innerhalb \nder Teilrevision keine neuen Machbarkeitsstudien für Wärmeverbunde durchgeführt. \n \n4. Verbindlichkeit \n \n4.1 Verbindlichkeit für die Behörden \nDie kommunale Energieplanung ist behördenverbindlich. Die vorgesehenen Massnahmen sind \nin der Behördentätigkeit zu berücksichtigen und entsprechend umzusetzen (§ 5 EnerG). Behör-\ndenverbindliche Bestandteile sind die Energieplankarte, der Erläuterungsbericht und der stati-\nsche Teil des Massnahmenkatalogs. \n \nDie beiden Gebietstypen (Eignungsgebiete und Verbundgebiete) unterscheiden sich in ihrer Ver-\nbindlichkeit: In den Verbundgebieten legt die Energieplanung die leitungsgebundene Wärmever-\nsorgung als angestrebte Lösung fest. In den Eignungsgebieten besteht demgegenüber keine \nFestlegung auf einen bestimmten Energieträger. Die Energieplanung spricht dort eine Empfeh-\nlung aus, welche dezentralen, erneuerbaren Energieträger sich aufgrund der örtlichen Gegeben-\nheiten am besten eignen. Der Entscheid über die konkrete Heizlösung liegt nach wie vor bei der \nEigentümerschaft. Die Energieplanung ersetzt keine Machbarkeitsprüfung der Heizlösung vor \nOrt. \n \n4.2 Abgestufte Ausbaufortschritt der Verbundgebiete \nMit den neuen Status ist der Ausbaufortschritt innerhalb der Verbundgebiete abgestuft. Massge-\nbend für den Status «in Planung» ist die gesicherte Finanzierung der Erschliessung. Stadtwerk \nWinterthur ist zudem dazu befähigt, Liegenschaften ausserhalb der Verbundgebiete anzuschlies-\nsen, sofern dies wirtschaftlich und technisch sinnvoll ist (SR.24.707-1 vom 23. Oktober 2024). \n \n  \n\n\n\n - 6 - \n\n4.3 Anschlussverpflichtung und Durchleitungsrechte \nGestützt auf die Energieplanung können grundeigentümerverbindliche Vorgaben in der Nut-\nzungsplanung festgesetzt werden. Zudem besteht gestützt auf § 295 Abs. 2 PBG die gesetzliche \nMöglichkeit, Grundeigentümerinnen und Grundeigentümer unter bestimmten Voraussetzungen \nzum Anschluss an ein Wärmenetz zu verpflichten oder Durchleitungsrechte zu gewähren. Die \nStadt Winterthur verzichtet in der Praxis auf die Anwendung der Anschlussverpflichtung und setzt \nauf die Attraktivität des Anschlusses. Von der Möglichkeit, Durchleitungsrechte durchzusetzen, \nwird hingegen bei Bedarf Gebrauch gemacht. \n \n5. Künftige Anpassungen \n \nMit der Verabschiedung der Masterplanstudien steht das Gerüst der kommunalen Energiepla-\nnung und soll mit der vorliegenden Teilrevision durch das Stadtparlament beschlossen werden. \nZum jetzigen Zeitpunkt sind keine grösseren Änderungen an den Wärmeverbünden vorgesehen. \nStatus-Änderungen von «in Prüfung» zu «in Planung» erfordern die Genehmigung der kantona-\nlen Baudirektion, während die Änderung von «in Planung» zu «in Betrieb» keine Genehmigung \nerfordert. Um den administrativen Aufwand in solchen Fällen klein zu halten wird eine Delegation \nan den Stadtrat beantragt. Bisher wurden sämtliche (Teil-)Revisionen der kommunalen Energie-\nplanung durch das Stadtparlament beschlossen. In der folgenden Tabelle ist dargestellt, welche \nArt von Anpassung am Energieplan künftig welche Genehmigungen voraussetzt. \n \nArt der Anpassung Kommunaler Beschluss Kantonale Genehmigung \n\nAusscheidung neuer Verbundge-\nbiete, Wegfall oder wesentliche Än-\nderungen bestehender Verbundge-\nbiete \n\nStadtparlament Ja \n\nStatusänderungen von «in Prü-\nfung» zu «in Planung» \n\nStadtrat Ja \n\nStatusänderungen von «in Pla-\nnung» zu «in Betrieb» \n\nStadtrat Nein \n\nKleinere Perimeter-Anpassungen \nan bestehenden Verbundgebieten \nund Anschluss von kleinen Arron-\ndierungsgebieten \n\nAbteilungsleitung Energie \nund Technik \n\nNein \n\nAnpassung der Empfehlungen für \neinen Energieträger innerhalb von \nEignungsgebieten (z.B. Grundwas-\nser zu Luft) \n\nAbteilungsleitung Energie \nund Technik \n\nNein \n\nTabelle 1: Beschluss und Genehmigungen je nach Art der Anpassungen am kommunalen Energieplan. \n \n6. Finanzielle Auswirkungen \n \nDie Genehmigung der Teilrevision löst keine unmittelbaren Investitionsverpflichtungen aus. Die \nFinanzierung des Wärmenetzausbaus erfolgt über separate Kreditvorlagen und die entsprechen-\nden Kostenschätzungen sind in den Masterplanstudien enthalten. \n \n  \n\n\n\n - 7 - \n\n7. Kommunikation \n \nVon der Teilrevision sind insbesondere Hauseigentümerinnen und Hauseigentümer in den Ge-\nbieten betroffen, die 2022 als Verbundgebiete und neu als Eignungsgebiete ausgewiesen wer-\nden. Der Stadtrat hat am 29. Oktober 2024 bereits über den Verzicht der jeweiligen Wärmever-\nbunde per Medienmitteilung informiert.  \n \nDie aktualisierte Energieplankarte wird nach Inkrafttreten im Online-Stadtplan und im kantonalen \nGeoportal veröffentlicht. Das Energieportal, welches als niederschwellige Beratungsplattform für \nden Heizungsersatz in Winterthur fungiert, bezieht die Informationen über mögliche Heizlösungen \nder Gebiete aus der Energieplankarte. \n \nFlankierende Massnahmen der Energieplanung werden neu nicht über den statischen Massnah-\nmenkatalog, sondern über das Klima-Cockpit der Stadt Winterthur kommuniziert. \n \nFragen betreffend der Energieplanung und den Wärmeverbunden werden über das Beratungs-\nangebot der städtischen Energieberatung oder über Hotline der Kundenberatung Wärme von \nStadtwerk Winterthur beantwortet. \n \n8. Weiteres Vorgehen \n \nDie Teilrevision ist gemäss § 7 EnerG durch die Baudirektion des Kantons Zürich zu genehmigen. \nEin öffentliches Mitwirkungsverfahren oder ein öffentliches Einspracheverfahren sieht das Ener-\ngiegesetz nicht vor. Die Teilrevision wird mit der Publikation des Genehmigungsentscheids der \nBaudirektion rechtskräftig.  \n \n \nDie Berichterstattung im Stadtparlament ist der Vorsteherin des Departements Bau und Mobilität übertra-\ngen. \n \n \n\nVor dem Stadtrat \n  \n\nDer Stadtpräsident: \n  \n\nS. Fritschi \n  \n  \n\nDer Stadtschreiber: \n  \n\nA. Simon \n \n \nBeilagen: \n1. Erläuterungsbericht Teilrevision Kommunale Energieplanung 2026 mit statischem  \n\nMassnahmenkatalog vom 19.08.2026 \n2. Energieplankarte vom 19.08.2026 \n3. Gasstilllegungskarte vom 19.08.2026 \n \n \n\nhttps://stadt.winterthur.ch/gemeinde/verwaltung/stadtkanzlei/kommunikation-stadt-winterthur/medienmitteilungen-stadt-winterthur/stadtrat-setzt-prioritaeten-beim-ausbau-der-staedtischen-waermenetze\nhttps://stadt.winterthur.ch/energieportal/\nhttps://stadt.winterthur.ch/klima-cockpit\nhttps://stadtplan.winterthur.ch/energieportal/unser-beratungsangebot/",
+            "text_fr": null,
+            "text_it": null,
+            "text_rm": null
+          }
+        ]
+      },
+      "expected": {
+        "required": [
+          "renewable_heat"
+        ],
+        "optional": [
+          "fossil_energy",
+          "public_sector",
+          "environmental_law",
+          "building_efficiency",
+          "soil_spatial_planning"
+        ],
+        "reason": "Winterthur'un ısı ağları ve bireysel yenilenebilir ısı çözümleri için belediye enerji planı. İçerikte fosil ısıdan geçiş, bağlayıcı planlama ve bina ısı ihtiyacı da var; genel bütçe belgesi değildir."
+      },
+      "sampling_main": "climate_energy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 24891,
+      "group": "wwf",
+      "title": "Betreffend Seglerschutz/Artenschutz",
+      "input": {
+        "affair": {
+          "title_de": "Betreffend Seglerschutz/Artenschutz",
+          "title_long_de": "Postulat Reinert Marie Louise, EVP, und Scherer Kleiner Leo, WettiGrüen, vom 16. Mai 2019 betreffend Seglerschutz/Artenschutz",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "species_habitats"
+        ],
+        "optional": [],
+        "reason": "Ebabil ve tür koruma başlığı açıkça doğal türleri konu ediniyor."
+      },
+      "sampling_main": "biodiversity_landscape"
+    },
+    {
+      "dataset": "affairs",
+      "id": 1337,
+      "group": "wwf",
+      "title": "Naturschutzgebiet Ruggeller Riet",
+      "input": {
+        "affair": {
+          "title_de": "Naturschutzgebiet Ruggeller Riet",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": [
+          {
+            "text_de": "<p>Einleitend h&auml;lt die Regierung fest, dass das Hauptziel des Pilotprojekts &bdquo;tempor&auml;rer Wasserr&uuml;ckhalt Ruggeller Riet&ldquo; der Erhalt bzw. die Wiederherstellung einer f&uuml;r Feuchtgebiete typischen Flora und Fauna ist. Die Verhinderung eines weiteren Torfabbaus und damit die Einsparung von CO<sub>2</sub>-Emissionen kann ein positiver Nebeneffekt des Pilotprojektes sein, ist jedoch nicht das Hauptziel des Projekts.</p>\r\n<p><strong>Zu Frage 1:</strong></p>\r\n<p>Es wird eine Fl&auml;che von rund 1.5 ha &uuml;berstaut, w&auml;hrend auf einer Fl&auml;che von ca. 2.2 ha ein Einstau von 0 bis 20 cm unter Boden erfolgt. Der gesamte Projektperimeter ist jedoch um ein Mehrfaches gr&ouml;sser.</p>\r\n<p><strong>Zu Frage 2:</strong></p>\r\n<p>Wie einleitend erw&auml;hnt, dient die tempor&auml;re Wiedervern&auml;ssung prim&auml;r dem Erhalt der Biodiversit&auml;t und nicht der CO<sub>2</sub>-Speicherung. Es wurden daher auch keine Emissionsmessungen durchgef&uuml;hrt. Der aktuelle Bodenaufbau wurde jedoch als Referenz beprobt. Mittels einer weiteren Beprobung in einigen Jahren wird sich die Ver&auml;nderung der Torfschicht darstellen lassen. Daraus wird abgeleitet werden k&ouml;nnen, wie stark das Moor Treibhausgase speichert.</p>\r\n<p><strong>Zu Frage 3:</strong></p>\r\n<p>Wasserst&auml;nde wurden nicht gemessen, weil sie f&uuml;r das Pilotprojekt insofern nicht von Bedeutung sind, als sie ohnehin zu tief sind und ja gerade ihre Anhebung das Ziel des Projektes ist. Haubenmessungen sind nicht vorgesehen, da die Einsparung von CO<sub>2</sub>-Emmissionen nicht im Vordergrund steht.</p>\r\n<p><strong>Zu Frage 4:</strong></p>\r\n<p>Der Biber schafft durch seine Stau- und Grabaktivit&auml;ten eine Vielzahl neuer Mikrohabitate und f&ouml;rdert damit die Biodiversit&auml;t im Naturschutzgebiet. Er f&ouml;rdert so das Hauptziel des Pilotprojektes. Der Biber wird deshalb nicht vergr&auml;mt, wenn er tempor&auml;r oder lokal Streuefl&auml;chen &uuml;berstaut. Um m&ouml;glichen &Uuml;berschwemmungen des Landwirtschaftslandes vorzubeugen, gibt es mildere Massnahmen als die Vergr&auml;mung.</p>\r\n<p><strong>Zu Frage 5:</strong></p>\r\n<p>Klimaschutz steht bei diesem Projekt nicht im Fokus. Torf wird &uuml;ber einen sehr langen Zeitraum gebildet, weshalb auch aus diesem Grund keine direkten Gasmessungen vorgesehen sind. Im Rahmen dieses Pilotprojektes allein k&ouml;nnte somit auch kein Klimaschutzprojekt ausgewiesen werden. Die Gold-Label-Zertifikate endeten mit der zweiten Verpflichtungsperiode des Kyoto-Protokolls.</p>",
+            "text_fr": null,
+            "text_it": null,
+            "text_rm": null
+          },
+          {
+            "text_de": "<p><span><span class=\"abs\">Im Variantenstudium tempor&auml;rer Wasserr&uuml;ckhalt Ruggeller Riet, das derzeit umgesetzt wird, ist unter Ziele aufgef&uuml;hrt: &laquo;Reduktion der Treibhausgasemissionen und Leisten eines Beitrages gegen die Klimaerw&auml;rmung&raquo;. Das Ziel ist Okay. Die Moorvegetation nimmt CO2 auf und bildet Biomasse. Nach dem Absterben wird die Biomasse zu Torf. Torf speichert Kohlenstoff, Stickstoff, Phosphor und andere Elemente. F&uuml;r diesen Prozess soll meist ein Wasserstand von f&uuml;nf bis 20&nbsp;Zentimeter unter der Bodenoberfl&auml;che gut sein. Steht das Wasser &uuml;ber der Oberfl&auml;che, wird Methan gebildet und das Moor wird zum kr&auml;ftigen Treibhausgasproduzenten. </span><span class=\"abs\">Das Naturschutzgebiet in Ruggell ist nicht eben, der H&ouml;henunterschied betr&auml;gt mehr als zwei Meter. Die Gr&auml;ben im Naturschutzgebiet wurden zum Entw&auml;ssern und deshalb an den tiefsten Stellen gemacht. Dadurch sind sie zum Vern&auml;ssen, wie im Pilotprojekt vorgesehen, sehr ung&uuml;nstig, weil, bis an h&ouml;her gelegenen Stellen Wasser ankommt, auf weiten Gebieten &Uuml;berstau entsteht und das bildet Treibhausgas, das Gegenteil, was gewollt ist. </span><span class=\"abs\"></span></span></p>\r\n<ol>\r\n<li>Auf wie viel zus&auml;tzlicher Fl&auml;che gegen&uuml;ber dem Zustand davor wird mit dem Pilotversuch ein meist idealer Wasserstand zwischen f&uuml;nf und 20&nbsp;Zentimeter unter der Bodenoberfl&auml;che erreicht und auf wie viel Fl&auml;che entsteht ein &Uuml;berstau? Also wie gross die Fl&auml;che mit dem &Uuml;berstau ist.</li>\r\n<li>Bei einem Pilotversuch sind Messungen unabdingbar, um die ideale Einstellung der Wasserst&auml;nde zu finden und die Zertifizierungskriterien zu erf&uuml;llen. Was haben Emissionsmessungen an Stellen mit &Uuml;berstau und an verschiedenen Wasserst&auml;nden unterhalb der Bodenoberfl&auml;che f&uuml;r Resultate gezeigt?</li>\r\n<li>Die Erfassung der Wasserst&auml;nde vor Beginn und w&auml;hrend der Phase des Pilotversuches sind von grosser Bedeutung, speziell auch f&uuml;r eine Emissionsauswertung mit Haubenmessungen. An wie vielen Punkten wurden und werden die Wasserst&auml;nde dokumentiert und in welchen Zeitabst&auml;nden?</li>\r\n<li>Wird der Biber, der mit seinem Dammbau Teile der Streuefl&auml;che in einen Stausee verwandelt, vergr&auml;mt, wenn die Treibhausgasbilanz deswegen in seinem Einzugsgebiet ins Negative kippt und das Klima damit sch&auml;digt und somit die Treibhausgasbilanz Liechtensteins verschlechtert?</li>\r\n<li>Wann kann mit Resultaten aus validierten Messergebnissen gerechnet werden, um die Kosten pro Tonne eingespartes CO2-&Auml;quivalent faktenbasiert auszuweisen, unter Offenlegung aller Kosten f&uuml;r die Vern&auml;ssung und transparenten Gegenrechnung der CO2-Senken und CH4-Quellen, um f&uuml;r den Staat nutzbringende CO2-Gold-Label-Zertifikate zu erhalten?</li>\r\n</ol>\r\n<p><span><span class=\"abs\"></span></span></p>",
+            "text_fr": null,
+            "text_it": null,
+            "text_rm": null
+          }
+        ]
+      },
+      "expected": {
+        "required": [
+          "protected_areas"
+        ],
+        "optional": [
+          "species_habitats",
+          "waters",
+          "climate_energy_other",
+          "soil_spatial_planning"
+        ],
+        "reason": "Ruggeller Riet doğal koruma alanı; bağlı içerik sulak alan habitatı, su tutma, turba ve ikincil karbon depolamayı ele alıyor."
+      },
+      "sampling_main": "biodiversity_landscape"
+    },
+    {
+      "dataset": "affairs",
+      "id": 43542,
+      "group": "wwf",
+      "title": "Waldreservate im Kanton Basel-Stadt",
+      "input": {
+        "affair": {
+          "title_de": "Waldreservate im Kanton Basel-Stadt",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "forest"
+        ],
+        "optional": [
+          "protected_areas"
+        ],
+        "reason": "Orman rezervlerinin korunması, orman alt kategorisine doğrudan uyar."
+      },
+      "sampling_main": "biodiversity_landscape"
+    },
+    {
+      "dataset": "affairs",
+      "id": 271,
+      "group": "wwf",
+      "title": "Gewässerschutz im Rhein - der Rendite der Pharmaindustrie geopfert",
+      "input": {
+        "affair": {
+          "title_de": "Gewässerschutz im Rhein - der Rendite der Pharmaindustrie geopfert",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "waters"
+        ],
+        "optional": [
+          "companies_supply_chains"
+        ],
+        "reason": "Ren Nehri'nde su koruma açıkça belirtiliyor; ilaç sanayisinin çevresel sorumluluğu ikincil olabilir."
+      },
+      "sampling_main": "biodiversity_landscape"
+    },
+    {
+      "dataset": "affairs",
+      "id": 36406,
+      "group": "wwf",
+      "title": "Aargauer Landwirtschaft ohne chemisch-synthetische Pestizide",
+      "input": {
+        "affair": {
+          "title_de": "Aargauer Landwirtschaft ohne chemisch-synthetische Pestizide",
+          "title_long_de": "Interpellation Robert Obrist, Grüne, Schinznach, vom 14. September 2021 betreffend Aargauer Landwirtschaft ohne chemisch-synthetische Pestizide",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "agriculture_biodiversity"
+        ],
+        "optional": [],
+        "reason": "Tarımda kimyasal-sentetik pestisitlerin kullanılmaması doğrudan tarımsal çevre konusudur."
+      },
+      "sampling_main": "biodiversity_landscape"
+    },
+    {
+      "dataset": "affairs",
+      "id": 2913,
+      "group": "wwf",
+      "title": "Kreislaufwirtschaft",
+      "input": {
+        "affair": {
+          "title_de": "Kreislaufwirtschaft",
+          "title_long_de": "Postulat Nr. 2022-759 von André Fallet, GLP, und Mitunterzeichnenden: Kreislaufwirtschaft",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "circular_economy"
+        ],
+        "optional": [],
+        "reason": "Başlık doğrudan döngüsel ekonomidir."
+      },
+      "sampling_main": "sustainable_economy_consumption"
+    },
+    {
+      "dataset": "affairs",
+      "id": 58340,
+      "group": "wwf",
+      "title": "Food Waste eindämmen",
+      "input": {
+        "affair": {
+          "title_de": "Food Waste eindämmen",
+          "title_long_de": null,
+          "title_fr": "Endiguer le gaspillage alimentaire",
+          "title_long_fr": null,
+          "title_it": "Ridurre lo spreco di alimenti",
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": [
+          {
+            "text_de": "Food Waste eindämmen",
+            "text_fr": "Endiguer le gaspillage alimentaire",
+            "text_it": "Ridurre lo spreco di alimenti",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Der Bundesrat hat am 8. März 2013 den Aktionsplan Grüne Wirtschaft verabschiedet. Die ressourcenschonendere Ernährung und die Verringerung der Nahrungsmittelabfälle sind beides Massnahmen des Aktionsplans.</p><p>Im Bereich der ressourcenschonenderen Ernährung werden in Abstimmung mit dem NFP 69, \"Gesunde Ernährung und nachhaltige Lebensmittelproduktion\", in einem ersten Schritt die Herausforderungen und Potenziale einer ressourcenschonenderen, ausgewogenen und abwechslungsreichen Ernährung identifiziert. In einem zweiten Schritt soll ein Dialog mit den Akteuren des Ernährungssystems aufgenommen und sollen Massnahmen erarbeitet werden.</p><p>Für die Erarbeitung von Massnahmen zur Reduktion der Nahrungsmittelabfälle hat eine Projektgruppe der Bundesverwaltung (BLW, Bafu, BLV, Deza) im Winter 2012/13 einen Stakeholderdialog initiiert. Zusammen mit Akteuren aller Stufen der Lebensmittelkette und interessierten Organisationen der Zivilgesellschaft wird nach übergreifenden Lösungen zur Reduktion der Nahrungsmittelabfälle gesucht. Im Rahmen von Arbeitsgruppen werden bis Ende 2014 konkrete Lösungsansätze zu den Themen \"Datierung von Lebensmitteln\", \"Bildung, Sensibilisierung, Information\" und \"Abgabe von Nahrungsmitteln an Bedürftige durch Hilfsorganisationen wie 'Caritas Markt', 'Schweizer Tafel' oder 'Tischlein deck dich'\" entwickelt.</p><p>Aus dem Stakeholderdialog ist klar hervorgegangen, dass dem Staat eine Verantwortung im Bereich der Information und der Sensibilisierung der Bevölkerung zugesprochen wird. Das wichtigste Instrument des Bundes zur Sensibilisierung der Öffentlichkeit war bislang eine Wanderausstellung mit dem Titel \"Lebensmittel wegwerfen. Das ist dumm.\". Sie ist, wie die in diesem Zusammenhang konzipierte Broschüre, auf grosses Interesse gestossen. Auch in Zukunft will sich der Bund im Bereich Kommunikation und Bildung aktiv engagieren. In der Arbeitsgruppe \"Bildung, Sensibilisierung und Information\" wird dafür ein Konzept erarbeitet. Im Bereich der Haltbarkeitsdaten werden in der Arbeitsgruppe \"Datierung\" Empfehlungen und Informationen zur Datierung von Lebensmitteln zuhanden der Industrie und der Konsumenten erarbeitet. Ein Leitfaden zur Datierung von Lebensmitteln für die Industrie wurde Anfang Juni 2014 vom BLV herausgegeben.</p><p>Auf internationaler Ebene unterstützt der Bund unter dem 10-Jahres-Rahmen für Programme zur Förderung nachhaltiger Konsum- und Produktionsmuster (10YFP) die Erarbeitung eines globalen Programms zu nachhaltigen Agrar- und Ernährungssystemen, welches ein besonderes Augenmerk auf die Themen Food Waste und Food Loss richten soll.</p><p>In der Schweiz sind in den letzten Jahren zudem zahlreiche private Projekte zur Bekämpfung von Nahrungsmittelabfällen entstanden. Mit den laufenden Arbeiten der Projektgruppe der Bundesverwaltung und den privaten Initiativen ist ein dynamischer Prozess in Gang gesetzt worden. Der Bundesrat will diesen Weg weiter verfolgen und sich auch weiterhin aktiv am internationalen Dialog beteiligen.</p><p>Im Rahmen des Aktionsplans Grüne Wirtschaft wird alle vier Jahre, das nächste Mal 2015, über den Stand der Umsetzung der Massnahmen des Aktionsplans berichtet, so auch in den Bereichen \"ressourcenschonendere Ernährung\" und \"Nahrungsmittelabfälle\".</p><p>Der Bundesrat trägt dem Anliegen des Postulates somit Rechnung und beantragt deshalb dessen Ablehnung.</p>  Der Bundesrat beantragt die Ablehnung des Postulates.",
+            "text_fr": "<p>La promotion de l'alimentation durable (préservant mieux les ressources naturelles) et la réduction des déchets alimentaires s'inscrivent déjà dans le plan d'action Economie verte adopté par le Conseil fédéral le 8 mars 2013.</p><p>En ce qui concerne l'alimentation durable, ce plan prévoit dans une première étape d'identifier, de façon coordonnée avec le PNR 69 \"Alimentation saine et production alimentaire durable\", les enjeux et les potentialités d'une alimentation équilibrée, variée et plus durable. Dans une seconde étape, il vise également à élaborer des mesures en concertation avec les acteurs du système agroalimentaire.</p><p>Un groupe de projet de l'administration (réunissant l'OFAG, l'OFEN, l'OSAV et la DDC) a entamé dans le courant de l'hiver 2012/13 un dialogue avec les parties prenantes, associant à tous les niveaux les acteurs de la filière agroalimentaire et les organisations concernées de la société civile, en vue de mener une politique concertée contre le gaspillage des aliments. Actuellement, des groupes de travail cherchent des solutions concrètes d'ici à fin 2014 dans les domaines du datage des aliments, de la formation, de la sensibilisation et de l'information ainsi que de la distribution aux personnes nécessiteuses par le truchement d'organisations d'entraide telles que les épiceries Caritas, Table Suisse ou Table couvre-toi.</p><p>Il ressort de ce dialogue qu'il incombe à l'État d'assumer une responsabilité dans l'information et la sensibilisation du public. Le principal moyen employé à ce jour par la Confédération est une exposition itinérante intitulée \"Jeter des aliments, c'est idiot\" laquelle, comme les brochures conçues sur ce sujet, suscite un vif intérêt. La Confédération entend poursuivre ces efforts de communication et de formation. À cette fin, le groupe de travail dédié à la formation, à la sensibilisation et à l'information prépare un plan d'action. Dans le domaine du datage des aliments, le groupe de travail \"Datage\" rédige des recommandations et des informations à l'usage de l'industrie et des consommateurs. De plus, l'OSAV a publié début juin 2014 un guide sur le datage des denrées alimentaires.</p><p>À l'échelle internationale, la Confédération soutient, dans le contexte du Cadre décennal de programmation concernant les modes de consommation et de production durables (10YFP), l'élaboration d'un programme global en vue de systèmes agroalimentaires et nutritionnels durables, qui accorde une attention particulière aux thèmes du \"Food Waste\" et du \"Food Loss\".</p><p>Ces dernières années, de nombreux projets, nés de l'initiative privée, ont vu le jour en Suisse dans le but de lutter contre le gaspillage alimentaire. Du fait de l'initiative privée et des travaux menés par le groupe de projet de l'administration fédérale, un processus dynamique visant à réduire le gaspillage des aliments a été lancé. Le Conseil fédéral entend continuer dans cette voie et poursuivre de manière active le dialogue à l'échelle internationale.</p><p>Le plan d'action Economie verte prévoit un compte rendu quadriennal sur la mise en oeuvre des mesures, le prochain en 2015, qui inclut les mesures prises dans les domaines \"alimentation durable\" et \"déchets alimentaires\".</p><p>Le Conseil fédéral a ainsi déjà pris en compte la requête formulée dans le postulat et propose donc de le rejeter.</p>  Le Conseil fédéral propose de rejeter le postulat.",
+            "text_it": "<p>L'8 marzo 2013 il Consiglio federale ha varato il piano d'azione sull' economia verde che, tra le diverse misure, contempla anche l'alimentazione più rispettosa delle risorse e la riduzione dei rifiuti alimentari.</p><p>Nell'ambito dell'alimentazione più rispettosa delle risorse, in sintonia con il PNR 69 \"Alimentazione sana e produzione alimentare sostenibile\", in una prima fase vengono identificate sfide e potenzialità di un'alimentazione più rispettosa delle risorse, equilibrata e variata e in una seconda fase si procede all'avvio di un dialogo con gli attori del sistema alimentare e all'elaborazione di misure.</p><p>Nell'inverno 2012/13 un gruppo di progetto dell'amministrazione federale (UFAG, UFAM, USAV e DSC) ha lanciato un dialogo con gli stakeholder per elaborare misure volte a ridurre i rifiuti alimentari. In collaborazione con attori a tutti i livelli della filiera alimentare e con organizzazioni della società civile interessate si cercano soluzioni intersettoriali per ridurre i rifiuti alimentari. Entro la fine del 2014, dei gruppi di lavoro svilupperanno approcci risolutivi concreti sui temi \"Indicazione della data di scadenza\", \"Formazione, sensibilizzazione, informazione\", \"Cessione di generi alimentari agli indigenti mediante organizzazioni di volontariato come Caritas (con i suoi mercati), Schweizer Tafel o Tavolino magico\".</p><p>Dal dialogo con gli stakeholder è emerso chiaramente che lo Stato è responsabile d'informare e sensibilizzare la popolazione. Il più importante strumento di sensibilizzazione dell'opinione pubblica applicato finora dalla Confederazione è una mostra itinerante dal titolo \"Sprecare il cibo. Che stupidità\" che, assieme all'opuscolo concepito per l'occasione, ha riscosso notevole interesse. Anche in futuro la Confederazione vuole impegnarsi attivamente nel settore della comunicazione e della formazione. Nel gruppo di lavoro \"Formazione, sensibilizzazione e informazione\" si elabora un piano in proposito. Per quanto concerne le date di conservabilità, nel gruppo di lavoro \"Indicazione della data di scadenza\" vengono elaborate raccomandazioni e informazioni destinate all'industria e ai consumatori sull'indicazione della data di scadenza degli alimenti. All'inizio di giugno 2014 l'USAV ha pubblicato una guida alla datazione di derrate alimentari all'attenzione dell'industria.</p><p>A livello internazionale, nel quadro del programma decennale per un comportamento di consumo e di produzione sostenibile (10YFP) la Confederazione propugna l'elaborazione di un programma globale per sistemi agroalimentari sostenibili, nel quale si riservi particolare attenzione ai temi dello spreco e delle perdite alimentari.</p><p>Inoltre, negli ultimi anni in Svizzera sono nati numerosi progetti privati per contrastare i rifiuti alimentari. Mediante i lavori del gruppo di progetto dell'amministrazione federale e le iniziative private è stato innescato un processo dinamico. Il Consiglio federale vuole proseguire su questa strada e continuare a partecipare attivamente al dialogo a livello internazionale.</p><p>Nel quadro del piano d'azione sull' economia verde ogni quattro anni, la prossima volta nel 2015, è redatto un rapporto sullo stato di attuazione delle misure da esso contemplate, quindi anche negli ambiti \"Alimentazione più rispettosa delle risorse\" e \"Rifiuti alimentari\".</p><p>Il Consiglio federale tiene quindi già conto delle richieste formulate nel postulato e propone, pertanto, di respingerlo.</p>  Il Consiglio federale propone di respingere il postulato.",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Der Bundesrat wird beauftragt, in einem Bericht darzustellen, durch welche Massnahmen Lebensmittelverluste verringert werden können und die pflanzliche Ernährung gefördert werden kann. Insbesondere soll geprüft werden:</p><p>1. wie zusammen mit allen Beteiligten der Lebensmittelkette, u. a. mit den Grossverbrauchern, der Gastronomie, der Lebensmittelverarbeitung, dem Handel und den landwirtschaftlichen Produzentinnen und Produzenten usw., Massnahmen zur Förderung der nachhaltigen Ernährung umgesetzt werden können;</p><p>2. wie eine realistische Berechnung der Haltbarkeitsdaten von Lebensmitteln besser überprüft und angepasst werden kann;</p><p>3. wie Projekte zur Bekämpfung von Food Waste und zur Förderung der pflanzlichen Ernährung angeregt und besser unterstützt werden könnten;</p><p>4. wie Haushalte etwa durch entsprechende Kampagnen oder die Integration der Thematiken Food Waste und pflanzliche Ernährung in den Schul- und Berufsbildungsunterricht auf die Problematik sensibilisiert werden könnten;</p><p>5. wie Food Waste bis 2020 im Vergleich zu heute um 80 Prozent reduziert werden kann.</p>",
+            "text_fr": "<p>Le Conseil fédéral est chargé d'établir un rapport indiquant les mesures à prendre pour réduire les pertes alimentaires et promouvoir l'alimentation végétale. Il s'agit en particulier d'examiner :</p><p>1. comment mettre en oeuvre des mesures de promotion de l'alimentation durable, en collaboration avec tous les intervenants de la filière alimentaire, notamment avec les gros consommateurs, le secteur de la restauration, le secteur de la transformation des denrées alimentaires, le commerce et les producteurs agricoles ;</p><p>2. comment adapter et mieux contrôler les méthodes de calcul des durées de conservation des denrées alimentaires pour que ces durées correspondent à la réalité ;</p><p>3. comment faire naître des projets de lutte contre le gaspillage alimentaire et de promotion de l'alimentation végétale, mais aussi comment mieux soutenir les projets existants ;</p><p>4. comment sensibiliser les ménages à cette problématique, notamment en lançant des campagnes en la matière ou en inscrivant les thèmes du gaspillage alimentaire et de l'alimentation végétale dans les programmes des écoles et des centres de formation professionnelle ;</p><p>5. comment réduire de 80 % le gaspillage alimentaire d'ici à 2020.</p>",
+            "text_it": "<p>Il Consiglio federale è incaricato d'illustrare in un rapporto quali misure consentono di ridurre lo spreco di alimenti e d'incentivare il consumo di prodotti vegetali. In particolare occorre esaminare:</p><p>1. come applicare misure tese a promuovere un'alimentazione sostenibile in collaborazione con tutti gli attori della filiera alimentare, in particolare con i grandi consumatori, la ristorazione, la trasformazione di derrate alimentari, il commercio e i produttori agricoli;</p><p>2. come verificare e adeguare il calcolo delle date di conservabilità degli alimenti affinché sia realistico;</p><p>3. come lanciare e sostenere meglio progetti per lottare contro lo spreco di alimenti e incentivare il consumo di prodotti vegetali;</p><p>4. come sensibilizzare le economie domestiche su questa problematica attraverso campagne mirate o integrando le tematiche dello spreco di alimenti e del consumo di prodotti vegetali nei programmi didattici e di formazione professionale;</p><p>5. come ridurre dell'80 per cento rispetto a oggi lo spreco di alimenti entro il 2020.</p>",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Ein Drittel aller Lebensmittel, pro Jahr also rund 2 Millionen Tonnen, wird in der Schweiz nicht konsumiert. Dies betrifft die vermeidbaren Verluste und bemisst sich an der gesamten landwirtschaftlichen Produktion. Rund die Hälfte der Abfälle wird in Haushalten und der Gastronomie (Konsum) verursacht: Pro Person landen hier täglich 320 Gramm einwandfreie Lebensmittel im Abfall.</p><p>Die unnötige und nichtnachhaltige Produktion von Lebensmitteln bedeutet eine erhebliche Ressourcenverschwendung: In der Schweiz etwa entstehen 31 Prozent der Umweltbelastung durch die Ernährung. Damit nimmt die Ernährung den gleichen Stellenwert an wie die Bereiche Wohnen und Verkehr. Zudem bringen die Entsorgung von Lebensmitteln und der hohe Konsum von Tierprodukten enorme CO2-Emissionen mit sich.</p><p>Auf internationaler Ebene werden Möglichkeiten zur Reduktion der Nahrungsmittelabfälle bereits breit diskutiert. In der EU etwa hat sich das Europäische Parlament zum Ziel gesetzt, das Ausmass des Food Waste bis ins Jahr 2025 zu halbieren. Zudem spricht sich die Uno für eine vermehrt pflanzliche Ernährung zur Bekämpfung des Welthungers, der Armut und des Klimawandels aus.</p>",
+            "text_fr": "<p>En Suisse, un tiers de toutes les denrées alimentaires - soit quelque 2 millions de tonnes par an - ne sont pas consommées. Il s'agit là des pertes évitables, qui sont calculées à partir de la production agricole totale. Environ la moitié des déchets sont produits par les ménages et le secteur de la restauration (consommation): par personne, il y a 320 grammes de denrées alimentaires parfaitement consommables qui finissent chaque jour à la poubelle.</p><p>Toute production de denrées alimentaires qui est inutile et non durable se solde par un gaspillage considérable de ressources : en Suisse, par exemple, l'alimentation est responsable de 31 % des atteintes à l'environnement. Elle se situe ainsi au même niveau que les domaines du logement et des transports. Qui plus est, l'élimination des denrées alimentaires et la consommation élevée de produits d'origine animale génèrent d'énormes émissions de CO2.</p><p>Au niveau international, on mène déjà des discussions à grande échelle pour trouver les moyens de réduire le volume des déchets alimentaires. Dans l'UE, par exemple, le Parlement européen s'est fixé pour objectif de faire diminuer de moitié le gaspillage alimentaire d'ici à 2025. Par ailleurs, l'ONU prône une alimentation plus végétale pour lutter contre la faim dans le monde, la pauvreté et le changement climatique.</p>",
+            "text_it": "<p>In Svizzera un terzo degli alimenti, vale a dire circa 2 milioni di tonnellate l'anno, non viene consumato. Questo dato si riferisce alle perdite evitabili ed è commisurato alla produzione agricola totale. La metà circa dei rifiuti è prodotta dalle economie domestiche e dalla ristorazione (consumo): ogni giorno 320 grammi pro capite di alimenti ineccepibili finiscono nella spazzatura.</p><p>La produzione in quantità eccessive e in maniera non sostenibile di derrate alimentari provoca un notevole spreco di risorse. In Svizzera il 31 per cento circa dell'impatto ambientale è riconducibile all'alimentazione che quindi si colloca sullo stesso piano di casa e trasporti. Lo smaltimento degli alimenti e l'elevato consumo di prodotti animali, dal canto loro, provocano enormi emissioni di CO2.</p><p>A livello internazionale si discute da tempo delle possibilità di ridimensionare i rifiuti alimentari. Nell'UE il Parlamento europeo si è posto l'obiettivo di ridurre della metà il volume dello spreco di alimenti entro il 2025. L'ONU propugna un maggiore consumo di prodotti vegetali per lottare contro la fame, la povertà e i cambiamenti climatici.</p>",
+            "text_rm": null
+          }
+        ]
+      },
+      "expected": {
+        "required": [
+          "food_consumption"
+        ],
+        "optional": [
+          "circular_economy",
+          "resources_raw_materials",
+          "environmental_research_education",
+          "international_environment"
+        ],
+        "reason": "Gıda israfını azaltma; içerikte kaynak tasarrufu, farkındalık eğitimi ve uluslararası sürdürülebilir tüketim programı var."
+      },
+      "sampling_main": "sustainable_economy_consumption"
+    },
+    {
+      "dataset": "affairs",
+      "id": 79298,
+      "group": "wwf",
+      "title": "Sustainable Finance bei der St.Galler Kantonalbank – noch viel Luft nach oben",
+      "input": {
+        "affair": {
+          "title_de": "Sustainable Finance bei der St.Galler Kantonalbank – noch viel Luft nach oben",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "sustainable_finance"
+        ],
+        "optional": [],
+        "reason": "Kantonal bankanın sürdürülebilir finans uygulamaları açıkça konu ediliyor."
+      },
+      "sampling_main": "sustainable_economy_consumption"
+    },
+    {
+      "dataset": "affairs",
+      "id": 2135,
+      "group": "wwf",
+      "title": "Nachhaltiger Konsum in der Stadt Luzern",
+      "input": {
+        "affair": {
+          "title_de": "Nachhaltiger Konsum in der Stadt Luzern",
+          "title_long_de": "Postulat: Nachhaltiger Konsum in der Stadt Luzern",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "food_consumption"
+        ],
+        "optional": [],
+        "reason": "Sürdürülebilir tüketim bu alt kategorinin açık kapsamındadır."
+      },
+      "sampling_main": "sustainable_economy_consumption"
+    },
+    {
+      "dataset": "affairs",
+      "id": 64337,
+      "group": "wwf",
+      "title": "Schweizer Kreislaufwirtschaft stärken. Plattform für Schweizer Ressourceneffizienz",
+      "input": {
+        "affair": {
+          "title_de": "Schweizer Kreislaufwirtschaft stärken. Plattform für Schweizer Ressourceneffizienz",
+          "title_long_de": null,
+          "title_fr": "Développer l'économie circulaire en Suisse. Créer une plateforme consacrée à l'efficacité des ressources",
+          "title_long_fr": null,
+          "title_it": "Rafforzare l'economia circolare svizzera. Piattaforma per l'uso efficiente delle risorse svizzere",
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": [
+          {
+            "text_de": "Schweizer Kreislaufwirtschaft stärken. Plattform für Schweizer Ressourceneffizienz",
+            "text_fr": "Développer l'économie circulaire en Suisse. Créer une plateforme consacrée à l'efficacité des ressources",
+            "text_it": "Rafforzare l'economia circolare svizzera. Piattaforma per l'uso efficiente delle risorse svizzere",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Das Umweltschutzgesetz (USG) wird wie folgt geändert:</p><p>Art. 10h</p><p>In Rahmen der Förderung der Schweizer Kreislaufwirtschaft betreibt der Bund eine Plattform. Er arbeitet dabei mit den Kantonen, nationalen und internationalen Organisationen der Wirtschaft, der Wissenschaft und der Gesellschaft zusammen.</p>",
+            "text_fr": "<p>La loi sur la protection de l'environnement est modifiée comme suit :</p><p>Art. 10h</p><p>La Confédération gère une plateforme consacrée à la promotion de l'économie circulaire en Suisse. Ce faisant, elle collabore avec les cantons, les organisations économiques et scientifiques et celles de la société civile actives au plan national ou international.</p>",
+            "text_it": "<p>La legge sulla protezione dell'ambiente (LPAmb) è modificata come segue: </p><p>Art. 10h</p><p>La Confederazione gestisce una piattaforma dedicata alla promozione dell'economia circolare svizzera. Al riguardo collabora con i Cantoni e con organizzazioni nazionali e internazionali dell'economia, della scienza e della società.</p>",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Die Kreislaufwirtschaft ist eine Chance für die Schweizer Wirtschaft, weil damit eine lokale Verarbeitung und Verwertung gefördert werden. So werden wertvolle Arbeitsplätze gesichert und geschaffen. Gleichzeitig werden Ressourcen in der Schweiz und global geschont. So führt beispielsweise Betonrecycling zur Reduktion von Deponieraum und Kiesabbau. Oder Urban Mining hilft, die Klimabelastung bei der Herstellung von Metallen zu reduzieren. Mit der Förderung der Kreislaufwirtschaft werden gleichzeitig wertvolle Innovationen ermöglicht, welche die Wettbewerbsfähigkeit der Industrie weiter stärken.</p><p>Angesichts der Langfristigkeit, der thematischen Breite und der erheblichen Auswirkungen der Ressourceneffizienz und Kreislaufwirtschaft ist die Schaffung einer neuen Plattform notwendig. Sie soll als Gefäss für Dialog, Entwicklung von Massnahmen, Vereinbarungen und Vernetzung dienen. Die Plattform soll Lücken schliessen und auf bestehende Politikbereiche beim Bund (Energie- und Klimapolitik, nachhaltige Entwicklung, internationale Aktivitäten, Forschungs- und Wirtschaftspolitik) sowie auf Aktivitäten in Wirtschaft, Wissenschaft und Gesellschaft abgestimmt sein.</p><p>Dieses Anliegen wurde bereits vom Bundesrat eingebracht, vernehmlasst und fand eine Mehrheit im Nationalrat. Denn die Volksinitiative \"Grüne Wirtschaft\" wurde zum Anlass genommen, um im Rahmen eines Gegenvorschlages verschiedene Anpassungen im USG vorzuschlagen, um bessere Rahmenbedingungen für eine Schweizer Kreislaufwirtschaft zu schaffen. Dieser Gegenvorschlag wurde 2015 im Nationalrat wegen der Opposition vonseiten FDP und SVP abgelehnt. Dabei gingen auch viele Anliegen verloren, welche in Bevölkerung, Wirtschaft und Parlament mehrheitsfähig sind. Aktuellstes Beispiel ist das Verbot des Inverkehrbringens von illegalem Holz. Dieses Anliegen wurde als Teil des Gegenvorschlages abgelehnt und nun aufgrund von zwei Motionen vonseiten der SVP wieder aufgenommen.</p><p>Mit dieser parlamentarischen Initiative geht es darum, ein weiteres mehrheitfähiges Anliegen für bessere Rahmenbedingungen für eine Kreislaufwirtschaft aufzunehmen und so die Schweizer Kreislaufwirtschaft zu stärken. Da dieses Anliegen bereits Teil der Vernehmlassung war und vom Bundesrat verabschiedet wurde, ist es nun am Parlament, dieses Anliegen per parlamentarische Initiative wieder aufzugreifen.</p>",
+            "text_fr": "<p>L'économie circulaire représente une chance pour l'économie suisse, car elle assure la promotion du traitement et de la valorisation des déchets à l'échelon local. De précieux emplois sont ainsi maintenus voire créés sur place et des ressources sont préservées, en Suisse et dans le monde. Le recyclage du béton permet par exemple de réduire l'espace nécessaire aux décharges et de restreindre l'exploitation de gravières. L'extraction de matériaux bruts logés dans des déchets urbains permet par ailleurs de limiter les atteintes à l'environnement dues à la production de métaux. La promotion de l'économie circulaire donne enfin lieu à des innovations qui renforcent encore la capacité concurrentielle de l'industrie.</p><p>Étant donné l'horizon à long terme, la diversité thématique et l'impact considérable de l'efficacité des ressources et de l'économie circulaire, la création d'une plateforme s'imposerait. Cet instrument permettrait le dialogue, le développement de mesures, l'élaboration d'accords et la mise en réseau. Il comblerait certaines lacunes et serait coordonné avec d'autres secteurs politiques de la Confédération (politique énergétique et climatique, développement durable, activités internationales, politique de recherche et politique économique) et avec certaines activités des acteurs économiques, de la communauté scientifique et de la société civile.</p><p>Cette proposition, émise par le Conseil fédéral, a déjà fait l'objet d'une procédure de consultation et a réuni une majorité du Conseil national, un contre-projet à l'initiative populaire \"Economie verte\" ayant prévu diverses modifications de la loi sur la protection de l'environnement visant à améliorer les conditions nécessaires à la mise en place d'une économie circulaire en Suisse. Ce contre-projet a été rejeté par le Conseil national en 2015 en raison de l'opposition du PLR et de l'UDC, diverses modifications qui auraient pu réunir une majorité au sein de la population, des milieux économiques et du Parlement passant du même coup à la trappe. L'interdiction de mettre sur le marché du bois illégal en est l'exemple le plus récent. Cette préoccupation, qui avait été balayée avec le contre-projet, fait maintenant l'objet de deux motions déposées par le groupe UDC.</p><p>La présente initiative parlementaire reprend à son tour une proposition pouvant réunir des majorités et promouvoir l'économie circulaire en Suisse, à savoir l'amélioration des conditions nécessaires à la mise en place d'une telle économie. Cette proposition faisait partie du projet mis en consultation et approuvé par le Conseil fédéral. Il appartient maintenant au Parlement d'adopter une initiative parlementaire allant dans ce sens.</p>",
+            "text_it": "<p>L'economia circolare è un'opportunità per l'economia svizzera poiché in questo modo si promuovono il trattamento e la valorizzazione dei materiali a livello locale. Si assicurano così preziosi posti di lavoro e se ne creano di nuovi, preservando nel contempo le risorse nel nostro Paese e in tutto il mondo. Ad esempio, il riciclaggio del calcestruzzo riduce lo spazio destinato alle discariche e la zona d'estrazione di inerti. L'estrazione mineraria urbana aiuta invece a ridurre l'impatto sul clima dovuto alla produzione di metalli. Promuovendo l'economia circolare si rendono allo stesso tempo possibili preziose innovazioni, che rafforzano ulteriormente la competitività dell'industria.</p><p>Considerati l'orizzonte a lungo termine, la molteplicità tematica e le considerevoli ripercussioni dell'uso efficiente delle risorse e dell'economia circolare, occorre creare una nuova piattaforma che deve fungere da contenitore per il dialogo, lo sviluppo di provvedimenti, l'elaborazione di accordi e la messa in rete. La piattaforma servirà a colmare determinate lacune e dovrà essere coordinata con i settori politici esistenti della Confederazione (politica energetica e politica climatica, sviluppo sostenibile, attività internazionali, politica in materia di ricerca e politica economica) e con le attività degli operatori del mondo economico, della comunità scientifica e della società civile.</p><p>Il Consiglio federale ha già proposto e messo in consultazione la richiesta dell'autore della presente iniziativa la quale ha anche riscosso la maggioranza in Consiglio nazionale. L'iniziativa popolare \"per un'economia sostenibile ed efficiente in materia di gestione delle risorse (economia verde)\" è stata infatti l'occasione per proporre vari adeguamenti nella LPAmb mediante un controprogetto, così da migliorare le condizioni quadro per un'economia circolare svizzera. Nel 2015 il controprogetto è stato respinto dal Consiglio nazionale a causa dell'opposizione del PLR e dell'UDC. Sono andate così perse anche richieste suscettibili di ottenere la maggioranza della popolazione, dell'economia e del Parlamento. L'esempio più recente è il divieto di mettere in commercio legname ottenuto illegalmente. Questa richiesta è stata respinta in quanto facente parte del controprogetto e viene ora ripresa in due mozioni presentate dall'UDC.</p><p>La presente iniziativa riprende a sua volta una richiesta, in grado di ottenere la maggioranza, di migliori condizioni quadro per un'economia circolare, ciò che consentirebbe di consolidare anche l'economia circolare svizzera. Poiché tale richiesta faceva già parte del progetto posto in consultazione ed era già stata approvata dal Consiglio federale, spetta ora al Parlamento ritornare su questa richiesta nell'ambito di un'iniziativa parlamentare.</p>",
+            "text_rm": null
+          }
+        ]
+      },
+      "expected": {
+        "required": [
+          "resources_raw_materials",
+          "circular_economy"
+        ],
+        "optional": [
+          "environmental_law",
+          "environmental_research_education"
+        ],
+        "reason": "Başlık döngüsel ekonomi ve kaynak verimliliğini birlikte istiyor; içerik çevre yasasında bilgi platformu kurulmasını öngörüyor."
+      },
+      "sampling_main": "sustainable_economy_consumption"
+    },
+    {
+      "dataset": "affairs",
+      "id": 28932,
+      "group": "wwf",
+      "title": "Vernehmlassung zur Teilrevision des kantonalen Umweltgesetzes (KUG; RB 40.7011)",
+      "input": {
+        "affair": {
+          "title_de": "Vernehmlassung zur Teilrevision des kantonalen Umweltgesetzes (KUG; RB 40.7011)",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": [
+          {
+            "text_de": "<p>Der Regierungsrat hat die Gesundheits-, Sozial- und Umweltdirektion an seiner Sitzung vom 14. Februar 2023 beauftragt, zur Teilrevision des kantonalen Umweltgesetzes (KUG; RB 40.7011) eine Vernehmlassung durchzuführen.</p>\r\n\r\n<p>Am 30. September 2020 hat der Landrat die Motion Andreas Bilger, Seedorf, zur Schaffung der gesetzlichen Grundlagen für die Zusammenlegung der Entsorgungsunternehmungen des Kantons Uri (Zentrale Organisation für Abfallbewirtschaftung [ZAKU] und Abwasser Uri) als erheblich erklärt. Gemäss den Empfehlungen des Regierungsrats an den Landrat soll mit der Teilrevision die gesetzliche Grundlage für eine mögliche Zusammenlegung der beiden Organisationen geschaffen werden. Die Teilrevision soll zudem zum Anlass genommen werden, weitere notwendige Anpassungen vorzunehmen.</p>\r\n\r\n<p>Die Teilrevision umfasst folgende Schwerpunkte:</p>\r\n\r\n<ul>\r\n\t<li>Die Möglichkeit zur Zusammenlegung der beiden Entsorgungsunternehmungen ZAKU und Abwasser Uri wird ins KUG aufgenommen.</li>\r\n\t<li>Zahlreiche Gesetzesartikel, die ausschliesslich die Gründung der beiden Entsorgungsunternehmungen betreffen, werden aufgehoben. Damit wird das KUG schlanker und übersichtlicher.</li>\r\n\t<li>Das KUG wird an das aktuelle Umwelt- und Gewässerschutzrecht des Bunds angepasst.</li>\r\n\t<li>Um Unklarheiten auszuräumen und geänderten Gegebenheiten zu entsprechen, werden Präzisierungen sowie Verfahrensanpassungen in den Bereichen Abwasser und Grundwasserschutz vorgenommen.</li>\r\n\t<li>Zum Erhalt und zur Stützung der dezentralen Besiedlung wird die Erschliessung der Weilerzonen mit den hauptsächlichsten Abwasseranlagen eingeführt.</li>\r\n\t<li>Die Zuständigkeiten und Aufgaben hinsichtlich Versorgung der Bevölkerung mit genügend und einwandfreiem Wasser wird im KUG geregelt.</li>\r\n\t<li>Zur Umsetzung der Motion von Landrätin Nora Sommer, Altdorf, zur Reduktion von unnötiger Verpackung wird der erforderliche Gesetzeserlass ins KUG aufgenommen.</li>\r\n</ul>\r\n\r\n<p>Die Vernehmlassung endet am 31. Mai 2023.</p>\r\n\r\n<p>Wir bitten Sie, die Online-Umfrage <a href=\"https://antwort.ur.ch/s/umweltgesetz\" target=\"_blank\">https://antwort.ur.ch/s/umweltgesetz<span class=\"sr-only\">Externer Link wird in einem neuen Fenster geöffnet.</span></a>&nbsp;oder das Formular für die Vernehmlassung zu nutzen und uns dieses ausgefüllt, wenn möglich in elektronischer Form, an folgende Adresse zuzustellen:</p>\r\n\r\n<div>Gesundheits-, Sozial- und Umweltdirektion",
+            "text_fr": null,
+            "text_it": null,
+            "text_rm": null
+          }
+        ]
+      },
+      "expected": {
+        "required": [
+          "environmental_law"
+        ],
+        "optional": [
+          "renewable_heat",
+          "soil_spatial_planning",
+          "waters",
+          "circular_economy"
+        ],
+        "reason": "Kantonal çevre yasasının revizyonu; mevcut içerikte jeotermi, kirli toprak, atık su ve ambalaj azaltma maddeleri de var."
+      },
+      "sampling_main": "environment_policy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 1549,
+      "group": "wwf",
+      "title": "Umweltbildung und -erziehung",
+      "input": {
+        "affair": {
+          "title_de": "Umweltbildung und -erziehung",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "environmental_research_education"
+        ],
+        "optional": [],
+        "reason": "Başlık açıkça çevre eğitimi ve çevre terbiyesidir; genel okul konusu değildir."
+      },
+      "sampling_main": "environment_policy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 188,
+      "group": "wwf",
+      "title": "Einen Klimafonds \"New Green Deal für Basel\" (NGDB)",
+      "input": {
+        "affair": {
+          "title_de": "Einen Klimafonds \"New Green Deal für Basel\" (NGDB)",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "environmental_funding"
+        ],
+        "optional": [
+          "climate_energy_other"
+        ],
+        "reason": "Özel bir iklim fonu; çevresel amaçlı finansman açıkça belirtiliyor."
+      },
+      "sampling_main": "environment_policy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 194,
+      "group": "wwf",
+      "title": "Nachhaltige Beschaffung nach ökologischen Kriterien beim Kanton und seinen Betrieben",
+      "input": {
+        "affair": {
+          "title_de": "Nachhaltige Beschaffung nach ökologischen Kriterien beim Kanton und seinen Betrieben",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "public_sector"
+        ],
+        "optional": [],
+        "reason": "Kantonun ekolojik ölçütlerle kamu alımı, kamu sektörünün çevre uygulamasıdır."
+      },
+      "sampling_main": "environment_policy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 45107,
+      "group": "wwf",
+      "title": "Basel pro Klima: Pariser Klimaabkommen einhalten",
+      "input": {
+        "affair": {
+          "title_de": "Basel pro Klima: Pariser Klimaabkommen einhalten",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "international_environment"
+        ],
+        "optional": [
+          "climate_energy_other"
+        ],
+        "reason": "Paris İklim Anlaşması'na uyum açıkça konu ediliyor."
+      },
+      "sampling_main": "environment_policy"
+    },
+    {
+      "dataset": "affairs",
+      "id": 2,
+      "group": "unrelated",
+      "title": "Klassenbildungen und Schulraumbedarf",
+      "input": {
+        "affair": {
+          "title_de": "Klassenbildungen und Schulraumbedarf",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Sınıf ve okul mekânı ihtiyacı; çevre bağlantısı yok."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 3,
+      "group": "unrelated",
+      "title": "Statistisches Amt und seine perfekten Mitarbeiter",
+      "input": {
+        "affair": {
+          "title_de": "Statistisches Amt und seine perfekten Mitarbeiter",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "İstatistik kurumu personeli; çevresel konu belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 4,
+      "group": "unrelated",
+      "title": "Staatspräsidenten in Basel",
+      "input": {
+        "affair": {
+          "title_de": "Staatspräsidenten in Basel",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Devlet başkanları; çevre politikası belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 5,
+      "group": "unrelated",
+      "title": "Bedürfnisse der Universität und der Forschung",
+      "input": {
+        "affair": {
+          "title_de": "Bedürfnisse der Universität und der Forschung",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Genel üniversite ve araştırma ihtiyaçları; çevre araştırması belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 6,
+      "group": "unrelated",
+      "title": "Schutz der persönlichen Integrität im Grossen Rat",
+      "input": {
+        "affair": {
+          "title_de": "Schutz der persönlichen Integrität im Grossen Rat",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Parlamentoda kişisel bütünlük; tür/habitat koruması veya çevre eğitimi değildir."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 7,
+      "group": "unrelated",
+      "title": "Schaffung von Wohnraum für Studierende und junge Leute in Ausbildung",
+      "input": {
+        "affair": {
+          "title_de": "Schaffung von Wohnraum für Studierende und junge Leute in Ausbildung",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Öğrenci konutu ihtiyacı; enerji verimliliği veya doğal habitat konusu belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 8,
+      "group": "unrelated",
+      "title": "Analyse zu den aktuellen Steuerabzügen im Kanton Basel-Stadt",
+      "input": {
+        "affair": {
+          "title_de": "Analyse zu den aktuellen Steuerabzügen im Kanton Basel-Stadt",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Genel vergi indirimleri; yeşil finans konusu belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 12,
+      "group": "unrelated",
+      "title": "Arbeitsbedingungen des Mittelbaus an der Universität Basel",
+      "input": {
+        "affair": {
+          "title_de": "Arbeitsbedingungen des Mittelbaus an der Universität Basel",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Üniversite çalışanlarının çalışma koşulları; çevre araştırması değildir."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 14,
+      "group": "unrelated",
+      "title": "Schulraumplanung",
+      "input": {
+        "affair": {
+          "title_de": "Schulraumplanung",
+          "title_long_de": "B 36/2020 Schulraumplanung",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Okul mekânı planlaması; çevresel arazi planlaması belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 15,
+      "group": "unrelated",
+      "title": "Videoüberwachung im öffentlichen Raum",
+      "input": {
+        "affair": {
+          "title_de": "Videoüberwachung im öffentlichen Raum",
+          "title_long_de": "Bericht: Videoüberwachung im öffentlichen Raum",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Kamusal alanda video gözetimi; kamu çevre uygulaması değildir."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 17,
+      "group": "unrelated",
+      "title": "Luzerner Theater",
+      "input": {
+        "affair": {
+          "title_de": "Luzerner Theater",
+          "title_long_de": "Interpellation: Luzerner Theater",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Tiyatro konusu; çevre bağlantısı yok."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 22,
+      "group": "unrelated",
+      "title": "Wahl eines Mitglieds des Districtsrates (Nachfolge Jürg Stöcklin, GAB)",
+      "input": {
+        "affair": {
+          "title_de": "Wahl eines Mitglieds des Districtsrates (Nachfolge Jürg Stöcklin, GAB)",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Konsey üyesi seçimi; genel parlamento işlemidir."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 26,
+      "group": "unrelated",
+      "title": "Zusätzliche Mittel für vollständige Transparenz in der «Affäre Rossier»",
+      "input": {
+        "affair": {
+          "title_de": "Zusätzliche Mittel für vollständige Transparenz in der «Affäre Rossier»",
+          "title_long_de": "2019.11_MO_7.0126_Affäre Rossier_BEH",
+          "title_fr": "Zusätzliche Mittel für vollständige Transparenz in der «Affäre Rossier»",
+          "title_long_fr": "Des moyens supplémentaires pour une transparence totale dans ce que l'on appelle «l'affaire Rossier»",
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Bir soruşturma için şeffaflık bütçesi; çevre fonu değildir."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 29,
+      "group": "unrelated",
+      "title": "Keine EU-Flagge am Stadthaus",
+      "input": {
+        "affair": {
+          "title_de": "Keine EU-Flagge am Stadthaus",
+          "title_long_de": "Postulat: Keine EU-Flagge am Stadthaus",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Belediye binasında AB bayrağı; uluslararası çevre politikası değildir."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 34,
+      "group": "unrelated",
+      "title": "Ersatzwahl Wahlbüro,  Austritt von Urs Wagner",
+      "input": {
+        "affair": {
+          "title_de": "Ersatzwahl Wahlbüro,  Austritt von Urs Wagner",
+          "title_long_de": "17.03.2011 - SR - Ersatzwahl Wahlbüro",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Seçim bürosu üyeliği; genel idari konudur."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 37,
+      "group": "unrelated",
+      "title": "Einrichtung eines runden Tischs für LGBTI-Anliegen",
+      "input": {
+        "affair": {
+          "title_de": "Einrichtung eines runden Tischs für LGBTI-Anliegen",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "LGBTI hakları; mevcut girdide çevre bağlantısı yok."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 38,
+      "group": "unrelated",
+      "title": "Cannabis-Tests",
+      "input": {
+        "affair": {
+          "title_de": "Cannabis-Tests",
+          "title_long_de": "Motion Patrick Angele (JUSO / SP) und 6 Mitunterzeichnende betreffend Cannabis-Tests",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Cannabis testleri; çevre veya tarımsal biyolojik çeşitlilik konusu belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 43,
+      "group": "unrelated",
+      "title": "Neue und innovative Lernräume",
+      "input": {
+        "affair": {
+          "title_de": "Neue und innovative Lernräume",
+          "title_long_de": "Neue und innovative Lernräume (Kleine Anfrage)",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Yenilikçi öğrenme mekânları; çevre eğitimi belirtilmiyor."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 45,
+      "group": "unrelated",
+      "title": "Spitex",
+      "input": {
+        "affair": {
+          "title_de": "Spitex",
+          "title_long_de": "Spitex (Kleine Anfrage)",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Evde sağlık hizmeti; çevre konusu değil."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 59,
+      "group": "unrelated",
+      "title": "Corona an der Schule Dietikon",
+      "input": {
+        "affair": {
+          "title_de": "Corona an der Schule Dietikon",
+          "title_long_de": "Corona an der Schule Dietikon (Kleine Anfrage)",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Okulda COVID; halk sağlığı konusudur, çevre eğitimi değildir."
+      }
+    },
+    {
+      "dataset": "affairs",
+      "id": 1428,
+      "group": "edge",
+      "title": "Ratschlag Gesamtkonzept Elektromobilität; Anpassung des kantonalen Umweltschutzgesetzes",
+      "input": {
+        "affair": {
+          "title_de": "Ratschlag Gesamtkonzept Elektromobilität; Anpassung des kantonalen Umweltschutzgesetzes",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "sustainable_mobility",
+          "environmental_law"
+        ],
+        "optional": [],
+        "reason": "Elektrikli ulaşım planı ve çevre yasasının değiştirilmesi iki ayrı açık konudur."
+      },
+      "case_type": "multilabel"
+    },
+    {
+      "dataset": "affairs",
+      "id": 2091,
+      "group": "edge",
+      "title": "Kreislaufwirtschaft im Kampf gegen die Klimakrise nutzen",
+      "input": {
+        "affair": {
+          "title_de": "Kreislaufwirtschaft im Kampf gegen die Klimakrise nutzen",
+          "title_long_de": "Interpellation 248 Kreislaufwirtschaft im Kampf gegen die Klimakrise nutzen",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "circular_economy",
+          "climate_energy_other"
+        ],
+        "optional": [],
+        "reason": "Döngüsel ekonomi ve iklim krizi birlikte belirtiliyor; özel bir enerji teknolojisi yok."
+      },
+      "case_type": "multilabel"
+    },
+    {
+      "dataset": "affairs",
+      "id": 12866,
+      "group": "edge",
+      "title": "Pestizideinsatz im Wald auf Stadtgebiet, Genehmigungskriterien für den Einsatz von Pestiziden sowie Möglichkeiten für den Schutz der Gewässer und deren Organismen",
+      "input": {
+        "affair": {
+          "title_de": "Pestizideinsatz im Wald auf Stadtgebiet, Genehmigungskriterien für den Einsatz von Pestiziden sowie Möglichkeiten für den Schutz der Gewässer und deren Organismen",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "forest",
+          "waters"
+        ],
+        "optional": [
+          "agriculture_biodiversity",
+          "environmental_law",
+          "species_habitats"
+        ],
+        "reason": "Ormanda pestisit kullanımı ve suların/organizmaların korunması birlikte belirtiliyor. Tarım uygulaması açık olmadığından tarım etiketi zorunlu değil."
+      },
+      "case_type": "multilabel"
+    },
+    {
+      "dataset": "affairs",
+      "id": 155107,
+      "group": "edge",
+      "title": "Schweizer Kreislaufwirtschaft stärken. Ressourceneffizienz im Umweltschutzgesetz aufnehmen",
+      "input": {
+        "affair": {
+          "title_de": "Schweizer Kreislaufwirtschaft stärken. Ressourceneffizienz im Umweltschutzgesetz aufnehmen",
+          "title_long_de": null,
+          "title_fr": "Développer l'économie circulaire en Suisse. Inscrire l'utilisation efficace des ressources dans la loi sur la protection de l'environnement",
+          "title_long_fr": null,
+          "title_it": "Rafforzare l'economia circolare svizzera. Integrare l'efficienza delle risorse nella legge sulla protezione dell'ambiente",
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": [
+          {
+            "text_de": "Schweizer Kreislaufwirtschaft stärken. Ressourceneffizienz im Umweltschutzgesetz aufnehmen",
+            "text_fr": "Développer l'économie circulaire en Suisse. Inscrire l'utilisation efficace des ressources dans la loi sur la protection de l'environnement",
+            "text_it": "Rafforzare l'economia circolare svizzera. Integrare l'efficienza delle risorse nella legge sulla protezione dell'ambiente",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Das Umweltschutzgesetz (USG) wird wie folgt geändert:</p><p>Art. 10h Abs. 1</p><p>Bund und im Rahmen ihrer Zuständigkeit die Kantone sorgen für die Schonung der natürlichen Ressourcen. Sie streben eine auf Dauer angelegte Verbesserung der Ressourceneffizienz an, um damit auch die Umweltbelastung massgeblich zu reduzieren.</p>",
+            "text_fr": "<p>La loi sur la protection de l'environnement est modifiée comme suit :</p><p>Art. 10h al. 1</p><p>La Confédération et, dans le cadre de leurs compétences, les cantons veillent à préserver les ressources naturelles. Ils oeuvrent à améliorer durablement l'efficacité dans l'utilisation de ces ressources, notamment afin de réduire les atteintes à l'environnement de manière déterminante.</p>",
+            "text_it": "<p>La legge sulla protezione dell'ambiente (LPAmb) è modificata come segue:</p><p>Art. 10h cpv. 1</p><p>La Confederazione e, nel quadro delle loro competenze, i Cantoni provvedono alla salvaguardia delle risorse naturali. Essi perseguono un miglioramento dell'efficienza delle risorse sul lungo periodo affinché anche l'inquinamento ambientale sia ridotto in modo determinante.</p>",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Die Kreislaufwirtschaft ist eine Chance für die Schweizer Wirtschaft, weil damit eine lokale Verarbeitung und Verwertung gefördert werden. So werden wertvolle Arbeitsplätze gesichert und geschaffen. Gleichzeitig werden Ressourcen in der Schweiz und global geschont. So führt beispielsweise Betonrecycling zur Reduktion von Deponieraum und Kiesabbau. Oder Urban Mining hilft, die Klimabelastung bei der Herstellung von Metallen zu reduzieren. Mit der Förderung der Kreislaufwirtschaft werden gleichzeitig wertvolle Innovationen ermöglicht, welche die Wettbewerbsfähigkeit der Industrie weiter stärken.</p><p>Indem die Ressourceneffizienz und -schonung im Umweltschutzgesetz aufgenommen werden, kann die Kreislaufwirtschaft über die Instrumente des Umweltschutzgesetzes direkter und effizienter berücksichtigt und gefördert werden.</p><p>Dieses Anliegen wurde bereits vom Bundesrat vorgeschlagen, vernehmlasst und fand eine Mehrheit im Nationalrat. Denn die Volksinitiative \"Grüne Wirtschaft\" wurde zum Anlass genommen, um im Rahmen eines Gegenvorschalges verschiedene Anpassungen im USG vorzuschlagen, um bessere Rahmenbedingungen für eine Schweizer Kreislaufwirtschaft zu schaffen. Dieser Gegenvorschlag wurde 2015 im Nationalrat wegen der Opposition vonseiten der FDP und SVP abgelehnt. Dabei gingen auch viele Anliegen verloren, welche in Bevölkerung, Wirtschaft und Parlament mehrheitsfähig sind. Aktuellstes Beispiel ist das Verbot des Inverkehrbringens von illegalem Holz. Dieses Anliegen wurde als Teil des Gegenvorschlages abgelehnt und nun aufgrund von zwei Motionen vonseiten der SVP wieder aufgenommen.</p><p>Mit dieser parlamentarischen Initiative geht es darum, ein weiteres mehrheitfähiges Anliegen für bessere Rahmenbedingungen für eine Kreislaufwirtschaft aufzunehmen, und so die Schweizer Kreislaufwirtschaft zu stärken. Da dieses Anliegen bereits Teil der Vernehmlassung war und vom Bundesrat verabschiedet wurde, ist es nun am Parlament, dieses Anliegen per parlamentarische Initiative wieder aufzugreifen.</p>",
+            "text_fr": "<p>L'économie circulaire représente une chance pour l'économie suisse, car elle assure la promotion du traitement et de la valorisation des déchets à l'échelon local. De précieux emplois sont ainsi maintenus voire créés sur place et des ressources sont préservées, en Suisse et dans le monde. Le recyclage du béton permet par exemple de réduire l'espace nécessaire aux décharges et de restreindre l'exploitation de gravières. L'extraction de matériaux bruts logés dans des déchets urbains permet par ailleurs de limiter les atteintes à l'environnement dues à la production de métaux. La promotion de l'économie circulaire donne enfin lieu à des innovations qui renforcent encore la capacité concurrentielle de l'industrie.</p><p>Inscrire la préservation des ressources naturelles et l'efficacité de leur utilisation dans la loi sur la protection de l'environnement permettrait de promouvoir l'économie circulaire de manière plus directe et efficiente.</p><p>Cette proposition, émise par le Conseil fédéral, a déjà fait l'objet d'une procédure de consultation et a réuni une majorité du Conseil national, un contre-projet à l'initiative populaire \"Economie verte\" ayant prévu diverses modifications de la loi sur la protection de l'environnement visant à améliorer les conditions nécessaires à la mise en place d'une économie circulaire en Suisse. Ce contre-projet a été rejeté par le Conseil national en 2015 en raison de l'opposition du PLR et de l'UDC, diverses modifications qui auraient pu réunir une majorité au sein de la population, des milieux économiques et du Parlement passant du même coup à la trappe. L'interdiction de mettre sur le marché du bois illégal en est l'exemple le plus récent. Cette préoccupation, qui avait été balayée avec le contre-projet, fait maintenant l'objet de deux motions déposées par le groupe UDC.</p><p>La présente initiative parlementaire reprend à son tour une proposition pouvant réunir des majorités et promouvoir l'économie circulaire en Suisse, à savoir l'amélioration des conditions nécessaires à la mise en place d'une telle économie. Cette proposition faisait partie du projet mis en consultation et approuvé par le Conseil fédéral. Il appartient maintenant au Parlement d'adopter une initiative parlementaire allant dans ce sens.</p>",
+            "text_it": "<p>L'economia circolare rappresenta un'opportunità per l'economia svizzera poiché consente di promuovere la trasformazione e la valorizzazione dei materiali a livello locale. Nel contempo essa contribuisce alla salvaguardia delle risorse in Svizzera e a livello globale. Ad esempio, il riciclaggio del calcestruzzo permette di ridurre lo spazio destinato alle discariche e all'estrazione della ghiaia. Anche l'estrazione mineraria urbana (urban mining) contribuisce a ridurre l'inquinamento ambientale nella fabbricazione di metalli. Promuovendo l'economia circolare sono inoltre rese possibili valide innovazioni, che rafforzano ulteriormente la competitività dell'industria.</p><p>Integrando gli obiettivi di efficienza e salvaguardia delle risorse nella legge sulla protezione dell'ambiente, quest'ultima consente di incentivare in modo più diretto ed efficiente l'economia circolare.</p><p>Questa richiesta era già stata proposta e posta in consultazione dal Consiglio federale ottenendo la maggioranza in Consiglio nazionale. L'iniziativa popolare \"Economia verde\" era stata lo spunto per proporre, nel quadro di un controprogetto, migliori condizioni quadro per lo sviluppo di un'economia circolare svizzera. Nel 2015 tale controprogetto era stato respinto in Consiglio nazionale poiché il PLR e l'UDC vi si erano opposti. Ciò ha posto fine a molte altre richieste suscettibili di ottenere la maggioranza presso la popolazione, l'economia e il Parlamento. L'esempio più recente in tal senso è costituito dal divieto di immissione in commercio di legno illegale. Respinta in quanto parte del controprogetto, tale richiesta è stata ora nuovamente ripresa in due mozioni dell'UDC.</p><p>L'iniziativa parlamentare formula un'ulteriore richiesta - suscettibile di ottenere la maggioranza - di creare migliori condizioni quadro per promuovere e quindi rafforzare l'economia circolare svizzera. Siccome tale richiesta è già stata posta in consultazione ed è già stata adottata dal Consiglio federale, spetta ora al Parlamento esaminarla nuovamente nell'ambito di un'iniziativa parlamentare.</p>",
+            "text_rm": null
+          }
+        ]
+      },
+      "expected": {
+        "required": [
+          "circular_economy",
+          "resources_raw_materials",
+          "environmental_law"
+        ],
+        "optional": [
+          "climate_energy_other"
+        ],
+        "reason": "Döngüsel ekonomi, doğal kaynak verimliliği ve çevre yasası değişikliği; içerikte iklim yükünün azaltılması da anılıyor."
+      },
+      "case_type": "multilabel"
+    },
+    {
+      "dataset": "affairs",
+      "id": 160271,
+      "group": "edge",
+      "title": "Massnahmen zum Schutz von Klima und Biodiversität. Synergien stärken ",
+      "input": {
+        "affair": {
+          "title_de": "Massnahmen zum Schutz von Klima und Biodiversität. Synergien stärken ",
+          "title_long_de": null,
+          "title_fr": "Renforcer les synergies entre mesures de protection du climat et mesures de protection de la biodiversité ",
+          "title_long_fr": null,
+          "title_it": "Rafforzare le sinergie tra le misure di protezione del clima e le misure di protezione della biodiversità ",
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": [
+          {
+            "text_de": "<p>Der Klimawandel wirkt sich negativ auf die Biodiversität aus, und die schwindende Biodiversität verhindert die Erreichung der Klimaziele. Die Klimakrise und die Biodiversitätskrise seien eng miteinander verknüpft, betonen der Weltklimarat und der Weltbiodiversitätsrat. Es wäre daher sinnvoll und wirksam, wenn die Klimapolitik und die Biodiversitätspolitik der Schweiz, die bisher grösstenteils voneinander unabhängig verfolgt wurden, in Zukunft gemeinsam entwickelt würden und wenn den Durchführungsmassnahmen ein gemeinsamer Ansatz zugrunde läge. Daher ist es wichtig, die Synergien zwischen den Massnahmen zum Schutz des Klimas und der Biodiversität sicherzustellen und zu maximieren.</p><p>In seinen Antworten auf die Fragen 21.7912 und 21.8231 räumte der Bundesrat ein, dass die Interaktionen zwischen Projekten zum Schutz des Klimas und Projekten zum Schutz der Biodiversität oftmals eng sein können. Er bemerkte, dass einige Projekte des Aktionsplans Strategie Biodiversität Schweiz sowohl zum Erhalt der Biodiversität als auch zur Anpassung an den Klimawandel und zum Klimaschutz beitragen würden. Dazu würden die Revitalisierung der Moore, die Förderung der Waldbiodiversität oder die ökologische Aufwertung in den Agglomerationen gehören. Umgekehrt beinhalte der Aktionsplan «Anpassung an den Klimawandel» Projekte, die zum Schutz der Biodiversität beitragen. Dazu würden der Schutz und die Regeneration von Torf und organischen Böden oder die Durchgrünung von Siedlungen und Agglomerationen gehören.</p><p>Der Bundesrat räumte zwar ein, dass die Interaktionen eng sein können, gesteht aber ein, dass es bei Projekten zum Schutz des Klimas und Projekten zum Schutz der Biodiversität noch kein Monitoring gebe.&nbsp;</p>",
+            "text_fr": "<p>Les changements climatiques ont des effets néfastes sur la biodiversité, et le déclin de la diversité biologique constitue un obstacle à la réalisation des objectifs climatiques. Crise climatique et crise de la biodiversité sont étroitement liées, comme le soulignent le GIEC et l’IPBES. Il serait donc judicieux et efficace que les politiques de la Suisse en matière de climat et de biodiversité, menées jusqu’ici en grande partie séparément, soient développées conjointement à l’avenir et que les mesures d’application fassent l’objet d’une approche commune. Partant, il paraît important de garantir et de maximiser les synergies entre les mesures de protection du climat et les mesures de protection de la biodiversité.</p><p>Dans ses réponses aux questions 21.7912 et 21.8231, le Conseil fédéral reconnaît que les interactions entre les projets visant à préserver le climat et ceux visant à préserver la biodiversité peuvent être étroites. Il mentionne que certains projets du plan d'action Stratégie Biodiversité Suisse contribuent aussi bien à la conservation de la biodiversité qu'à l'adaptation au changement climatique et à la protection du climat. Il s'agit notamment de la revitalisation des marais, de la promotion de la biodiversité forestière ou de la revalorisation écologique dans les agglomérations. Inversement, le plan d'action Adaptation au changement climatique comprend des projets qui contribuent à la protection de la biodiversité. Il s'agit notamment de la protection et de la régénération des tourbières et des sols organiques ou de la végétalisation des zones d'habitation et des agglomérations.</p><p>Tout en reconnaissant que les interactions peuvent être étroites, le Conseil fédéral admet qu’il n’existe aucun monitoring des synergies entre projets de protection du climat et projets de protection de la biodiversité.&nbsp;</p>",
+            "text_it": "<p>Il cambiamento climatico ha un impatto negativo sulla biodiversità, e il declino della diversità biologica costituisce un ostacolo al raggiungimento degli obiettivi climatici. La crisi climatica e la crisi della biodiversità sono strettamente collegate, come hanno sottolineato l'IPCC e l'IPBES. Sarebbe quindi opportuno ed efficace che in futuro le politiche svizzere in materia di clima e di biodiversità, finora condotte in gran parte in modo separato, venissero sviluppate congiuntamente e che le misure di attuazione fossero oggetto di un approccio comune. È quindi importante garantire e sfruttare al massimo le sinergie esistenti tra le misure di protezione del clima e quelle di protezione della biodiversità.</p><p>Nelle risposte alle domande&nbsp;21.7912 e 21.8231, il Consiglio federale riconosce che le interazioni tra i progetti di protezione del clima e quelli di protezione della biodiversità possono essere forti. Al riguardo, fa l'esempio di alcuni progetti del piano d'azione Strategia Biodiversità Svizzera che contribuiscono sia alla conservazione della biodiversità sia all'adattamento ai cambiamenti climatici e alla protezione del clima. Tra questi vi sono in particolare la rivitalizzazione delle zone umide, la promozione della biodiversità forestale e la valorizzazione ecologica degli agglomerati. Analogamente, il piano d'azione per l'adattamento ai cambiamenti climatici comprende progetti che contribuiscono alla protezione della biodiversità. Tra questi vi sono in particolare la protezione e la rigenerazione delle torbiere e dei suoli organici o l'inverdimento delle zone insediative e degli agglomerati.</p><p>Pur riconoscendo che le interazioni possono essere forti, il Consiglio federale ammette che non esiste alcun monitoraggio delle sinergie esistenti tra i progetti di protezione del clima e quelli di protezione della biodiversità.&nbsp;</p>",
+            "text_rm": null
+          },
+          {
+            "text_de": "<p>Der Bundesrat wird beauftragt, die Synergien zwischen Massnahmen zum Schutz des Klimas und der Biodiversität systematisch zu stärken, um die Wirksamkeit des Engagements in der Bekämpfung dieser beiden zusammenhängenden Krisen zu erhöhen. Zu diesem Zweck könnte er namentlich ein Monitoring der bestehenden Synergien einführen.</p>",
+            "text_fr": "<p>Le Conseil fédéral est chargé de renforcer de manière systématique les synergies entre mesures de protection du climat et mesures de protection de la biodiversité dans le but de renforcer l'efficacité des engagements pris pour lutter contre ces deux crises conjointes. Pour ce faire, il pourra notamment mettre en place un monitoring des synergies existantes.</p>",
+            "text_it": "<p>Il Consiglio federale è incaricato di rafforzare sistematicamente le sinergie tra le misure di protezione del clima e quelle di protezione della biodiversità, al fine di aumentare l'efficacia degli impegni assunti per combattere queste due crisi connesse. A tal fine, deve in particolare approntare un monitoraggio delle sinergie esistenti.</p>",
+            "text_rm": null
+          },
+          {
+            "text_de": "<div><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial\">Der Bundesrat ist bereits heute bestrebt, das Synergiepotenzial in den Bereichen Klima und Biodiversität bestmöglich zu nutzen. Das Bundesgesetz über die Ziele im Klimaschutz, die Innovation und die Stärkung der Energiesicherheit (KlG) sieht unter anderem vor, die Zunahmen von klimabedingten Schäden an Menschen und Sachwerten durch Veränderungen der Lebensräume und der Artenzusammensetzung zu vermeiden. In seinem indirekten Gegenvorschlag zur Biodiversitätsinitiative (22.025) setzt der Bundesrat unter anderem ein Schwergewicht auf die Qualität der Flächen. Damit einher geht die Sanierung von bestehenden Schutzgebieten, hier insbesondere die Moore, welche in degradiertem Zustand erhebliche CO</span><span style=\"line-height:150%; font-family:Arial; font-size:7.33pt; vertical-align:sub\">2</span><span style=\"font-family:Arial\">-Quellen darstellen, sowie auf die Biodiversität in den Siedlungen mit vielfältigen Synergien zum Klimaschutz. Bei der Aktualisierung der Strategie «Anpassung an den Klimawandel in der Schweiz» sowie beim zugehörigen Aktionsplan ab 2026 wird die sektorenübergreifende Ausrichtung gestärkt, namentlich mit Blick auf die Biodiversität. Bestehende Monitoringprogramme wie das Biodiversitätsmonitoring oder das Landesforstinventar erlauben bereits heute Rückschlüsse auf die Effekte des Klimawandels zu ziehen. </span></p><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial; -aw-import:ignore\">&#xa0;</span></p><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial\">Vor dem Hintergrund der bereits ergriffenen Massnahmen erachtet der Bundesrat ein zusätzliches Monitoring nicht für notwendig. </span><a name=\"_Hlk147989512\">Es würde die Verfahren aufwändiger und schwerfälliger, jedoch nicht zwingend wirksamer machen</a><span style=\"font-family:Arial\">. Die Überprüfung der Synergien kann in die Evaluation der Aktionspläne integriert werden.</span></p></div><br><br>Der Bundesrat beantragt die Ablehnung der Motion.",
+            "text_fr": "<div><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial\">Le Conseil fédéral s’efforce aujourd’hui déjà d’exploiter au mieux ce potentiel. La loi fédérale sur les objectifs en matière de protection du climat, sur l’innovation et sur le renforcement de la sécurité énergétique vise notamment à éviter l’augmentation des dommages climatiques causés aux êtres humains et aux biens matériels en raison des modifications des milieux naturels et de la composition des espèces. Dans son contre-projet indirect à l’Initiative biodiversité (22.025), le Conseil fédéral met notamment l’accent sur la qualité des surfaces</span><span style=\"font-family:Arial\">&#xa0;</span><span style=\"font-family:Arial\">: assainissement des aires protégées existantes, surtout des marais, qui, s’ils sont dégradés, constituent une importante source de CO</span><span style=\"line-height:150%; font-family:Arial; font-size:7.33pt; vertical-align:sub\">2</span><span style=\"font-family:Arial\">. Le Conseil fédéral veut aussi promouvoir la conservation de la biodiversité dans les zones urbanisées grâce aux nombreuses synergies avec la protection du climat. Lors de l’actualisation de la stratégie Adaptation aux changements climatiques en Suisse et dans le cadre du plan d’action correspondant valable à partir de 2026, l’approche transversale sera renforcée, notamment s’agissant de la biodiversité. Les programmes de monitoring existants (p.</span><span style=\"font-family:Arial\">&#xa0;</span><span style=\"font-family:Arial\">ex. Monitoring de la biodiversité en Suisse ou inventaire forestier national) permettent déjà de tirer des conclusions sur les effets des changements climatiques. </span></p><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial; -aw-import:ignore\">&#xa0;</span></p><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial\">Compte tenu des mesures déjà prises, le Conseil fédéral estime qu’il n’est pas nécessaire de mettre en place un monitoring supplémentaire. En effet, les procédures s’en trouveraient alourdies et compliquées sans toutefois gagner en efficacité. L’examen des synergies peut être intégré dans l’évaluation des plans d’action.</span></p></div><br><br>Le Conseil fédéral propose de rejeter la motion.",
+            "text_it": "<div><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial\">Il Consiglio federale si sta già impegnando per sfruttare al meglio le potenziali sinergie negli ambiti del clima e della biodiversità. La legge federale sugli obiettivi in materia di protezione del clima, l'innovazione e il rafforzamento della sicurezza energetica (LOCli) prescrive, tra l'altro, che occorre evitare l'aggravarsi dei danni causati dai cambiamenti climatici a persone e cose dovuto ai cambiamenti negli ecosistemi e nella composizione delle specie. Nel suo controprogetto indiretto all'Iniziativa biodiversità (22.025), il Consiglio federale pone l'accento anche sulla qualità delle superfici e sulla biodiversità nelle zone urbane. La qualità delle superfici va di pari passo con il ripristino di aree protette esistenti, in particolare le paludi, che in stato di degrado costituiscono fonti significative di CO2. Inoltre vuole promovere la biodiversità nelle zone urbane - con molteplici sinergie per la protezione del clima. In occasione dell'aggiornamento della strategia \"Adattamento ai cambiamenti climatici in Svizzera\" e del relativo piano d'azione, a partire dal 2026 gli sarà conferito un orientamento più intersettoriale, in particolare nell'ottica della promozione della biodiversità. I programmi di monitoraggio esistenti, come il monitoraggio della biodiversità o l'Inventario forestale nazionale, consentono già di trarre conclusioni sugli effetti dei cambiamenti climatici. </span></p><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial; -aw-import:ignore\">&#xa0;</span></p><p style=\"margin-top:0pt; margin-bottom:0pt; line-height:150%; widows:0; orphans:0; font-size:11pt\"><span style=\"font-family:Arial\">Alla luce delle misure già adottate, il Consiglio federale non ritiene necessario condurre un ulteriore monitoraggio, che renderebbe le procedure più complesse e onerose ma non necessariamente più efficaci. L'esame delle sinergie può essere integrato nella valutazione dei piani d'azione.</span></p></div><br><br>Il Consiglio federale propone di respingere la mozione.",
+            "text_rm": null
+          },
+          {
+            "text_de": "Massnahmen zum Schutz von Klima und Biodiversität. Synergien stärken ",
+            "text_fr": "Renforcer les synergies entre mesures de protection du climat et mesures de protection de la biodiversité ",
+            "text_it": "Rafforzare le sinergie tra le misure di protezione del clima e le misure di protezione della biodiversità ",
+            "text_rm": null
+          }
+        ]
+      },
+      "expected": {
+        "required": [
+          "climate_energy_other"
+        ],
+        "required_any": [
+          [
+            "biodiversity_landscape_other",
+            "species_habitats",
+            "forest",
+            "waters",
+            "soil_spatial_planning"
+          ]
+        ],
+        "optional": [
+          "biodiversity_landscape_other",
+          "species_habitats",
+          "forest",
+          "waters",
+          "soil_spatial_planning",
+          "environment_policy_other",
+          "environmental_research_education"
+        ],
+        "reason": "İklim ve biyolojik çeşitlilik birlikte korunuyor. İçerikte orman, sulak alan, toprak ve izleme örnekleri var; iklimle birlikte en az bir biyolojik çeşitlilik etiketi gerekli."
+      },
+      "case_type": "multilabel"
+    },
+    {
+      "dataset": "affairs",
+      "id": 1,
+      "group": "edge",
+      "title": "TransRUN II",
+      "input": {
+        "affair": {
+          "title_de": null,
+          "title_long_de": null,
+          "title_fr": "TransRUN II",
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Proje adı TransRUN II tek başına sürdürülebilir ulaşımı kanıtlamıyor; bağlı içerik yok."
+      },
+      "case_type": "ambiguous"
+    },
+    {
+      "dataset": "affairs",
+      "id": 9,
+      "group": "edge",
+      "title": "Geschäftsbericht 2008",
+      "input": {
+        "affair": {
+          "title_de": "Geschäftsbericht 2008",
+          "title_long_de": "Bericht und Antrag: Geschäftsbericht 2008",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Genel yıllık rapor başlığından çevre içeriği çıkarılamaz."
+      },
+      "case_type": "ambiguous"
+    },
+    {
+      "dataset": "affairs",
+      "id": 20,
+      "group": "edge",
+      "title": "Budgetpostulat Mirjam Ballmer Dienststelle Nr. 614 / Stadtgärtnerei / BVD",
+      "input": {
+        "affair": {
+          "title_de": "Budgetpostulat Mirjam Ballmer Dienststelle Nr. 614 / Stadtgärtnerei / BVD",
+          "title_long_de": null,
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Belediye bahçecilik biriminin bütçesi çevresel olabilir; mevcut başlık amacı belirtmediğinden tahmin yapılmamalı."
+      },
+      "case_type": "ambiguous"
+    },
+    {
+      "dataset": "affairs",
+      "id": 48,
+      "group": "edge",
+      "title": "Arch-Areal",
+      "input": {
+        "affair": {
+          "title_de": "Arch-Areal",
+          "title_long_de": "Arch-Areal",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Alan adı tek başına çevresel arazi kullanım sorununu kanıtlamıyor."
+      },
+      "case_type": "ambiguous"
+    },
+    {
+      "dataset": "affairs",
+      "id": 57,
+      "group": "edge",
+      "title": "Nachhaltige Lösung Winterdienst",
+      "input": {
+        "affair": {
+          "title_de": "Nachhaltige Lösung Winterdienst",
+          "title_long_de": "Nachhaltige Lösung Winterdienst",
+          "title_fr": null,
+          "title_long_fr": null,
+          "title_it": null,
+          "title_long_it": null,
+          "title_rm": null,
+          "title_long_rm": null
+        },
+        "texts": []
+      },
+      "expected": {
+        "required": [
+          "other"
+        ],
+        "optional": [],
+        "reason": "Sürdürülebilir kış hizmeti ekonomik sürekliliği de ifade edebilir; mevcut metinde ekolojik etki açık değil."
+      },
+      "case_type": "ambiguous"
+    }
+  ]
+}

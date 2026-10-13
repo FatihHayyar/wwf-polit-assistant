@@ -1,0 +1,1383 @@
+{
+  "summary": {
+    "baseline_correct": 40,
+    "correct": 50,
+    "records": 50,
+    "database_writes": 0,
+    "version": "rule-based-v7",
+    "groups": {
+      "wwf": {
+        "total": 20,
+        "correct": 20
+      },
+      "edge": {
+        "total": 10,
+        "correct": 10
+      },
+      "unrelated": {
+        "total": 20,
+        "correct": 20
+      }
+    }
+  },
+  "baseline": [
+    {
+      "dataset": "affairs",
+      "id": 2160,
+      "title": "Photovoltaikanlage Schulanlage Spitz",
+      "group": "wwf",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "renewable_electricity"
+      ],
+      "missing_any": [],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 37526,
+      "title": "Stillstand bei der Windenergie-Nutzung im Kanton Bern?",
+      "group": "wwf",
+      "proposed": [
+        "renewable_electricity"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 3895,
+      "title": "Mehr Transparenz bei der Energieeffizienz städtischer Liegenschaften",
+      "group": "wwf",
+      "proposed": [
+        "building_efficiency"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 8598,
+      "title": "Synergien nutzen bei der Bereitstellung von Ladeinfrastruktur für die E-Mobilität",
+      "group": "wwf",
+      "proposed": [
+        "sustainable_mobility"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "documents",
+      "id": 68618,
+      "title": "Antrag Stadtrat - 2026.96W",
+      "group": "wwf",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "renewable_heat"
+      ],
+      "missing_any": [],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 24891,
+      "title": "Betreffend Seglerschutz/Artenschutz",
+      "group": "wwf",
+      "proposed": [
+        "species_habitats"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 1337,
+      "title": "Naturschutzgebiet Ruggeller Riet",
+      "group": "wwf",
+      "proposed": [
+        "protected_areas"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 43542,
+      "title": "Waldreservate im Kanton Basel-Stadt",
+      "group": "wwf",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "forest"
+      ],
+      "missing_any": [],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 271,
+      "title": "Gewässerschutz im Rhein - der Rendite der Pharmaindustrie geopfert",
+      "group": "wwf",
+      "proposed": [
+        "waters"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 36406,
+      "title": "Aargauer Landwirtschaft ohne chemisch-synthetische Pestizide",
+      "group": "wwf",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "agriculture_biodiversity"
+      ],
+      "missing_any": [],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 2913,
+      "title": "Kreislaufwirtschaft",
+      "group": "wwf",
+      "proposed": [
+        "circular_economy"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 58340,
+      "title": "Food Waste eindämmen",
+      "group": "wwf",
+      "proposed": [
+        "food_consumption"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 79298,
+      "title": "Sustainable Finance bei der St.Galler Kantonalbank – noch viel Luft nach oben",
+      "group": "wwf",
+      "proposed": [
+        "sustainable_finance"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 2135,
+      "title": "Nachhaltiger Konsum in der Stadt Luzern",
+      "group": "wwf",
+      "proposed": [
+        "food_consumption"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 64337,
+      "title": "Schweizer Kreislaufwirtschaft stärken. Plattform für Schweizer Ressourceneffizienz",
+      "group": "wwf",
+      "proposed": [
+        "circular_economy",
+        "resources_raw_materials"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 28932,
+      "title": "Vernehmlassung zur Teilrevision des kantonalen Umweltgesetzes (KUG; RB 40.7011)",
+      "group": "wwf",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "environmental_law"
+      ],
+      "missing_any": [],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 1549,
+      "title": "Umweltbildung und -erziehung",
+      "group": "wwf",
+      "proposed": [
+        "environmental_research_education"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 188,
+      "title": "Einen Klimafonds \"New Green Deal für Basel\" (NGDB)",
+      "group": "wwf",
+      "proposed": [
+        "environmental_funding"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 194,
+      "title": "Nachhaltige Beschaffung nach ökologischen Kriterien beim Kanton und seinen Betrieben",
+      "group": "wwf",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "public_sector"
+      ],
+      "missing_any": [],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 45107,
+      "title": "Basel pro Klima: Pariser Klimaabkommen einhalten",
+      "group": "wwf",
+      "proposed": [
+        "international_environment"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 2,
+      "title": "Klassenbildungen und Schulraumbedarf",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 3,
+      "title": "Statistisches Amt und seine perfekten Mitarbeiter",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 4,
+      "title": "Staatspräsidenten in Basel",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 5,
+      "title": "Bedürfnisse der Universität und der Forschung",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 6,
+      "title": "Schutz der persönlichen Integrität im Grossen Rat",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 7,
+      "title": "Schaffung von Wohnraum für Studierende und junge Leute in Ausbildung",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 8,
+      "title": "Analyse zu den aktuellen Steuerabzügen im Kanton Basel-Stadt",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 12,
+      "title": "Arbeitsbedingungen des Mittelbaus an der Universität Basel",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 14,
+      "title": "Schulraumplanung",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 15,
+      "title": "Videoüberwachung im öffentlichen Raum",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 17,
+      "title": "Luzerner Theater",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 22,
+      "title": "Wahl eines Mitglieds des Districtsrates (Nachfolge Jürg Stöcklin, GAB)",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 26,
+      "title": "Zusätzliche Mittel für vollständige Transparenz in der «Affäre Rossier»",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 29,
+      "title": "Keine EU-Flagge am Stadthaus",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 34,
+      "title": "Ersatzwahl Wahlbüro,  Austritt von Urs Wagner",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 37,
+      "title": "Einrichtung eines runden Tischs für LGBTI-Anliegen",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 38,
+      "title": "Cannabis-Tests",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 43,
+      "title": "Neue und innovative Lernräume",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 45,
+      "title": "Spitex",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 59,
+      "title": "Corona an der Schule Dietikon",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 1428,
+      "title": "Ratschlag Gesamtkonzept Elektromobilität; Anpassung des kantonalen Umweltschutzgesetzes",
+      "group": "edge",
+      "proposed": [
+        "sustainable_mobility"
+      ],
+      "correct": false,
+      "missing": [
+        "environmental_law"
+      ],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 2091,
+      "title": "Kreislaufwirtschaft im Kampf gegen die Klimakrise nutzen",
+      "group": "edge",
+      "proposed": [
+        "circular_economy"
+      ],
+      "correct": false,
+      "missing": [
+        "climate_energy_other"
+      ],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 12866,
+      "title": "Pestizideinsatz im Wald auf Stadtgebiet, Genehmigungskriterien für den Einsatz von Pestiziden sowie Möglichkeiten für den Schutz der Gewässer und deren Organismen",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "forest",
+        "waters"
+      ],
+      "missing_any": [],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 155107,
+      "title": "Schweizer Kreislaufwirtschaft stärken. Ressourceneffizienz im Umweltschutzgesetz aufnehmen",
+      "group": "edge",
+      "proposed": [
+        "circular_economy",
+        "environmental_law",
+        "resources_raw_materials"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 160271,
+      "title": "Massnahmen zum Schutz von Klima und Biodiversität. Synergien stärken ",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": false,
+      "missing": [
+        "climate_energy_other"
+      ],
+      "missing_any": [
+        [
+          "biodiversity_landscape_other",
+          "species_habitats",
+          "forest",
+          "waters",
+          "soil_spatial_planning"
+        ]
+      ],
+      "extra": [
+        "other"
+      ]
+    },
+    {
+      "dataset": "affairs",
+      "id": 1,
+      "title": "TransRUN II",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 9,
+      "title": "Geschäftsbericht 2008",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 20,
+      "title": "Budgetpostulat Mirjam Ballmer Dienststelle Nr. 614 / Stadtgärtnerei / BVD",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 48,
+      "title": "Arch-Areal",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 57,
+      "title": "Nachhaltige Lösung Winterdienst",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    }
+  ],
+  "results": [
+    {
+      "dataset": "affairs",
+      "id": 2160,
+      "title": "Photovoltaikanlage Schulanlage Spitz",
+      "group": "wwf",
+      "proposed": [
+        "renewable_electricity"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 37526,
+      "title": "Stillstand bei der Windenergie-Nutzung im Kanton Bern?",
+      "group": "wwf",
+      "proposed": [
+        "renewable_electricity"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 3895,
+      "title": "Mehr Transparenz bei der Energieeffizienz städtischer Liegenschaften",
+      "group": "wwf",
+      "proposed": [
+        "building_efficiency"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 8598,
+      "title": "Synergien nutzen bei der Bereitstellung von Ladeinfrastruktur für die E-Mobilität",
+      "group": "wwf",
+      "proposed": [
+        "sustainable_mobility"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "documents",
+      "id": 68618,
+      "title": "Antrag Stadtrat - 2026.96W",
+      "group": "wwf",
+      "proposed": [
+        "renewable_heat"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 24891,
+      "title": "Betreffend Seglerschutz/Artenschutz",
+      "group": "wwf",
+      "proposed": [
+        "species_habitats"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 1337,
+      "title": "Naturschutzgebiet Ruggeller Riet",
+      "group": "wwf",
+      "proposed": [
+        "protected_areas"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 43542,
+      "title": "Waldreservate im Kanton Basel-Stadt",
+      "group": "wwf",
+      "proposed": [
+        "forest"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 271,
+      "title": "Gewässerschutz im Rhein - der Rendite der Pharmaindustrie geopfert",
+      "group": "wwf",
+      "proposed": [
+        "waters"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 36406,
+      "title": "Aargauer Landwirtschaft ohne chemisch-synthetische Pestizide",
+      "group": "wwf",
+      "proposed": [
+        "agriculture_biodiversity"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 2913,
+      "title": "Kreislaufwirtschaft",
+      "group": "wwf",
+      "proposed": [
+        "circular_economy"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 58340,
+      "title": "Food Waste eindämmen",
+      "group": "wwf",
+      "proposed": [
+        "food_consumption"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 79298,
+      "title": "Sustainable Finance bei der St.Galler Kantonalbank – noch viel Luft nach oben",
+      "group": "wwf",
+      "proposed": [
+        "sustainable_finance"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 2135,
+      "title": "Nachhaltiger Konsum in der Stadt Luzern",
+      "group": "wwf",
+      "proposed": [
+        "food_consumption"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 64337,
+      "title": "Schweizer Kreislaufwirtschaft stärken. Plattform für Schweizer Ressourceneffizienz",
+      "group": "wwf",
+      "proposed": [
+        "circular_economy",
+        "resources_raw_materials"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 28932,
+      "title": "Vernehmlassung zur Teilrevision des kantonalen Umweltgesetzes (KUG; RB 40.7011)",
+      "group": "wwf",
+      "proposed": [
+        "environmental_law"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 1549,
+      "title": "Umweltbildung und -erziehung",
+      "group": "wwf",
+      "proposed": [
+        "environmental_research_education"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 188,
+      "title": "Einen Klimafonds \"New Green Deal für Basel\" (NGDB)",
+      "group": "wwf",
+      "proposed": [
+        "environmental_funding"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 194,
+      "title": "Nachhaltige Beschaffung nach ökologischen Kriterien beim Kanton und seinen Betrieben",
+      "group": "wwf",
+      "proposed": [
+        "public_sector"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 45107,
+      "title": "Basel pro Klima: Pariser Klimaabkommen einhalten",
+      "group": "wwf",
+      "proposed": [
+        "international_environment"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 2,
+      "title": "Klassenbildungen und Schulraumbedarf",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 3,
+      "title": "Statistisches Amt und seine perfekten Mitarbeiter",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 4,
+      "title": "Staatspräsidenten in Basel",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 5,
+      "title": "Bedürfnisse der Universität und der Forschung",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 6,
+      "title": "Schutz der persönlichen Integrität im Grossen Rat",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 7,
+      "title": "Schaffung von Wohnraum für Studierende und junge Leute in Ausbildung",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 8,
+      "title": "Analyse zu den aktuellen Steuerabzügen im Kanton Basel-Stadt",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 12,
+      "title": "Arbeitsbedingungen des Mittelbaus an der Universität Basel",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 14,
+      "title": "Schulraumplanung",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 15,
+      "title": "Videoüberwachung im öffentlichen Raum",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 17,
+      "title": "Luzerner Theater",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 22,
+      "title": "Wahl eines Mitglieds des Districtsrates (Nachfolge Jürg Stöcklin, GAB)",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 26,
+      "title": "Zusätzliche Mittel für vollständige Transparenz in der «Affäre Rossier»",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 29,
+      "title": "Keine EU-Flagge am Stadthaus",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 34,
+      "title": "Ersatzwahl Wahlbüro,  Austritt von Urs Wagner",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 37,
+      "title": "Einrichtung eines runden Tischs für LGBTI-Anliegen",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 38,
+      "title": "Cannabis-Tests",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 43,
+      "title": "Neue und innovative Lernräume",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 45,
+      "title": "Spitex",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 59,
+      "title": "Corona an der Schule Dietikon",
+      "group": "unrelated",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 1428,
+      "title": "Ratschlag Gesamtkonzept Elektromobilität; Anpassung des kantonalen Umweltschutzgesetzes",
+      "group": "edge",
+      "proposed": [
+        "environmental_law",
+        "sustainable_mobility"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 2091,
+      "title": "Kreislaufwirtschaft im Kampf gegen die Klimakrise nutzen",
+      "group": "edge",
+      "proposed": [
+        "circular_economy",
+        "climate_energy_other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 12866,
+      "title": "Pestizideinsatz im Wald auf Stadtgebiet, Genehmigungskriterien für den Einsatz von Pestiziden sowie Möglichkeiten für den Schutz der Gewässer und deren Organismen",
+      "group": "edge",
+      "proposed": [
+        "agriculture_biodiversity",
+        "forest",
+        "waters"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 155107,
+      "title": "Schweizer Kreislaufwirtschaft stärken. Ressourceneffizienz im Umweltschutzgesetz aufnehmen",
+      "group": "edge",
+      "proposed": [
+        "circular_economy",
+        "environmental_law",
+        "resources_raw_materials"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 160271,
+      "title": "Massnahmen zum Schutz von Klima und Biodiversität. Synergien stärken ",
+      "group": "edge",
+      "proposed": [
+        "biodiversity_landscape_other",
+        "climate_energy_other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 1,
+      "title": "TransRUN II",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 9,
+      "title": "Geschäftsbericht 2008",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 20,
+      "title": "Budgetpostulat Mirjam Ballmer Dienststelle Nr. 614 / Stadtgärtnerei / BVD",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 48,
+      "title": "Arch-Areal",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    },
+    {
+      "dataset": "affairs",
+      "id": 57,
+      "title": "Nachhaltige Lösung Winterdienst",
+      "group": "edge",
+      "proposed": [
+        "other"
+      ],
+      "correct": true,
+      "missing": [],
+      "missing_any": [],
+      "extra": []
+    }
+  ]
+}

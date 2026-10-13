@@ -2,7 +2,7 @@ from datetime import date, datetime, time, timedelta
 from math import ceil
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import exists, extract, func, or_, select
+from sqlalchemy import exists, extract, func, or_, select, case, cast, String, tuple_
 
 from app.models.change_event import ChangeEvent
 from app.models.change_event_affair import ChangeEventAffair
@@ -88,6 +88,20 @@ def entity_statement(db, dataset, *, q=None, canton=None, category=None, subcate
     return statement
 
 
+def affair_group_fields():
+    title = func.lower(func.trim(func.coalesce(*(func.nullif(getattr(Affair, "title_" + language), "")
+                                               for language in ("de", "fr", "it", "rm")), "")))
+    day = func.date(Affair.begin_date)
+    unique = case((or_(title == "", Affair.body_id.is_(None), Affair.begin_date.is_(None)), cast(Affair.id, String)), else_="")
+    return Affair.body_id, day, title, unique
+
+
+def group_affairs(statement):
+    """Group matching same-title/day/body sources; retain every original record."""
+    groups = statement.with_only_columns(func.max(Affair.id)).order_by(None).group_by(*affair_group_fields())
+    return statement.where(Affair.id.in_(groups))
+
+
 def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategory=None,
                   year=None, month=None, date_from=None, date_to=None, affair_id=None,
                   group_id=None, person_id=None,
@@ -100,8 +114,11 @@ def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategor
     statement = entity_statement(db, dataset, q=q, canton=canton, category=category, subcategory=subcategory,
         year=year, month=month, date_from=date_from, date_to=date_to, affair_id=affair_id,
         group_id=group_id, person_id=person_id, agenda_id=agenda_id, meeting_id=meeting_id)
+    ungrouped_statement = statement
     if record_ids is not None:
         statement = statement.where(key.in_(record_ids))
+    if dataset == "affairs":
+        statement = group_affairs(statement)
     total = db.scalar(select(func.count()).select_from(statement.subquery())) or 0
     key = model.pk if dataset == "documents" else model.id
     rows = db.scalars(statement.order_by(date_column.desc().nullslast(), key.desc()).limit(page_size).offset((page - 1) * page_size)).all()
@@ -131,6 +148,14 @@ def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategor
                           canton=cantons.get(row.body_id), affair_ids=sorted(linked),
                           categories=[dict(code=code, name=name) for code, name in categories]))
         items[-1].update(presentation)
+        if dataset == "affairs":
+            identity = select(*affair_group_fields()).where(Affair.id == row.id)
+            variants = db.scalars(ungrouped_statement.where(tuple_(*affair_group_fields()).in_(identity)).order_by(Affair.id)).all()
+            if len(variants) > 1:
+                items[-1]["record_variants"] = [dict(id=variant.id, number=variant.number,
+                    title=next((getattr(variant, "title_" + language) for language in ("de", "fr", "it", "rm")
+                                if getattr(variant, "title_" + language)), None),
+                    kind=record_presentation(db, "affairs", variant).get("kind")) for variant in variants]
     return jsonable_encoder(dict(items=items, pagination=dict(page=page, page_size=page_size, total_items=total, total_pages=ceil(total / page_size))))
 
 
@@ -245,6 +270,8 @@ def search_all_entities(db, datasets=None, *, page=1, page_size=10, **filters):
         spec = ENTITIES[dataset]
         key = spec.model.pk if dataset == "documents" else spec.model.id
         statement = entity_statement(db, dataset, direct_search=True, **filters)
+        if dataset == "affairs":
+            statement = group_affairs(statement)
         parts.append(statement.with_only_columns(literal(dataset).label("dataset"), key.label("record_id"),
                      getattr(spec.model, spec.date_field).label("date")).order_by(None))
     combined = union_all(*parts).subquery()

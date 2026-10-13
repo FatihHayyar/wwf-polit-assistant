@@ -24,4 +24,9 @@ for(const language of ui.languages){
 }
 assert.equal(ui.t("en","renewable_electricity"),"Renewable electricity");
 assert.equal(ui.t("fr","page",{page:2,pages:4}),"Page 2 sur 4");
+const appSource=fs.readFileSync(path.join(root,"app/web/app.js"),"utf8");
+vm.runInContext(`const ui=window.PolitUI;let language="de";const state={categories:[{code:"climate_energy",name_de:"Klima & Energie",name_fr:"Climat & énergie",subcategories:[{code:"climate_energy_other",name_de:"Sonstiges",name_fr:"Autres"}]}]};`+appSource.slice(appSource.indexOf("function categoryName("),appSource.indexOf("function updateSubcategories(")),context);
+assert.equal(vm.runInContext('categoryPath({code:"climate_energy_other",name:"Sonstiges"})',context),"Klima & Energie / Sonstiges");
+assert.equal(vm.runInContext('categoryPath({code:"other",name:"Sonstiges"})',context),"Sonstiges");
+assert.equal(vm.runInContext('language="fr";categoryPath({code:"climate_energy_other"})',context),"Climat & énergie / Autres");
 console.log("Frontend checks passed: four languages, translation coverage, preferences and concise affair fields.");

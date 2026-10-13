@@ -12,7 +12,7 @@ Anforderungen wurden iterativ aus Auftrag und Praxisfeedback konkretisiert. Der 
 
 ## Nachweis und Grenzen
 
-Die vorhandene isolierte Suite umfasst 81 erfolgreiche Tests; JavaScript- und lokale Browserprüfungen ergänzen die Evidenz. Fehlerfälle führten zu robusteren Quellmappings und zusätzlichen Dokumenten-Bestandsprüfungen. Diese Ergebnisse gelten für konkrete Arbeitsstände und ersetzen keine fachliche Abnahme.
+Die vorhandene isolierte Suite umfasst am 13. Oktober 91 erfolgreiche Tests; aktuelle JavaScript-Prüfungen und ältere lokale Browserprüfungen ergänzen die Evidenz. Fehlerfälle führten zu robusteren Quellmappings und zusätzlicher Text-/Dokumentenbehandlung. Die konfigurierbaren Regeln erreichten auf 50 Entwicklungsbeispielen 50/50 gegenüber bisher 40/50; alle 2.951.254 Inhaltsdatensätze wurden technisch vollständig neu klassifiziert. Diese Ergebnisse gelten für konkrete Arbeitsstände und ersetzen keine unabhängige fachliche Abnahme. Nachweis: [Prüfung vom 13. Oktober](../05-testing/review-2026-10-13.md).
 
 Offen sind die endgültige Energie-/Klima-Taxonomie, WWF-Szenarien und quantitative Klassifikationsgüte. Organisationsversand und Zielumgebung sind bei der späteren betrieblichen Übernahme durch WWF zu prüfen. Eine gemessene Zeitersparnis oder vollständige historische Quellenabdeckung wird nicht behauptet. Es gibt keinen implementierten Chatbot oder LLM-Dienst.
 

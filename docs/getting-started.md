@@ -53,11 +53,14 @@ python scripts/bootstrap/download_openparldata.py --dry-run
 python scripts/bootstrap/download_openparldata.py --workers 6
 python scripts/bootstrap/import_normalized.py all
 python -m scripts.seed_classification
-python -m scripts.classify_affairs
-python -m scripts.classify_entities
+python -m scripts.rule_quality
+python -m scripts.reclassify_rules --apply
+python -m scripts.rule_backfill_status
 ```
 
 Auch `--dry-run` lädt das Exportmanifest und speichert es lokal; es lädt keine vollständigen Exporte. Der Import wählt den neuesten passenden lokalen Snapshot und verarbeitet Referenzdaten vor abhängigen Datensätzen. Bei mehrteiligen Imports werden abgeschlossene Dateien als Wiederaufnahmestand gespeichert. Ein anderer Snapshot oder fehlender Fortschrittsstand kann einen Tabellenreset auslösen. Download, Import und Klassifikation benötigen bei Millionen von Zeilen erheblich Zeit und Speicherplatz.
+
+Der neue Klassifikations-Backfill besitzt ohne `--apply` eine schreibgeschützte Vorschau. Seine Qualitätsschranke benötigt Git-Historie mit dem festgelegten Baseline-Commit; ZIP-Downloads ohne `.git` reichen dafür nicht. Themen und Regeln werden in `app/classification/taxonomy.json` bearbeitet. Nach Änderungen seeden und Prozesse neu starten; mit `--apply --force` bestehende Zuordnungen ausdrücklich erneuern. Vollständige Voraussetzungen und ältere Einzeljobs stehen in der [Konfiguration](configuration.md#regelbasierte-klassifikation).
 
 `scripts/bootstrap/validate_database.py` vergleicht mit historischen Sollzahlen des ursprünglichen Imports. Diese Zahlen eignen sich nicht als Aktualitätsprüfung eines später synchronisierten Bestands.
 

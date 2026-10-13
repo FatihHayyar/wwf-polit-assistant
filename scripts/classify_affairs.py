@@ -48,6 +48,7 @@ def load_fallback_category(
             ClassificationCategory.is_fallback.is_(
                 True
             ),
+            ClassificationCategory.parent_id.is_(None),
         )
     )
 
@@ -582,6 +583,7 @@ def validate_results(
             ClassificationCategory.is_fallback.is_(
                 True
             ),
+            ClassificationCategory.parent_id.is_(None),
         )
     )
 

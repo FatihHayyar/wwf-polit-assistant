@@ -26,7 +26,7 @@ rules are provisional and should not be described as WWF-approved.
 | Erneuerbare Stromerzeugung (Wind/PV) | `climate_energy / renewable_electricity`; PV and wind concepts exist. |
 | Effizienz in Gebäuden | `climate_energy / building_efficiency` |
 | Elektromobilität | `climate_energy / sustainable_mobility`; also includes other sustainable transport. |
-| Vorbildfunktion der öffentlichen Hand | `environment_policy / public_sector`; Vorbildfunktion concept exists, but is outside Klima & Energie. |
+| Vorbildfunktion der öffentlichen Hand | `environment_policy / public_sector`; generic public-role concepts require an environmental qualifier and remain outside Klima & Energie. |
 | Rechenzentren | Combined category `climate_energy / large_consumers_datacenters`. |
 | Grossverbraucher | Same combined category; independent category subscriptions are unavailable. Keywords distinguish them provisionally. |
 
@@ -36,6 +36,8 @@ other main themes during the initial focus. Splitting or moving categories
 requires migrating existing subscriptions and historical classifications.
 
 ## Architecture and scope
+
+As of 13 October, categories and rules are configured in `app/classification/taxonomy.json`, with a local Sonstiges child under each main theme and a separate global fallback. Labels show main/subtheme. Rule version v7 covers all 2,951,254 local source records; its curated 50-example development result is 50/50 versus 40/50 previously. This is not WWF expert approval or a representative unseen evaluation. See the [current verification](05-testing/review-2026-10-13.md).
 
 ```mermaid
 flowchart LR

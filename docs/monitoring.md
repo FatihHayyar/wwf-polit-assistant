@@ -45,12 +45,16 @@ To classify existing related records by their own content, including standalone
 records, run the following preparation job. It does not create notifications:
 
 ```powershell
-.venv\Scripts\python.exe -m scripts.classify_entities
+.venv\Scripts\python.exe -m scripts.reclassify_rules --apply
 ```
 
-This job commits batches of 500 and skips classifications at the current classifier
-version on restart. Use `--dataset agendas` to process one section, or `--force`
-to rebuild its classifications. The taxonomy must already be seeded. New records
+This job covers all nine datasets, requires a passing development-quality set,
+seeds the configured JSON taxonomy and commits batches (default 1,000; documents/texts capped at 250).
+It holds the shared synchronization lock and skips complete current-version classifications on restart.
+Without `--apply`, PostgreSQL remains read-only. Use `--dataset agendas` to process one section,
+or `--force` after taxonomy edits to rebuild current-version classifications too.
+Git history containing the fixed baseline commit is required for its quality gate.
+The legacy `scripts.classify_entities` job remains available without that gate. New records
 and meaningful changes are classified during synchronization; unchanged records
 with missing own classifications are also classified when scanned.
 

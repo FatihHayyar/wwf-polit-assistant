@@ -1,6 +1,6 @@
 # Projektdokumentation
 
-**Stand: 12. Oktober 2026.** Entwicklungs-MVP; technische Umsetzung, WWF-Abnahme und Betriebsfreigabe werden getrennt geführt. Der aktuelle Aufgabenstand steht in [GitHub-Tracking](01-project-management/github-tracking.md).
+**Stand: 13. Oktober 2026.** Entwicklungs-MVP; technische Umsetzung, WWF-Abnahme und Betriebsfreigabe werden getrennt geführt. Der lokale Stand steht im [Aufgabenstand](01-project-management/current-status.md), aktuelle Nachweise in der [Prüfung vom 13. Oktober](05-testing/review-2026-10-13.md). [GitHub-Tracking](01-project-management/github-tracking.md) dokumentiert den bisherigen externen Tracking-Stand.
 
 ## 01 – Projektmanagement
 

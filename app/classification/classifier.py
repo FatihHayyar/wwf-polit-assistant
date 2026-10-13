@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+from html import unescape
+from html.parser import HTMLParser
 import unicodedata
 from dataclasses import dataclass, field
 
@@ -15,7 +17,7 @@ from app.models import (
 )
 
 
-CLASSIFIER_VERSION = "rule-based-v6"
+CLASSIFIER_VERSION = "rule-based-v7"
 
 SUPPORTED_LANGUAGES = ("de", "fr", "it", "rm")
 
@@ -45,6 +47,7 @@ class CompiledRule:
     rule_type: str
     weight: float
     pattern: re.Pattern[str]
+    match_type: str = "phrase"
 
 
 @dataclass(frozen=True)
@@ -64,6 +67,8 @@ class Evidence:
 class CategoryMatch:
     category_id: int
     score: float = 0.0
+    title_qualifier_concepts: set[str] = field(default_factory=set)
+    content_qualifier_concepts: set[str] = field(default_factory=set)
 
     title_strong_concepts: set[str] = field(
         default_factory=set
@@ -113,6 +118,20 @@ def normalize_text(value: str | None) -> str:
     if not value:
         return ""
 
+    if re.search(r"</?[A-Za-z][^>]*>", value):
+        parser = _SourceParser()
+        try:
+            parser.feed(value)
+        except (AssertionError, ValueError):
+            # Malformed source markup must not abort a synchronization/backfill.
+            # Preserve the original text so no substantive content is discarded.
+            pass
+        else:
+            value = "".join(parser.parts)
+    value = unescape(value)
+    value = re.sub(r"[\u2018\u2019\u02bc]", "\'", value)
+    if "\n" in value and "-" in value:
+        value = re.sub(r"(?<=\w)-\s*\n\s*(?=\w)", "", value)
     value = unicodedata.normalize(
         "NFKC",
         value,
@@ -124,20 +143,30 @@ def normalize_text(value: str | None) -> str:
         value,
     )
 
-    return re.sub(
-        r"\s+",
-        " ",
-        value,
-    ).strip()
+    return " ".join(value.split())
 
 
-def build_phrase_pattern(
-    term: str,
-) -> re.Pattern[str]:
-    return re.compile(
-        rf"(?<!\w){re.escape(term)}(?!\w)",
-        re.IGNORECASE,
-    )
+class _SourceParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+
+    def handle_data(self, data):
+        self.parts.append(data)
+
+    def handle_starttag(self, tag, attrs):
+        if tag in {"p", "div", "br", "li", "tr", "h1", "h2", "h3"}:
+            self.parts.append(" ")
+
+    def handle_endtag(self, tag):
+        if tag in {"p", "div", "li", "tr"}:
+            self.parts.append(" ")
+
+
+def build_phrase_pattern(term: str, match_type: str = "phrase") -> re.Pattern[str]:
+    # Prefix expansion is opt-in; short words/acronyms stay exact.
+    suffix = r"[^\W\d_]*" if match_type == "prefix" and len(term.split()[-1]) >= 5 else ""
+    return re.compile(rf"(?<!\w){re.escape(term)}{suffix}(?!\w)", re.IGNORECASE)
 
 
 def confidence_for_match(
@@ -152,7 +181,28 @@ def confidence_for_match(
     if match.content_strong >= 2:
         return "medium"
 
+    if (match.title_context_concepts and match.title_qualifier_concepts) or (match.content_context_concepts and match.content_qualifier_concepts):
+        return "medium"
     return "low"
+
+
+def _anchor_alternatives(words):
+    """Factor shared prefixes without changing which anchor words match."""
+    trie = {}
+    for word in words:
+        node = trie
+        for letter in word:
+            node = node.setdefault(letter, {})
+        node[None] = {}
+
+    def render(node):
+        branches = [re.escape(letter) + render(child) for letter, child in sorted(
+            ((key, value) for key, value in node.items() if key is not None))]
+        if None in node:
+            branches.append("")
+        return branches[0] if len(branches) == 1 else "(?:" + "|".join(branches) + ")"
+
+    return render(trie)
 
 
 class AffairClassifier:
@@ -197,6 +247,10 @@ class AffairClassifier:
         ).all()
 
         for rule in rules:
+            if rule.category_id not in self.categories:
+                continue
+            if rule.match_type not in {"phrase", "prefix"}:
+                continue
             if rule.scope not in self.rules:
                 continue
 
@@ -227,11 +281,37 @@ class AffairClassifier:
                     scope=rule.scope,
                     rule_type=rule.rule_type,
                     weight=rule.weight,
+                    match_type=rule.match_type,
                     pattern=build_phrase_pattern(
-                        term
+                        term, rule.match_type
                     ),
                 )
             )
+
+        self.anchor_indexes = {}
+        for scope, languages in self.rules.items():
+            self.anchor_indexes[scope] = {}
+            for language, rules in languages.items():
+                exact, prefixes = {}, {}
+                order = {}
+                for position, rule in enumerate(rules):
+                    order[rule.id] = position
+                    term = normalize_text(rule.term)
+                    words = re.findall(r"\w+", term)
+                    if not words:
+                        continue
+                    first = words[0]
+                    if rule.match_type == "prefix" and term == first and len(first) >= 5:
+                        node = prefixes
+                        for letter in first:
+                            node = node.setdefault(letter, {})
+                        node.setdefault(None, []).append(rule)
+                    else:
+                        exact.setdefault(first, []).append(rule)
+                anchors = {words[0] for r in rules
+                           if (words := re.findall(r"\w+", normalize_text(r.term)))}
+                anchor_pattern = re.compile(rf"(?<!\w){_anchor_alternatives(anchors)}\w*(?!\w)") if anchors else re.compile(r"(?!)")
+                self.anchor_indexes[scope][language] = (exact, prefixes, order, anchor_pattern)
 
     def _add_evidence(
         self,
@@ -271,6 +351,8 @@ class AffairClassifier:
                     match.title_strong_concepts.add(
                         rule.concept_code
                     )
+                elif rule.rule_type == "qualifier":
+                    match.title_qualifier_concepts.add(rule.concept_code)
                 else:
                     match.title_context_concepts.add(
                         rule.concept_code
@@ -280,6 +362,8 @@ class AffairClassifier:
                     match.content_strong_concepts.add(
                         rule.concept_code
                     )
+                elif rule.rule_type == "qualifier":
+                    match.content_qualifier_concepts.add(rule.concept_code)
                 else:
                     match.content_context_concepts.add(
                         rule.concept_code
@@ -332,18 +416,22 @@ class AffairClassifier:
         if not text:
             return
 
-        for rule in self.rules[
-            scope
-        ][
-            language
-        ]:
-            if rule.pattern.search(text):
-                self._add_evidence(
-                    matches,
-                    rule=rule,
-                    source_type=source_type,
-                    source_id=source_id,
-                )
+        exact, prefixes, order, anchor_pattern = self.anchor_indexes[scope][language]
+        matched = set()
+        for occurrence in anchor_pattern.finditer(text):
+            word = occurrence.group()
+            candidates = {r.id: r for r in exact.get(word, [])}
+            node = prefixes
+            for letter in word:
+                node = node.get(letter)
+                if node is None:
+                    break
+                for rule in node.get(None, []):
+                    candidates[rule.id] = rule
+            for rule in sorted(candidates.values(), key=lambda r: order[r.id]):
+                if rule.id not in matched and rule.pattern.match(text, occurrence.start()):
+                    matched.add(rule.id)
+                    self._add_evidence(matches, rule=rule, source_type=source_type, source_id=source_id)
 
     def classify_title(
         self,
@@ -407,6 +495,12 @@ class AffairClassifier:
             matches.values()
         )
 
+    def _prefer_specific(self, matches):
+        parents = {self.categories[m.category_id].parent_id for m in matches
+                   if not self.categories[m.category_id].is_fallback}
+        return [m for m in matches if not (self.categories[m.category_id].is_fallback
+                and self.categories[m.category_id].parent_id in parents)]
+
     def accepted_title_matches(
         self,
         affair: Affair,
@@ -416,7 +510,7 @@ class AffairClassifier:
             for match in self.classify_title(
                 affair
             )
-            if match.title_strong >= 1
+            if match.title_strong >= 1 or (match.title_context_concepts and match.title_qualifier_concepts)
         ]
 
         accepted.sort(
@@ -427,7 +521,7 @@ class AffairClassifier:
             reverse=True,
         )
 
-        return accepted
+        return self._prefer_specific(accepted)
 
     def accepted_content_matches(
         self,
@@ -449,7 +543,7 @@ class AffairClassifier:
             if category is None:
                 continue
 
-            if match.content_strong < 2:
+            if match.content_strong < 2 and not (match.content_context_concepts and match.content_qualifier_concepts):
                 continue
 
             if (
@@ -470,7 +564,7 @@ class AffairClassifier:
             reverse=True,
         )
 
-        return accepted
+        return self._prefer_specific(accepted)
 
     def classify(
         self,
@@ -507,6 +601,8 @@ class AffairClassifier:
                     content_match.category_id
                 ] = content_match
                 continue
+
+            existing.content_qualifier_concepts.update(content_match.content_qualifier_concepts)
 
             for concept in (
                 content_match.content_strong_concepts
