@@ -38,8 +38,8 @@
 - [Testergebnisse und Grenzen](05-testing/test-results.md)
 - [Gesamtprüfung vom 12. Oktober](05-testing/review-2026-10-12.md)
 - [Prüfung vom 13. Oktober](05-testing/review-2026-10-13.md)
-- [Klassifikation auf dem blinden Prüfset](05-testing/evidence/holdout-evaluation.md)
-- [Regelqualität auf dem Entwicklungsset](05-testing/evidence/rule-quality-development-set.md) und [Backfill `rule-based-v7`](05-testing/evidence/backfill-rule-based-v7.md)
+- [Klassifikation auf den blinden Prüfsets](05-testing/evidence/holdout-evaluation.md) (v8, mit eingefrorener Erstmessung)
+- [Regelqualität auf dem Entwicklungsset](05-testing/evidence/rule-quality-development-set.md), Abdeckung `rule-based-v8` in [rule_backfill_status.json](05-testing/evidence/rule_backfill_status.json) und historischer [Backfill `rule-based-v7`](05-testing/evidence/backfill-rule-based-v7.md)
 
 ## 06 – Übergabe
 
@@ -59,4 +59,4 @@ Der formale Kursbericht mit persönlichen Angaben, signiertem Auftrag und Origin
 
 [Projektübersicht](../README.md), [Installation](getting-started.md), [Konfiguration](configuration.md), [API](api.md), [Fehlerbehebung](troubleshooting.md), [Lizenzstatus](licensing.md), [Demo-Stichprobe](../data/demo/README.md), [Mitwirken](../CONTRIBUTING.md), [Sicherheit](../SECURITY.md) und [Support](../SUPPORT.md).
 
-Der detaillierte [Monitoring-Leitfaden](monitoring.md) beschreibt Anmeldung, Missbrauchsschutz, Abonnements, Demo-Benachrichtigung, Synchronisation und Benachrichtigungsregeln. Die [WWF-Anforderungsprüfung](wwf-requirements.md) ist aktualisiert; das [Review vom 11. Oktober](daily-review-2026-10-11.md) dokumentiert einen historischen Stand. Die gesamte Dokumentation ist deutsch. Alte Einstiegsdateien wie `architecture.md`, `testing.md`, `deployment.md` und `user-guide.md` verweisen auf die neuen Hauptdokumente.
+Der detaillierte [Monitoring-Leitfaden](monitoring.md) beschreibt Fragen in natürlicher Sprache, Anmeldung, Missbrauchsschutz, Abonnements, Demo-Benachrichtigung, Synchronisierungsstrategie und Benachrichtigungsregeln. Die [WWF-Anforderungsprüfung](wwf-requirements.md) ordnet jede Anforderung aus Aufgabenstellung und WWF-E-Mail ihrer Umsetzung und ihrem Nachweis zu; das [Review vom 11. Oktober](daily-review-2026-10-11.md) dokumentiert einen historischen Stand. Die gesamte Dokumentation ist deutsch. Alte Einstiegsdateien wie `architecture.md`, `testing.md`, `deployment.md` und `user-guide.md` verweisen auf die neuen Hauptdokumente.

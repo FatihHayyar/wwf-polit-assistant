@@ -8,9 +8,17 @@ Im Bericht `logs/sync_<run_id>.json` und im Laufprotokoll das fehlgeschlagene Da
 
 ## Ein Lauf ist schnell und meldet keine Änderungen
 
-Das kann korrekt sein, beweist aber allein keine vollständige Datenabdeckung. `python -m scripts.sync.audit_latest` vergleicht eine aktuelle Quellstichprobe mit dem lokalen Bestand und schreibt `logs/latest_source_audit.json`. Das Werkzeug benötigt Quellzugang und Datenbanklesezugriff; es repariert keine Datensätze. Eine Stichprobe ist keine vollständige Bestandsprüfung.
+Das ist der Normalfall: Reguläre Läufe lesen nur Änderungen seit dem Checkpoint, neue und fehlende IDs. Änderungen, die die Quelle ohne neues Änderungsdatum vornimmt, erkennt erst der nächste vollständige Vergleich (`last_full_scan_at` plus Intervall). Das Bereichsmodul mit `--recheck` erzwingt ihn, z. B. `python -m scripts.sync.votings_sync --recheck` (Geschäfte: `scripts.sync.incremental_sync`, Dokumente: `scripts.sync.docs_sync`). Ein schneller Lauf beweist allein keine vollständige Datenabdeckung. `python -m scripts.sync.audit_latest` vergleicht eine aktuelle Quellstichprobe mit dem lokalen Bestand und schreibt `logs/latest_source_audit.json`. Das Werkzeug benötigt Quellzugang und Datenbanklesezugriff; es repariert keine Datensätze. Eine Stichprobe ist keine vollständige Bestandsprüfung.
 
 Bei Dokumenten sind Anzahl lokaler Zeilen und Anzahl eindeutiger Quell-IDs verschieden. Mehrfachzuordnungen dürfen nicht als fehlende Dokumente gezählt werden. Der Dokumenten-Sync prüft zusätzlich Bestands- und ID-Lücken; zuverlässige Zeitstempel allein reichen bei nachträglich eingestellten Inhalten nicht immer aus.
+
+## Checkpoint bleibt stehen
+
+Der Checkpoint (`last_updated_at`, `last_id`) ist die neueste gelesene Quellposition, nicht die Laufzeit. Er bleibt stehen, wenn die Quelle seit dem letzten Lauf keine neueren Änderungen hat oder der Lauf mit einem Fehler endete (`status = error`, Meldung in `error_message`). `last_run_at` zeigt den letzten Abgleich. Vor dem 21. Oktober schrieben die Bereiche mit Bestandsvergleich ihren Cursor nicht fort; das ist behoben.
+
+## Frage wird falsch verstanden
+
+Die Antwort zeigt unter «Verstanden», welche Teile erkannt wurden. Nicht erkannte Themen fallen auf einen Suchbegriff zurück. Abhilfe: Fachbegriff verwenden (z. B. «Photovoltaik» statt «Sonnenstrom»), den Begriff in Anführungszeichen setzen oder die gesetzten Filter im Suchformular anpassen. Kantonskürzel werden nur in Grossbuchstaben erkannt («BE», nicht «be»).
 
 ## Oberfläche zeigt einen alten Stand
 
@@ -28,7 +36,7 @@ E-Mail- und Token-Endpunkte sind begrenzt, etwa eine E-Mail pro Minute an diesel
 
 Das ist beabsichtigt: Erst der Klick auf die Schaltfläche meldet an. So können Linkscanner von E-Mail-Systemen das einmalige Token nicht verbrauchen. «Ungültig oder bereits verwendet» bedeutet, dass ein neuer Link angefordert werden muss.
 
-Für Monitoring zusätzlich prüfen: verifiziertes Konto, aktive Filter oder Watches, bestätigte Empfänger, passende relevante Änderung und erfolgreicher vollständiger Sync. Eine Änderung technischer Metadaten muss keine Nachricht erzeugen. Bei SMTP-Fehlern bleiben ausstehende Nachrichten erhalten; Provider-Limits können den Versand unterbrechen.
+Für Monitoring zusätzlich prüfen: verifiziertes Konto, mindestens ein aktives, nicht pausiertes Abonnement oder ein Watch, bestätigte Empfänger, passende relevante Änderung und erfolgreicher Sync aller Bereiche. Ein Abonnement mit Geschäftstyp passt nur zu Datensätzen, deren Geschäft diesen Typ hat. Eine Änderung technischer Metadaten muss keine Nachricht erzeugen. Bei SMTP-Fehlern bleiben ausstehende Nachrichten erhalten; Provider-Limits können den Versand unterbrechen.
 
 ## Google-Schaltfläche fehlt
 

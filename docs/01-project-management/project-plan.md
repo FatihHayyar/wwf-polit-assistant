@@ -7,10 +7,10 @@ Der WWF Polit-Assistant wird als WIPRO-MVP iterativ entwickelt. Genehmigter Auft
 | M1 Auftrag und Anforderungen | Scope, Anforderungen, priorisierte Anwendungsfälle | Dokumentierte Basis; offene Interpretationen separat verfolgen |
 | M2 Datenintegration | Import, Schema, neun Dataset-Syncs | Mapping und Beziehungen nachvollziehbar; Fehlerszenarien technisch geprüft |
 | M3 Klassifikation und Recherche | Regeln, API, neun UI-Bereiche | Technische Funktionen geprüft; Fachgüte separat bewerten |
-| M4 Monitoring und Kontofunktionen | Filter, Watches, Empfänger und E-Mail-Pipeline | Technische Regressionen; Organisationsversand separat offen |
+| M4 Monitoring und Kontofunktionen | Mehrere Abonnements, Watches, Empfänger, E-Mail-Pipeline und dialogorientierte Abfrage | Technische Regressionen; Organisationsversand separat offen |
 | M5 Validation und Qualität | WWF-Szenarien, Taxonomiefreigabe, Leistungs- und Datenprüfung | Beobachtete Ergebnisse und fachliche Bestätigung |
 | M6 Dokumentation und Übergabe | Technische Unterlagen und reproduzierbare Demo | Dokumentation verfügbar; tatsächlicher Betreiberstart und Abgabe separat |
-| M7 Weiterentwicklung | Azure-Testbetrieb und optionale AI-Erweiterungen | Nur nach Abstimmung und mit eigenen Nachweisen |
+| M7 Weiterentwicklung | Azure-Testbetrieb, KI-Klassifikation, Zusammenfassungen und Chat mit Quellenangaben | Nur nach Abstimmung und mit eigenen Nachweisen; Vergleich über die Prüfsets |
 
 M5 und die tatsächliche Übergabe sind nicht durch erfolgreiche Unit-Tests erledigt. Keine persönlichen Fälligkeiten werden ohne Bestätigung gesetzt. Bereits umgesetzte Arbeit wird retrospektiv als solche gekennzeichnet; neue Issues erhalten keine erfundenen historischen Erstellungsdaten.
 

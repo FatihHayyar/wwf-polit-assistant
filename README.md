@@ -4,7 +4,7 @@
 
 **Parlamentarische Entwicklungen finden, einordnen und verfolgen.**
 
-Der WWF Polit-Assistant bündelt Schweizer Parlamentsdaten aus OpenParlData und macht sie nach WWF-Themen, Kantonen, Datum und Suchbegriffen zugänglich. Zusammengehörige Geschäfte, Sitzungen, Traktanden und Dokumente lassen sich im politischen Kontext betrachten. Abonnements informieren per E-Mail über relevante neue Inhalte und Änderungen.
+Der WWF Polit-Assistant bündelt Schweizer Parlamentsdaten aus OpenParlData und macht sie nach WWF-Themen, Kantonen, Geschäftstypen, Datum und Suchbegriffen zugänglich – auch über Fragen in natürlicher Sprache. Zusammengehörige Geschäfte, Sitzungen, Traktanden und Dokumente lassen sich im politischen Kontext betrachten. Abonnements informieren per E-Mail über relevante neue Inhalte und Änderungen.
 
 Das Projekt entsteht für **WWF Schweiz** im **Wirtschaftsprojekt (WIPRO)** des BSc Informatik an der **Hochschule Luzern (HSLU)**. Der aktuelle Stand ist ein funktionsfähiger Entwicklungs-MVP; die fachliche Abnahme und der Betrieb in der WWF-Umgebung stehen noch aus.
 
@@ -14,12 +14,12 @@ Das Projekt entsteht für **WWF Schweiz** im **Wirtschaftsprojekt (WIPRO)** des 
 
 Das MVP soll die politische Recherche und das Monitoring für WWF vereinfachen:
 
-- **Relevante Inhalte finden:** parlamentarische Daten nach Themen, Kantonen und individuellen Suchbegriffen durchsuchen.
+- **Relevante Inhalte finden:** parlamentarische Daten nach Themen, Kantonen, Geschäftstypen und individuellen Suchbegriffen durchsuchen oder als Frage formulieren.
 - **Zusammenhänge verstehen:** zu einem Geschäft auch die zugehörigen Termine, Ereignisse, Abstimmungen und Dokumente sehen.
-- **Entwicklungen verfolgen:** Themen abonnieren oder einzelne Einträge beobachten und über relevante Veränderungen informiert werden.
+- **Entwicklungen verfolgen:** mehrere Abonnements mit eigenen Filterkombinationen anlegen oder einzelne Einträge beobachten und über relevante Veränderungen informiert werden.
 - **Eine anschlussfähige Grundlage schaffen:** dokumentierte API, strukturierte Daten und eine containerisierte Python-Anwendung für die spätere Integration in die WWF-Systemlandschaft.
 
-Die Themenklassifikation erfolgt regelbasiert. KI, semantische Suche und dialogorientierte Abfragen sind mögliche Erweiterungen; sie sind im aktuellen MVP nicht umgesetzt.
+Die Themenklassifikation und die dialogorientierte Abfrage arbeiten regelbasiert und nachvollziehbar. Beide besitzen eine definierte Schnittstelle, an der später ein Sprachmodell angeschlossen werden kann ([KI-Erweiterung](docs/03-architecture/system-architecture.md#erweiterungspunkte-für-ki)).
 
 ## Funktionen
 
@@ -41,23 +41,29 @@ Der Änderungsverlauf eines Geschäfts zeigt die Titel der betroffenen Inhalte u
 | **Gruppen** (`groups`) | Parlamentarische Gremien und Gruppen sowie verfügbare zugehörige Sitzungen |
 | **Interessenbindungen** (`interests`) | Deklarierte Interessen mit Informationen zur zugehörigen Person |
 
-Die Suche kombiniert **Suchbegriff, Hauptthema, Unterthema, Kanton und Datumsbereich**. Ergebnisse werden serverseitig paginiert. Die Oberfläche unterstützt **Deutsch, Französisch, Italienisch und Englisch**; parlamentarische Originaltexte werden nicht automatisch übersetzt.
+Die Suche kombiniert **Suchbegriff, Hauptthema, Unterthema, Kanton, Geschäftstyp (z. B. Motion, Postulat, Interpellation) und Datumsbereich**. Der Geschäftstyp-Filter erscheint nur im Bereich Geschäfte. Ergebnisse werden serverseitig paginiert. Die Oberfläche unterstützt **Deutsch, Französisch, Italienisch und Englisch**; parlamentarische Originaltexte werden nicht automatisch übersetzt.
 
 Themenetiketten zeigen **Hauptthema / Unterthema**, beispielsweise **Klima & Energie / Sonstiges**. Dieses lokale Sonstiges bezeichnet einen passenden Hauptbereich ohne spezifisches Unterthema; das globale Sonstiges bezeichnet Inhalte ohne erkannte WWF-Zuordnung.
 
 In der Bereichs- und bereichsübergreifenden Suche werden Geschäfte mit gleichem normalisiertem Titel, gleicher Körperschaft und gleichem Kalendertag als eine Ergebniskarte zusammengefasst. Beispielsweise bleiben Regierungsbotschaft und Gesetzesentwurf über getrennte Schaltflächen erreichbar. Die Originaldatensätze, IDs und Detailansichten bleiben erhalten; Trefferzahl und Pagination zählen die Gruppen. Das ist eine Darstellungsregel und keine nachgewiesene fachliche Identität der Quellen. Andere Tage oder Körperschaften bleiben getrennt.
 
+### Fragen in natürlicher Sprache
+
+Über dem Suchformular lässt sich eine Frage stellen, etwa «Motionen zum Wolf im Wallis seit 2024» oder «Séances au Grand Conseil de Genève le mois dernier». Die Anwendung erkennt Bereich, WWF-Thema (über dieselben Regeln wie die Klassifikation), Kanton, Geschäftstyp, Zeitraum und Suchbegriffe in Deutsch, Französisch, Italienisch und Englisch. Sie zeigt an, was sie verstanden hat, setzt die Filter im Suchformular und nennt die Trefferzahl. Angemeldete Nutzer können die Frage direkt als Abonnement speichern.
+
+Die Erkennung ist regelbasiert: Sie erfindet keine Antworten, sondern übersetzt die Frage in nachprüfbare Filter. Nicht erkannte Teile bleiben sichtbar und lassen sich im Formular korrigieren.
+
 ### Konfigurierbare WWF-Themen
 
 Die vier Hauptbereiche **Klima & Energie**, **Biodiversität & Landschaft**, **Nachhaltige Wirtschaft & Konsum** und **Umwelt & Politik** besitzen jeweils eine Sonstiges-Unterkategorie. Namen, Hierarchie, Synonyme, Regeln und Schwellenwerte werden in [taxonomy.json](app/classification/taxonomy.json) gepflegt. Die Oberfläche übernimmt die konfigurierten Namen aus der Kategorien-API.
 
-Die aktuelle Version `rule-based-v7` erkennt eindeutige Titelbegriffe auch in Zusammensetzungen und mit Buchstaben-Endungen. Generische Begriffe benötigen einen ausdrücklichen Umweltbezug. Mehrere Themen können gleichzeitig passen; spezifische Unterthemen verdrängen den lokalen Fallback ihres Hauptthemas. Übersetzungen und Synonyme zählen als ein Konzept. Details und Befehle: [Klassifikationskonzept](docs/04-technical-concepts/classification-concept.md) und [Konfiguration](docs/configuration.md#regelbasierte-klassifikation).
+Die aktuelle Version `rule-based-v8` erkennt eindeutige Titelbegriffe auch in Zusammensetzungen und mit Buchstaben-Endungen. Generische Begriffe benötigen einen ausdrücklichen Umweltbezug; Ausschlussregeln verhindern bekannte Fehltreffer (z. B. Ortsnamen). Rechenzentren und Grossverbraucher sind eigene Unterthemen, die Vorbildfunktion der öffentlichen Hand gehört zu Klima & Energie. Mehrere Themen können gleichzeitig passen; spezifische Unterthemen verdrängen den lokalen Fallback ihres Hauptthemas. Übersetzungen und Synonyme zählen als ein Konzept. Details und Befehle: [Klassifikationskonzept](docs/04-technical-concepts/classification-concept.md) und [Konfiguration](docs/configuration.md#regelbasierte-klassifikation).
 
 ### Abonnements und E-Mail-Monitoring
 
 Die Recherche ist ohne Konto zugänglich. Für Benachrichtigungen registrieren sich Nutzer per E-Mail und melden sich über einen zeitlich begrenzten Link an. Optional steht eine konfigurierte Google-Anmeldung zur Verfügung. In der Abonnementverwaltung können bis zu zehn Benachrichtigungsadressen ausgewählt werden; zusätzliche Adressen benötigen eine Bestätigung.
 
-Abonnements können WWF-Themen, Kantone, Suchbegriffe und Datenbereiche kombinieren. Zusätzlich lassen sich einzelne Einträge verfolgen. Hauptthemen schliessen ihre Unterthemen ein. Mehrere Werte innerhalb einer Filtergruppe gelten als Alternativen; Einschränkungen verschiedener Gruppen müssen gemeinsam passen.
+Jedes Konto kann **bis zu zehn benannte Abonnements** führen, z. B. «Energie in Bern» und «Biodiversität in Zürich». Ein Abonnement kombiniert WWF-Themen, Kantone, Geschäftstypen, Suchbegriffe und Datenbereiche; es lässt sich pausieren, bearbeiten und löschen. Hauptthemen schliessen ihre Unterthemen ein. Innerhalb eines Abonnements gelten mehrere Werte einer Filtergruppe als Alternativen, verschiedene Gruppen müssen gemeinsam passen. Eine Änderung wird gemeldet, sobald **eines** der aktiven Abonnements passt. Zusätzlich lassen sich einzelne Einträge verfolgen.
 
 Die Anwendung speichert Quelldatenänderungen getrennt von ihrer Benachrichtigungsrelevanz. Technische Metadaten, reine Formatänderungen und bestimmte geringfügige Textkorrekturen sollen keine E-Mail auslösen. Relevante Updates werden pro Nutzer und Geschäft beziehungsweise eigenständigem Eintrag zusammengefasst.
 
@@ -65,14 +71,15 @@ Benachrichtigungen besitzen eine HTML-Ansicht mit Inhaltskarten und eine separat
 
 ## Projektstand – 21. Oktober 2026
 
-Datenimport, neun Synchronisationsmodule, konfigurierbare regelbasierte Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung, Abonnementverwaltung und E-Mail-Benachrichtigungen sind umgesetzt. Präsentation, fachliche Bewertung durch WWF und formale Abnahme stehen aus. Azure-Bereitstellung sowie KI- und Dialogfunktionen gehören nicht zum Lieferumfang dieses MVP.
+Datenimport, Synchronisierung aller neun Bereiche, konfigurierbare regelbasierte Klassifikation, Recherche mit Geschäftstyp-Filter, dialogorientierte Abfrage, verknüpfte Detailansichten, passwortlose Anmeldung, mehrere Abonnements pro Konto und E-Mail-Benachrichtigungen sind umgesetzt. Präsentation, fachliche Bewertung durch WWF und formale Abnahme stehen aus. Die Azure-Bereitstellung selbst übernimmt WWF; das Projekt liefert dafür ein vorbereitetes Container-Setup und eine [Integrationsanleitung](docs/03-architecture/azure-integration.md).
 
 | Bereich | Stand und Nachweis |
 |---|---|
-| Datenbestand | 2'951'254 Inhaltsdatensätze in neun Bereichen. Vollständiger Lauf am 12. Oktober: 9/9 Bereiche ohne Fehler; Quellstichprobe mit 4'500 Datensätzen ohne Abweichung ([Prüfung](docs/05-testing/review-2026-10-12.md)) |
-| Klassifikation | `rule-based-v7` auf allen Datensätzen. Entwicklungsset 50/50 (Regeln daran verbessert). **Blindes Prüfset mit 300 Zufallsgeschäften: Precision 1.0, Recall 0.325** – sehr präzise, aber die Mehrheit relevanter Geschäfte wird übersehen ([Auswertung](docs/05-testing/evidence/holdout-evaluation.md)) |
-| Sicherheit | Gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für E-Mail- und Token-Endpunkte, Bestätigungsseite statt Token-Verbrauch beim Öffnen eines Links, Widerruf aller Tokens beim Abmelden, strikte Sicherheits-Header ([Details](docs/monitoring.md#anmeldung-und-schutz-vor-missbrauch)) |
-| Tests | 124 isolierte Backend-, API- und Klassifikationstests, Frontend-Prüfungen und CI (Lint, Migrationen auf PostgreSQL 17, Docker-Build). Edge-Durchlauf der Demo inkl. Registrierung, Testbenachrichtigung und Abmeldung am 21. Oktober |
+| Datenbestand | 2'958'331 Inhaltsdatensätze in neun Bereichen (21. Oktober). Alle Bereiche am 21. Oktober mit der neuen Sync-Strategie abgeglichen; Quellstichprobe vom 12. Oktober mit 4'500 Datensätzen ohne Abweichung ([Prüfung](docs/05-testing/review-2026-10-12.md)) |
+| Synchronisierung | Nur Änderungen, neue und fehlende IDs werden gelesen; vollständige Vergleiche laufen je Bereich in festen Abständen. Der tägliche Geschäftsabgleich dauert Sekunden statt über einer Stunde ([Strategie](docs/monitoring.md#synchronisierungsstrategie)) |
+| Klassifikation | `rule-based-v8` auf allen Datensätzen. Entwicklungsset 50/50 (Regeln daran verbessert). **Unabhängiges Prüfset B (300 Zufallsgeschäfte, vor der Messung annotiert): Precision 1.0, Recall 0.667** (v7 auf demselben Set: Recall 0.361). Rund ein Drittel der relevanten Geschäfte wird weiterhin übersehen ([Auswertung](docs/05-testing/evidence/holdout-evaluation.md)) |
+| Sicherheit | Gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für E-Mail-, Token- und Frage-Endpunkte sowie für Bestätigungs-E-Mails bei Abonnementänderungen, Bestätigungsseite statt Token-Verbrauch beim Öffnen eines Links, Widerruf aller Tokens beim Abmelden, strikte Sicherheits-Header, Container ohne Root-Rechte ([Details](docs/monitoring.md#anmeldung-und-schutz-vor-missbrauch)) |
+| Tests | 151 isolierte Backend-, API-, Sync- und Klassifikationstests, Frontend-Prüfungen und CI (Lint, Migrationen auf PostgreSQL 17, Docker-Build). Browser-Durchlauf der Demo inkl. Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung am 21. Oktober |
 | Demo | Ein-Kommando-Start mit Beispieldaten und Mailpit; Benachrichtigungen lassen sich mit einem Testgeschäft direkt ausprobieren |
 
 Automatisierte Tests und Stichproben ersetzen keine WWF-Abnahme. Frühere Nachweise: [Prüfung vom 13. Oktober](docs/05-testing/review-2026-10-13.md), [Testergebnisse](docs/05-testing/test-results.md), [Aufgabenstand](docs/01-project-management/current-status.md).
@@ -112,12 +119,12 @@ Die Demo verwendet eine eigene Datenbank, erhält vorhandene Daten beim Neustart
 
 ### Einen ersten Ablauf ausprobieren
 
-1. Einen Bereich auswählen und nach einem Begriff oder WWF-Thema suchen; einen Treffer öffnen und seine verknüpften Inhalte ansehen.
+1. Eine Frage stellen, z. B. «Motionen zur Photovoltaik im Kanton Bern», oder einen Bereich auswählen und nach Begriff, WWF-Thema oder Geschäftstyp filtern; einen Treffer öffnen und seine verknüpften Inhalte ansehen.
 2. **Registrieren** wählen und eine E-Mail-Adresse eingeben (beliebig, z. B. `test@example.org`).
 3. In **Mailpit** ([localhost:8025](http://localhost:8025)) die Bestätigungs-E-Mail öffnen, dem Link folgen und **Registrierung bestätigen** klicken. Die Abonnementverwaltung öffnet sich.
-4. Ein Thema wählen, z. B. **Klima & Energie**, optional auch Kantone oder Stichwörter.
-5. Unter **Benachrichtigung testen (Demo)** ein Thema wählen und **Testgeschäft erstellen und benachrichtigen** klicken. Die Anwendung speichert die Auswahl, legt ein fiktives neues Geschäft an und schickt es durch die echte Klassifikation, die Relevanzprüfung und den Versand.
-6. In Mailpit erscheint die Benachrichtigung zum neuen Geschäft. Passt das Testgeschäft nicht zu den gespeicherten Filtern, erklärt die Oberfläche den Grund, statt eine E-Mail zu senden.
+4. **Neues Abonnement** wählen, einen Namen vergeben und ein Thema wählen, z. B. **Klima & Energie**, optional auch Kantone, Geschäftstypen oder Stichwörter. Weitere Abonnements lassen sich auf dieselbe Weise ergänzen.
+5. Unter **Benachrichtigung testen (Demo)** ein Thema wählen und **Testgeschäft erstellen und benachrichtigen** klicken. Die Anwendung legt ein fiktives neues Geschäft an und schickt es durch die echte Klassifikation, die Relevanzprüfung und den Versand.
+6. In Mailpit erscheint die Benachrichtigung zum neuen Geschäft. Passt das Testgeschäft zu keinem gespeicherten Abonnement, erklärt die Oberfläche den Grund, statt eine E-Mail zu senden.
 
 Alle Demo-E-Mails bleiben lokal; externe SMTP-Zugangsdaten werden nicht benötigt. Die Testfunktion existiert nur mit `DEMO_MODE=true` und ist auch per Kommandozeile verfügbar:
 
@@ -169,7 +176,7 @@ flowchart TD
 | Frontend | HTML, CSS und JavaScript-Module ohne Build-Schritt, von FastAPI ausgeliefert |
 | API-Dokumentation | OpenAPI / Swagger |
 | Ausführung | Docker und Docker Compose |
-| Regelmässige Jobs | Python-Scheduler, 03:00 Europe/Zurich |
+| Regelmässige Jobs | Python-Scheduler, täglich 04:30 Europe/Zurich (`SYNC_TIME`) |
 | Qualitätssicherung | unittest, FastAPI-TestClient, Node-Prüfungen, ruff, GitHub Actions |
 | E-Mail | SMTP; Mailpit im Docker-Demo-Setup |
 
@@ -179,25 +186,25 @@ Die normalisierten Daten bilden direkte und indirekte Beziehungen zwischen Gesch
 
 Die konfigurierbare Klassifikation verwendet hierarchische Kategorien, mehrsprachige Regeln, Gewichte, Scores, Konfidenzwerte und Klassifikationsevidenz. Verknüpfte Inhalte können die Klassifikation des zugehörigen Geschäfts ergänzen; andere Datensätze besitzen zusätzlich eigene Klassifikationen.
 
-Der bisherige Themenbaum umfasst Klima & Energie, Biodiversität & Landschaft, nachhaltige Wirtschaft & Konsum, Umwelt & Politik sowie eine Auffangkategorie. Die endgültige Taxonomie und der initiale WWF-Fokus auf Energie & Klima müssen mit den WWF-Fachexperten abgestimmt werden.
+Der Themenbaum umfasst Klima & Energie (mit Rechenzentren, Grossverbrauchern und der Vorbildfunktion der öffentlichen Hand), Biodiversität & Landschaft, nachhaltige Wirtschaft & Konsum, Umwelt & Politik sowie eine Auffangkategorie. Er folgt den Rückmeldungen von WWF; die endgültige fachliche Bestätigung durch die WWF-Fachexperten steht aus.
 
 ### Datenbestand
 
-Der erneute Quellenvergleich vom **12. Oktober 2026** ergab folgende lokale Bestände. Die API-Gesamtzahlen stimmten je Bereich mit den lokalen Zeilenzahlen überein. Gleiche Anzahlen allein beweisen jedoch keine identischen Inhalte; dazu wurde zusätzlich die oben beschriebene Stichprobe verglichen.
+Lokaler Bestand nach dem Abgleich vom **21. Oktober 2026**. Beim Quellenvergleich vom 12. Oktober stimmten die API-Gesamtzahlen je Bereich mit den lokalen Zeilenzahlen überein; zusätzlich wurde eine Inhaltsstichprobe verglichen.
 
 | Bereich | Lokale Zeilen |
 |---|---:|
-| Geschäfte | 326.124 |
-| Traktanden | 423.161 |
-| Sitzungen | 33.677 |
-| Abstimmungen | 77.144 |
-| Ereignisse | 916.688 |
-| Dokumente | 909.151 |
-| Texte | 226.062 |
-| Gruppen | 8.886 |
-| Interessenbindungen | 30.361 |
+| Geschäfte | 326.499 |
+| Traktanden | 423.580 |
+| Sitzungen | 33.711 |
+| Abstimmungen | 79.061 |
+| Ereignisse | 918.113 |
+| Dokumente | 912.005 |
+| Texte | 226.086 |
+| Gruppen | 8.891 |
+| Interessenbindungen | 30.385 |
 
-Die Dokumenttabelle enthält **902.993 unterschiedliche Quell-IDs**: mehrere Zeilen können unterschiedliche Zuordnungen desselben Quelldokuments repräsentieren. Referenzdaten wie Bodies, Persons und Memberships sowie die separate Demo-Datenbank sind in dieser Tabelle nicht mitgezählt.
+Die Dokumenttabelle enthält **905.847 unterschiedliche Quell-IDs**: mehrere Zeilen können unterschiedliche Zuordnungen desselben Quelldokuments repräsentieren. Referenzdaten wie Bodies, Persons und Memberships sowie die separate Demo-Datenbank sind in dieser Tabelle nicht mitgezählt.
 
 Der vollständige Entwicklungsbestand und die kleine Docker-Stichprobe sind getrennte Datenbestände. Die folgenden Zahlen dokumentieren den ursprünglichen **Bootstrap vom 6. Oktober 2026**, nicht die aktuellen Datenbankzahlen.
 
@@ -230,29 +237,26 @@ Alle 325.691 ursprünglichen Geschäfte wurden klassifiziert. Der damalige Stand
 
 Regelanpassungen und historische Neuberechnung sind vom Sync getrennt: `python -m scripts.reclassify_rules` ist eine schreibgeschützte Vorschau; `--apply` verarbeitet den Bestand nach bestandenem Entwicklungsset. `--dataset`, `--limit` und `--workers` begrenzen Umfang und Parallelität. Nach Taxonomieänderungen `--force` verwenden. Die Qualitätsschranke benötigt Git-Historie mit dem festgelegten Baseline-Commit; ein ZIP ohne `.git` reicht dafür nicht. Weitere Voraussetzungen und die älteren Einzeljobs stehen in der [Konfiguration](docs/configuration.md#regelbasierte-klassifikation).
 
-Alle neun Bereiche besitzen eigene Sync-Module:
+Alle neun Bereiche laufen über einen gemeinsamen Ablauf ([entity_sync.py](scripts/sync/entity_sync.py)); die Bereichsmodule enthalten nur noch Quelle und Feldzuordnung. Jeder Lauf besteht aus bis zu vier Phasen:
 
-| Dataset | Modul | Abgleich |
+| Phase | Was gelesen wird | Bereiche |
 |---|---|---|
-| Affairs | `scripts.sync.incremental_sync` | Update-Checkpoint |
-| Agendas | `scripts.sync.agendas_sync` | Bestandsvergleich |
-| Meetings | `scripts.sync.meetings_sync` | Update-Checkpoint |
-| Votings | `scripts.sync.votings_sync` | Bestandsvergleich |
-| Events | `scripts.sync.events_sync` | Bestandsvergleich |
-| Documents | `scripts.sync.docs_sync` | Update-Checkpoint |
-| Texts | `scripts.sync.texts_sync` | Bestandsvergleich |
-| Groups | `scripts.sync.groups_sync` | Bestandsvergleich |
-| Interests | `scripts.sync.interests_sync` | Bestandsvergleich |
+| Änderungen | Datensätze mit `updated_at` nach dem Checkpoint (absteigend sortiert, Nullwerte ausgeschlossen) | alle ausser Traktanden |
+| Zeitfenster | Traktanden mit Sitzungsdatum ±60 Tage, da die Quelle für Traktanden kein Änderungsdatum liefert | Traktanden |
+| Neue IDs | IDs oberhalb der höchsten lokalen ID | alle |
+| Fehlende IDs | nur IDs, die lokal fehlen (Dokumente über gezielte ID-Abfragen) | alle |
 
-Der Bestandsvergleich verwendet ein stabiles Inventar und den aktuellen API-Inhalt, wenn geeignete Änderungscursor fehlen oder nicht zuverlässig sind. Dabei können viele unveränderte Datensätze gelesen werden. `CHANGED` bedeutet eine gespeicherte Inhaltsänderung und führt nicht automatisch zu einer E-Mail. Fingerprints und Normalisierung reduzieren technische Unterschiede; die Benachrichtigungsregeln bewerten zusätzlich die fachliche Bedeutung.
+Ein **vollständiger Vergleich** liest den ganzen Bestand und erkennt auch Änderungen, die die Quelle nicht mit einem neuen Änderungsdatum markiert. Er läuft je Bereich in festen Abständen (`FULL_SCAN_DAYS`, z. B. Abstimmungen und Ereignisse wöchentlich, Geschäfte monatlich; Dokumente werden wegen ihres Umfangs nur über Änderungen und ID-Lücken abgeglichen) und wird in `sync_checkpoints.last_full_scan_at` vermerkt. `--recheck` erzwingt ihn.
 
-Verarbeitete Batches werden gespeichert. Fortschritt und abgeschlossene Dataset-Schritte ermöglichen die Wiederaufnahme unterbrochener Jobs. Ein PostgreSQL-Advisory-Lock schützt den gemeinsamen Runner vor paralleler Ausführung.
+`CHANGED` bedeutet eine gespeicherte Inhaltsänderung und führt nicht automatisch zu einer E-Mail. Fingerprints und Normalisierung reduzieren technische Unterschiede; die Benachrichtigungsregeln bewerten zusätzlich die fachliche Bedeutung.
+
+Verarbeitete Seiten werden gespeichert. Fortschritt und abgeschlossene Dataset-Schritte ermöglichen die Wiederaufnahme unterbrochener Jobs. Ein PostgreSQL-Advisory-Lock schützt den gemeinsamen Runner vor paralleler Ausführung.
 
 ```powershell
 python -m scripts.sync.run_all
 ```
 
-Der separat gestartete Scheduler führt den Job täglich um **03:00 Europe/Zurich** aus. Die Entwicklungsphase unterstützt ausserdem einen geschützten API-Start im Hintergrund, Statusabfragen, Logs und Abbruch. Laufberichte und Logs werden lokal unter `logs/` gespeichert. Der Compose-Scheduler bindet dieses Verzeichnis als `/app/logs` ein, damit Fortschritt und Berichte beim Ersetzen des Containers erhalten bleiben und von der lokalen API gelesen werden können.
+Der separat gestartete Scheduler führt den Job täglich um **04:30 Europe/Zurich** aus (`SYNC_TIME`). OpenParlData erzeugt seine Tagesexporte gegen 02:15 UTC; der Lauf danach erfasst die Änderungen der Nacht noch am selben Tag. Die Entwicklungsphase unterstützt ausserdem einen geschützten API-Start im Hintergrund, Statusabfragen, Logs und Abbruch. Laufberichte und Logs werden unter `logs/` gespeichert. Der Compose-Scheduler bindet dieses Verzeichnis als `/app/logs` ein, damit Fortschritt und Berichte beim Ersetzen des Containers erhalten bleiben und von der API gelesen werden können.
 
 Relevante Änderungen an Traktanden, Sitzungen, Abstimmungen, Ereignissen, Dokumenten und Texten werden den verbundenen Geschäften zugeordnet. Der Versand erfolgt nach erfolgreichem Abschluss der Dataset-Schritte. Vor dem Senden werden Konto und Abonnement erneut geprüft. Fehlgeschlagene Sendungen bleiben zur erneuten Verarbeitung ausstehend; nicht mehr passende Benachrichtigungen können verworfen werden.
 
@@ -266,11 +270,11 @@ Ein Checkpoint ist eine **Position in der Datenquelle**, kein Zeitstempel des zu
 
 | Feld | Bedeutung |
 |---|---|
-| `last_updated_at` + `last_id` | Zuletzt erfolgreich verarbeitete Quellposition bei Geschäften, Sitzungen und Dokumenten |
-| `last_id` bei den anderen sechs Bereichen | ID-Fortschritt; dort gibt es keinen zuverlässig verwendbaren Zeitcursor, deshalb bleibt `last_updated_at` leer |
+| `last_updated_at` + `last_id` | Zuletzt erfolgreich verarbeitete Quellposition (Änderungsdatum und ID); bei Traktanden nur die höchste ID |
 | `last_run_at` | Zeitpunkt des letzten gespeicherten Dataset-Abgleichs, auch ohne neue Inhalte; Erfolg zusätzlich über Status und Laufbericht prüfen |
+| `last_full_scan_at` | Letzter vollständiger Vergleich des Bereichs; bestimmt, wann der nächste fällig ist |
 
-Beispiel aus dem geprüften Bestand: Geschäfte besitzen die Quellposition **11.10.2026, 05:23:12 / ID 341425**, obwohl der letzte Abgleich am **12.10.2026** stattfand. Ohne eine neuere Quellposition bleibt dieser Checkpoint korrekt bestehen. Auch ein Metadaten-Update kann den Quellcursor verändern, ohne eine relevante Inhaltsänderung oder Nachricht zu erzeugen.
+Beispiel vom 21. Oktober: Der Geschäfts-Checkpoint steht auf **21.10.2026, 04:02:44 / ID 341748**, der Abgleich lief um 13:36. Die Quellposition entspricht dem jüngsten Änderungsdatum in der Quelle, nicht der Laufzeit. Vor der neuen Strategie blieben die Checkpoints einiger Bereiche (z. B. Dokumente auf dem 11. Oktober) stehen, weil Bestandsvergleiche den Cursor nicht fortschrieben; das ist behoben.
 
 Den Quellcursor auf die aktuelle Uhrzeit zu setzen wäre falsch: dadurch könnten später bereitgestellte Inhalte mit älteren Quellzeitstempeln übersprungen werden. Letzte Kontrollzeit, Quellposition und `NEW`/`CHANGED` sind daher getrennt zu lesen. Der aktuelle Befund lautet **keine weiteren Unterschiede in den abgeschlossenen Läufen und der Quellenstichprobe**; er beweist nicht, dass OpenParlData während des gesamten Tages weltweit keine Änderungen hatte.
 
@@ -288,7 +292,8 @@ Die interaktive Dokumentation wird aus der Anwendung erzeugt: **`/docs`**; die O
 | Anmeldung per E-Mail | `POST /api/v1/auth/login`; Link: `GET`/`POST /api/v1/auth/verify-login` |
 | Optionale Google-Anmeldung | `GET /api/v1/auth/providers`, `GET /api/v1/auth/google`, `GET /api/v1/auth/google/callback` |
 | Konto, Logout und Löschung | `GET /api/v1/auth/me`, `POST /api/v1/auth/logout`, `DELETE /api/v1/auth/me` |
-| Abonnements lesen und ersetzen | `GET /api/v1/subscriptions`, `PUT /api/v1/subscriptions` |
+| Abonnements | `GET /api/v1/subscriptions` (Übersicht), `POST /api/v1/subscriptions/profiles`, `PUT`/`DELETE /api/v1/subscriptions/profiles/{id}`, `DELETE /api/v1/subscriptions` (alle beenden) |
+| Frage in natürlicher Sprache | `POST /api/v1/ask` |
 | Einzelne Inhalte verfolgen | `PUT /api/v1/subscriptions/watches/{dataset}/{record_id}`, `DELETE` auf demselben Pfad |
 | Benachrichtigungsadressen | `GET /api/v1/subscriptions/recipients`, `PUT` auf demselben Pfad; Bestätigung über `GET`/`POST /recipients/verify` |
 | Demo-Testbenachrichtigung (nur `DEMO_MODE`) | `GET /api/v1/demo/status`, `GET /api/v1/demo/topics`, `POST /api/v1/demo/notifications` |
@@ -305,24 +310,28 @@ Beispiel einer Bereichssuche:
 GET /api/v1/entities/agendas?q=Photovoltaik&canton=ZH&page=1
 ```
 
-Themen, Unterthemen und Datumsfilter lassen sich ergänzen. Die Standardseitengrösse beträgt zehn Treffer. Textsuche verwendet je nach Dataset PostgreSQL-Trigramm- oder Volltextindizes; externe Dokumentanhänge werden dadurch nicht automatisch heruntergeladen.
+Themen, Unterthemen, Geschäftstyp (`affair_type`, nur Geschäfte) und Datumsfilter lassen sich ergänzen. Die Standardseitengrösse beträgt zehn Treffer. Textsuche verwendet je nach Dataset PostgreSQL-Trigramm- oder Volltextindizes; externe Dokumentanhänge werden dadurch nicht automatisch heruntergeladen.
 
-Beispiel eines Themen-/Kanton-Abonnements:
+Beispiel eines Abonnements (`POST /api/v1/subscriptions/profiles`):
 
 ```json
 {
+  "name": "Energie-Motionen in Bern",
   "category_ids": [1],
-  "canton_keys": ["BE"]
+  "canton_keys": ["BE"],
+  "affair_types": ["Motion"]
 }
 ```
 
-Kategorie-IDs werden über die Kategorien-API ermittelt. Ein Hauptthema umfasst seine Unterkategorien. Leere Themen- oder Kantonsgruppen schränken die jeweilige Dimension nicht ein; reine Filterabonnements ohne Themen, Kantone und Keywords pausieren. Einzelne Record-Watches werden separat verwaltet.
+Kategorie-IDs werden über die Kategorien-API ermittelt, Geschäftstypen über `GET /api/v1/affair-types`. Ein Hauptthema umfasst seine Unterkategorien. Leere Filtergruppen schränken die jeweilige Dimension nicht ein; ein Abonnement ohne Themen, Kantone, Geschäftstypen und Suchbegriffe ist pausiert. Einzelne Record-Watches werden separat verwaltet.
 
-| Themen | Kantone | Bedeutung |
-|---|---|---|
-| Klima & Energie | BE | Passende Entwicklungen im Kanton Bern |
-| Klima & Energie | Alle | Passende Entwicklungen in allen Kantonen |
-| Alle | ZH | Entwicklungen aller Themen im Kanton Zürich |
+| Abonnement | Themen | Kantone | Geschäftstypen | Bedeutung |
+|---|---|---|---|---|
+| 1 | Klima & Energie | BE | Alle | Passende Entwicklungen im Kanton Bern |
+| 2 | Biodiversität & Landschaft | ZH | Motion, Postulat | Motionen und Postulate zur Biodiversität in Zürich |
+| 3 | Alle | Alle | Alle, Suchbegriff «Wolf» | Alles mit «Wolf» im Titel |
+
+Eine Änderung, die zu Abonnement 1 **oder** 2 **oder** 3 passt, erzeugt genau eine Benachrichtigung.
 
 Die Anmeldung verwendet JWT und ein HttpOnly-Sitzungscookie für die Oberfläche; API-Clients können Bearer-Tokens verwenden. Abmelden widerruft alle bisher ausgestellten Tokens des Kontos. Registrierung und Anmeldung antworten für bekannte und unbekannte Adressen identisch; E-Mail- und Token-Endpunkte sind ratenbegrenzt (HTTP 429 mit `Retry-After`). Verwaltungsfunktionen erfordern Anmeldung, Sync-Operationen den separat konfigurierten Schlüssel im Header `X-Sync-API-Key`. Kontolöschung ist unterstützt.
 
@@ -383,7 +392,7 @@ python -m scripts.evaluate_holdout
 
 Das Testterminal danach schliessen oder die beiden Variablen entfernen, bevor die echte Anwendung darin gestartet wird. Voraussetzungen und Browserabläufe: [Testplan](docs/05-testing/test-plan.md).
 
-Die Tests decken unter anderem Sync-Fortschritt, Beziehungen, Normalisierung, Klassifikation, Benachrichtigungsregeln, Anmeldung, Ratenbegrenzung, Sicherheits-Header und den Demo-Ablauf über den echten HTTP-Stack ab. `scripts.evaluate_holdout` misst die Klassifikation auf dem blinden Prüfset, ohne PostgreSQL zu benötigen. GitHub Actions führt bei jedem Push zusätzlich ruff, die Migrationen auf PostgreSQL 17 und den Docker-Build aus. Live-Sync und Organisations-SMTP wurden separat geprüft; die fachliche WWF-Abnahme steht aus.
+Die Tests decken unter anderem die Sync-Phasen, Beziehungen, Normalisierung, Klassifikation, Abonnements, die Fragenerkennung, Benachrichtigungsregeln, Anmeldung, Ratenbegrenzung, Sicherheits-Header und den Demo-Ablauf über den echten HTTP-Stack ab. `scripts.evaluate_holdout` misst die Klassifikation auf beiden blinden Prüfsets, ohne PostgreSQL zu benötigen. GitHub Actions führt bei jedem Push zusätzlich ruff, die Migrationen auf PostgreSQL 17 und den Docker-Build aus. Live-Sync und Organisations-SMTP wurden separat geprüft; die fachliche WWF-Abnahme steht aus.
 
 ## Grenzen und nächste Schritte
 
@@ -393,7 +402,7 @@ Die behobenen Sync-, Windows-Checkpoint-, SMTP- und Oberflächenprobleme werden 
 
 | Aufgabe | Noch ausstehender Schritt |
 |---|---|
-| Fachliche Qualität | WWF-Taxonomie und Fokus Energie & Klima bestätigen; das Prüfset von WWF-Fachpersonen nachannotieren lassen. Der gemessene Recall von 0.325 zeigt, dass die Regeln Synonyme, Fachbegriffe (z. B. Jagd, Wolf, Kompost, Waldentwicklung) und französische/italienische Titel ergänzen müssen; danach mit einem neuen Prüfset messen |
+| Fachliche Qualität | WWF-Taxonomie und Fokus Energie & Klima bestätigen; die Prüfsets von WWF-Fachpersonen nachannotieren lassen. Der Recall stieg von 0.36 (v7) auf 0.67 (v8, unabhängiges Prüfset B); die verbleibenden Fehler betreffen vor allem indirekte Formulierungen (z. B. «Nachtabschaltung der Strassenbeleuchtung», «Fischtreppe»). Nach weiteren Regeländerungen ein neues Prüfset ziehen |
 | Demonstration | Präsentation und nachvollziehbare Beispiele für Suche, Beziehungen, Abonnements und relevante Änderungen vorbereiten |
 | WWF-Feedback und Abnahme | Gemeinsamen Anwendungsfalldurchlauf durchführen; Rückmeldungen und tatsächliche Akzeptanz dokumentieren |
 | Projektabschluss | Vorbereitete Ergebnis-/Übergabeunterlagen prüfen, formalen Kursbericht abschliessen und tatsächliche Übergabe durchführen |
@@ -403,11 +412,11 @@ Die behobenen Sync-, Windows-Checkpoint-, SMTP- und Oberflächenprobleme werden 
 
 Container, Konfiguration, Migrationen, Sicherung, API und Betriebsrollen sind dokumentiert. WWF muss für seine Umgebung insbesondere erreichbare HTTPS-Links, Organisations-SMTP, Secrets, Monitoring und Wiederherstellung festlegen und prüfen. Lokaler SMTP-Versand wurde erfolgreich nachgewiesen; ein WWF-Produktionsprovider ist damit noch nicht geprüft.
 
-Der MVP liefert mit Python, PostgreSQL, Docker, OpenAPI und Umgebungsvariablen eine Grundlage für die spätere Azure-Integration durch WWF. Ein eigenes Azure-Deployment gehört nicht zum aktuellen Lieferumfang; Kompatibilität mit der konkreten WWF-Umgebung wird nicht als bereits getestet ausgegeben. Lokale JSON-Laufberichte ersetzen kein zentrales Produktionsmonitoring. Harmonisierten Geschäftszuständen und Originalsprachen sind durch die Quellabdeckung Grenzen gesetzt.
+Der MVP liefert mit Python, PostgreSQL, Docker (ohne Root-Rechte, mit Healthcheck), OpenAPI und Umgebungsvariablen eine Grundlage für die Azure-Integration durch WWF; die [Azure-Anleitung](docs/03-architecture/azure-integration.md) beschreibt eine konkrete Zielarchitektur mit Azure Container Apps, Azure Database for PostgreSQL und Azure Files. Ein eigenes Azure-Deployment gehört nicht zum Lieferumfang; Kompatibilität mit der konkreten WWF-Umgebung wird nicht als bereits getestet ausgegeben. Lokale JSON-Laufberichte ersetzen kein zentrales Produktionsmonitoring. Harmonisierten Geschäftszuständen und Originalsprachen sind durch die Quellabdeckung Grenzen gesetzt.
 
 ### Optionale Weiterentwicklung
 
-KI-gestützte Klassifikation, semantische Suche, Zusammenfassungen und dialogorientierte Abfragen bleiben Erweiterungen. Eine KI-Klassifikation lässt sich mit demselben Prüfset direkt gegen die Regeln vergleichen. Das aktuelle MVP bietet strukturierte Suche und Filter, keinen KI-Chat. Ebenso optional sind ein täglicher Sammeldigest, weitergehende SMTP-Optimierungen und Organisations-SSO.
+KI-gestützte Klassifikation, semantische Suche, Zusammenfassungen und ein Chat mit frei formulierten Antworten bleiben Erweiterungen. Die regelbasierte Fragenerkennung (`QueryInterpreter`) und die Klassifikation besitzen dafür definierte Schnittstellen; eine KI-Klassifikation lässt sich mit denselben Prüfsets direkt gegen die Regeln vergleichen. Ebenso optional sind ein täglicher Sammeldigest, weitergehende SMTP-Optimierungen und Organisations-SSO.
 
 Die beiden grossen Indizes für die experimentelle bereichsübergreifende Suche können mit `python -m scripts.build_search_indexes` in einem Wartungsfenster aufgebaut werden. Die öffentliche Bereichsrecherche benötigt sie nicht. Ein GitHub-Projects-Board ist noch nicht erstellt; dafür fehlt die erforderliche Projects-Berechtigung. Bestehende Issues und Milestones können bereits genutzt werden.
 
@@ -420,18 +429,19 @@ Die Dokumentation ist nach Projektmanagement, Anforderungen, Architektur, techni
 | [Dokumentationsindex](docs/README.md) | Einstieg in alle Projektunterlagen |
 | [Aktueller Aufgabenstand](docs/01-project-management/current-status.md) | Erledigte Prüfungen, verbleibende Abnahme und Abgleich der gestrigen Aufgaben |
 | [Installation](docs/getting-started.md) | Demo, Entwicklungsumgebung und vollständiger Erstimport |
-| [Benutzerhandbuch](docs/06-handover/user-guide.md) | Recherche, Anmeldung und Abonnements |
+| [Benutzerhandbuch](docs/06-handover/user-guide.md) | Recherche, Fragen, Anmeldung und Abonnements |
 | [Konfiguration](docs/configuration.md) | Umgebungsvariablen, Container, Google-Anmeldung und editierbare Klassifikation |
 | [Architektur](docs/03-architecture/system-architecture.md) | Komponenten, Datenmodell und Ausführungsgrenzen |
 | [API](docs/api.md) | Öffentliche Recherche und geschützte Verwaltungsrouten |
 | [Tests](docs/05-testing/test-plan.md) | Automatisierte Prüfungen und manuelle Abnahme |
-| [Klassifikation auf dem Prüfset](docs/05-testing/evidence/holdout-evaluation.md) | Blind annotierte Stichprobe mit Precision, Recall und Fehlerliste |
+| [Klassifikation auf den Prüfsets](docs/05-testing/evidence/holdout-evaluation.md) | Zwei blind annotierte Stichproben mit Precision, Recall und Fehlerliste |
 | [Betrieb](docs/06-handover/deployment-guide.md) | Prozessrollen, Migrationen und Sicherung |
 | [Fehlerbehebung](docs/troubleshooting.md) | Sync-, Anmelde- und Installationsprobleme |
 | [Mitwirken](CONTRIBUTING.md) | Beiträge und Pull Requests |
 | [Sicherheit](SECURITY.md), [Support](SUPPORT.md) | Meldewege und Hilfe |
 | [Änderungsprotokoll](CHANGELOG.md), [Lizenzen](docs/licensing.md) | Arbeitsstand und offene Lizenzentscheidung |
-| [Betrieb und Monitoring](docs/monitoring.md) | Lokaler Start, Klassifikationsvorbereitung, Abonnements, Sync-Steuerung und Benachrichtigungsregeln |
+| [Betrieb und Monitoring](docs/monitoring.md) | Lokaler Start, Klassifikationsvorbereitung, Abonnements, Sync-Strategie und Benachrichtigungsregeln |
+| [Azure-Integration](docs/03-architecture/azure-integration.md) | Zielarchitektur und Schritte für den Betrieb in Azure |
 | [WWF-Anforderungen](docs/wwf-requirements.md) | Zuordnung der Auftraggeberanforderungen und offene fachliche Entscheidungen |
 | [Review vom 11. Oktober 2026](docs/daily-review-2026-10-11.md) | Historischer Befund mit aktualisierter Erledigungsübersicht; keine aktuelle offene Fehlerliste |
 | [Demo-Stichprobe](data/demo/README.md) | Herkunft, Umfang und Erneuerung der Beispieldaten |

@@ -62,3 +62,15 @@ Milestones M1–M4 dokumentieren die abgeschlossene technische beziehungsweise d
 | [#28 – AI- und dialogorientierte Erweiterungen nach MVP-Abnahme untersuchen](https://github.com/FatihHayyar/wwf-polit-assistant/issues/28) | M7 | Offen |
 
 Die geschlossenen Issues verlinken den veröffentlichten Implementierungs-/Dokumentationsstand und beschreiben ihre Aussagegrenzen. Die Rechte-/Projekttafel-Aufgabe bleibt [in Issue #25](https://github.com/FatihHayyar/wwf-polit-assistant/issues/25) offen. Die übrigen Issues können bereits über Milestones und Labels verfolgt werden.
+
+## Lokal umgesetzt, auf GitHub noch nachzuführen (21. Oktober 2026)
+
+Die Tabelle oben gibt den Stand auf GitHub wieder. Auf dem Branch `improvements/wipro-review` sind folgende Punkte umgesetzt; die Issues werden nach dem Push mit Nachweis aktualisiert:
+
+| Issue | Lokaler Stand |
+|---|---|
+| #13 Dialogorientierte Abfrage | Regelbasiert umgesetzt (`POST /api/v1/ask`, Fragefeld in der Oberfläche); kann geschlossen werden, sobald WWF den Umfang bestätigt |
+| #26 Azure-Zielarchitektur | [Zielarchitektur](../03-architecture/azure-integration.md) beschrieben, Image ohne Root-Rechte; Testdeployment bleibt offen |
+| #28 AI-Erweiterungen | Schnittstellen und Vergleichsverfahren dokumentiert ([Erweiterungspunkte](../03-architecture/system-architecture.md#erweiterungspunkte-für-ki)); Untersuchung bleibt offen |
+
+Neu ohne eigenes Issue umgesetzt: mehrere Abonnements je Konto, Geschäftstyp-Filter, getrennte Themen Rechenzentren und Grossverbraucher, neue Synchronisierungsstrategie und zweites Prüfset.

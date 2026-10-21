@@ -4,11 +4,18 @@ Dieser Stand ersetzt die offenen technischen Prüfpunkte aus dem [Review vom 11.
 
 ## Ergänzungen vom 21. Oktober
 
-- **Klassifikation unabhängig gemessen:** 300 zufällige Geschäfte (fester Seed, ohne Entwicklungsbeispiele) blind annotiert. `rule-based-v7`: Precision 1.0, Recall 0.325 bei der WWF-Relevanz; 268/300 Datensätze streng korrekt. Das Entwicklungsset (50/50) wird nur noch als Regressionsprüfung geführt. [Auswertung](../05-testing/evidence/holdout-evaluation.md)
-- **Sicherheit:** gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für alle E-Mail- und Token-Endpunkte, Bestätigungsseite mit POST statt Token-Verbrauch beim Öffnen, Ursprungsprüfung, Token-Widerruf beim Abmelden (Migration `20261021_session_version`), Sicherheits-Header mit CSP, PostgreSQL nur lokal erreichbar.
+Abgleich mit der Aufgabenstellung und den E-Mail-Konkretisierungen von WWF; jede Anforderung ist in der [Anforderungsprüfung](../wwf-requirements.md) mit Nachweis verknüpft.
+
+- **Mehrere Abonnements:** bis zu zehn benannte Abonnements je Konto mit Themen, Kantonen, Geschäftstypen, Stichwörtern und Bereichen; Bearbeiten, Pausieren, Löschen. Bestehende Abonnements wurden migriert (`20261021_subscription_profiles`).
+- **Geschäftstyp** als Such- und Abonnementfilter (Motion, Postulat, Interpellation …), auch für verknüpfte Datensätze.
+- **Dialogorientierte Abfrage:** Fragen in vier Sprachen werden regelbasiert in Filter übersetzt; das Ergebnis lässt sich als Abonnement speichern. Schnittstelle für eine spätere KI-Variante vorhanden.
+- **Synchronisierung neu aufgebaut:** nur Änderungen, neue und fehlende IDs; vollständige Vergleiche in festen Abständen. Geschäfte: rund 3 Sekunden statt 74 Minuten. Checkpoints aller Bereiche stehen wieder auf dem 21. Oktober (Dokumente zuvor 11. Oktober, 2'854 Dokumente nachgeholt). Start um 04:30 nach den Quellexporten.
+- **Klassifikation v8:** Rechenzentren und Grossverbraucher getrennt, Vorbildfunktion der öffentlichen Hand unter Klima & Energie, Ausschluss- und Infix-Regeln, viele neue Fachbegriffe. Zweites blindes Prüfset B: Recall 0.667 statt 0.361 bei Precision 1.0. Alle 2'958'331 Datensätze neu klassifiziert. [Auswertung](../05-testing/evidence/holdout-evaluation.md)
+- **Azure:** Container ohne Root-Rechte, Healthcheck, konkrete [Zielarchitektur](../03-architecture/azure-integration.md).
+- **Sicherheit:** gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für E-Mail-, Token- und Frage-Endpunkte, Bestätigungsseite mit POST statt Token-Verbrauch beim Öffnen, Ursprungsprüfung, Token-Widerruf beim Abmelden, Sicherheits-Header mit CSP, PostgreSQL nur lokal erreichbar.
 - **Demo:** Testbenachrichtigung über ein fiktives Geschäft, das die echte Klassifikation und den echten Versand durchläuft; Anleitung auf der Startseite.
-- **Wartbarkeit:** Frontend in Module aufgeteilt, Stylesheet formatiert, Repository bereinigt, Dokumentation vollständig deutsch, ruff und GitHub-Actions-CI.
-- **Tests:** 124 isolierte Tests erfolgreich; Edge-Durchlauf der Demo in einer isolierten Instanz erfolgreich. Die Änderungen liegen auf dem Branch `improvements/wipro-review` und sind nicht gepusht.
+- **Wartbarkeit:** Frontend in Module aufgeteilt, Sync-Code vereinheitlicht (sieben veraltete Skripte entfernt), Dokumentation vollständig deutsch, ruff und GitHub-Actions-CI.
+- **Tests:** 151 isolierte Tests erfolgreich; Browser-Durchlauf der Demo mit Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung in einer isolierten Instanz erfolgreich; Migrationen auf PostgreSQL 17 vor- und zurückgespielt. Die Änderungen liegen auf dem Branch `improvements/wipro-review` und sind nicht gepusht.
 
 ## Ergänzungen vom 13. Oktober
 
@@ -41,22 +48,22 @@ Nachweise: [Prüfung vom 13. Oktober](../05-testing/review-2026-10-13.md), [Konf
 - 81 Backend-Tests unter Windows erfolgreich; im Linux-Image 80 erfolgreich und eine Windows-spezifische Prüfung übersprungen. JavaScript- und Browserkontrollen ebenfalls erfolgreich.
 - Deutsche Dokumentation strukturiert; technische Übergabe, Benutzerhandbuch, Anforderungen, Tests und Ergebnisunterlagen vorbereitet. GitHub-Issues/Milestones angelegt. Ein Projects-Board benötigt noch die passende Berechtigung.
 
-## Bedeutung der unveränderten Checkpoints
+## Bedeutung der unveränderten Checkpoints (Stand 12. Oktober)
 
-`last_updated_at` und `last_id` speichern die erfolgreich verarbeitete Quellposition, `last_run_at` den letzten gespeicherten Dataset-Abgleich. Ohne neuere Quellposition bleibt der Cursor unverändert, obwohl heute erneut kontrolliert wurde. Bei sechs Bestandsvergleichs-Datasets bleibt das Zeitcursorfeld leer; eine ID und die Laufberichte dokumentieren den Fortschritt.
+Dieser Abschnitt erklärt den damaligen Befund. Seit dem 21. Oktober schreiben alle Bereiche ihren Checkpoint nach jedem erfolgreichen Lauf auf die neueste gelesene Quellposition fort; vollständige Vergleiche werden in `last_full_scan_at` vermerkt ([Synchronisierungsstrategie](../monitoring.md#synchronisierungsstrategie)).
 
-Die Datenbank bestätigt für alle neun Bereiche einen letzten Abgleich am **12. Oktober** und den Dataset-Status `idle`. Bei Geschäften lautet die Quellposition weiterhin **11.10.2026 05:23:12 / ID 341425**. Ein Quellcursor kann auch durch technisch veränderte Metadaten vorrücken; er ist keine verlässliche Uhrzeit der letzten fachlichen Änderung. Erfolgreichen Abschluss zusätzlich im Laufbericht prüfen.
+`last_updated_at` und `last_id` speichern die erfolgreich verarbeitete Quellposition, `last_run_at` den letzten gespeicherten Dataset-Abgleich. Damals blieben die Zeitcursor der sechs Bestandsvergleichs-Datasets leer, und der Dokumenten-Cursor rückte nicht vor, obwohl täglich kontrolliert wurde.
 
-Die späteren vollständigen Läufe meldeten **1.682.302 unveränderte verarbeitete Einträge**, keine neuen/geänderten Inhalte und keine Fehler. Der erneute direkte API-Vergleich bestätigt diesen Befund für die geprüften Beispiele. Das beweist nicht, dass OpenParlData am gesamten Tag keinerlei Änderung hatte. Bei den Zeitcursor-Datasets wurde nach Quelländerungsdatum/ID sortiert, bei den übrigen sechs nach ID; Letzteres ist kein globaler Nachweis der jüngsten Änderung an älteren Datensätzen.
+Die damaligen vollständigen Läufe meldeten **1.682.302 unveränderte verarbeitete Einträge**, keine neuen/geänderten Inhalte und keine Fehler. Der direkte API-Vergleich bestätigte diesen Befund für die geprüften Beispiele.
 
 ## Nächste Schritte vor Abschluss
 
-1. Demonstration und Präsentation mit konkreten Such-, Kontext- und Monitoringbeispielen vorbereiten.
-2. WWF-Taxonomie/Fokus bestätigen und das Prüfset gemeinsam mit WWF-Fachpersonen nachannotieren. Regeln anschliessend gezielt für den Recall erweitern und mit einem neuen Prüfset messen.
+1. Demonstration und Präsentation mit konkreten Such-, Frage-, Kontext- und Monitoringbeispielen vorbereiten.
+2. WWF-Taxonomie bestätigen (u. a. Begriffe zur Kühlung) und die Prüfsets gemeinsam mit WWF-Fachpersonen nachannotieren. Nach weiteren Regeländerungen mit einem neuen Prüfset messen.
 3. WWF-Anwendungsfälle durchgehen; Feedback, Abnahme und verbleibende Anpassungen dokumentieren.
 4. Formale Kursunterlagen fertigstellen und die tatsächliche Übergabe durchführen. Private personenbezogene Kursunterlagen bleiben ausserhalb des öffentlichen Repositorys.
 5. Softwarelizenz festlegen.
 
-Azure-Integration erfolgt bei Übernahme durch WWF. KI/Dialog, Organisations-SSO, täglicher Gesamtdigest und experimentelle bereichsübergreifende Suche bleiben Weiterentwicklung, keine offenen Pflichtfunktionen dieses MVP.
+Die Azure-Bereitstellung erfolgt bei Übernahme durch WWF nach der [Azure-Anleitung](../03-architecture/azure-integration.md). KI-gestützte Klassifikation, Zusammenfassungen, ein Chat mit Quellenangaben, Organisations-SSO und ein täglicher Gesamtdigest bleiben Weiterentwicklung.
 
 Nachweise: [Gesamtprüfung](../05-testing/review-2026-10-12.md), [Testergebnisse](../05-testing/test-results.md), [GitHub-Tracking](github-tracking.md), [Projektübersicht](../../README.md).

@@ -4,7 +4,7 @@
 flowchart LR
     change[Quelländerung] --> persist[Inhalt speichern]
     persist --> policy[Substantielle Relevanz prüfen]
-    policy --> match[Filter / Watch abgleichen]
+    policy --> match[Abonnements / Watches abgleichen]
     match --> pending[Ausstehende Nachricht]
     pending --> recheck[Konto / Auswahl / Empfänger erneut prüfen]
     recheck --> smtp[SMTP-Zusammenfassung]

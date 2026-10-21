@@ -12,11 +12,32 @@ Die laufende Anwendung stellt `/docs` und `/openapi.json` bereit. Dort stehen di
 | `GET /entities/{dataset}/{record_id}` | Detailansicht und Beziehungen |
 | `GET /affairs`, `GET /affairs/{affair_id}` | Geschäftssuche und Geschäftsdetails |
 | `GET /categories`, `GET /cantons`, `GET /affair-types` | Filterwerte |
+| `POST /ask` | Frage in natürlicher Sprache in Filter übersetzen und erste Ergebnisseite liefern |
 | `GET /health` am Server-Root | Erreichbarkeit und Datenbankverbindung |
 
 Beispiel: `GET /api/v1/entities/agendas?q=Photovoltaik&canton=ZH&page=1&page_size=10`.
 
-Bereichslisten unterstützen unter anderem `q`, `category`, `subcategory`, `canton`, `year`, `month`, `date_from` und `date_to`. Verknüpfungsfilter wie `affair_id`, `meeting_id`, `agenda_id`, `group_id` oder `person_id` gelten je nach Bereich. `page` beginnt bei 1; `page_size` liegt zwischen 1 und 50, standardmässig 10. Jahre sind auf 1900–2100 begrenzt. Dokumentensuche lädt keine externen PDFs nach.
+Bereichslisten unterstützen unter anderem `q`, `category`, `subcategory`, `canton`, `affair_type` (nur Geschäfte, Wert aus `/affair-types`), `year`, `month`, `date_from` und `date_to`. Verknüpfungsfilter wie `affair_id`, `meeting_id`, `agenda_id`, `group_id` oder `person_id` gelten je nach Bereich. `page` beginnt bei 1; `page_size` liegt zwischen 1 und 50, standardmässig 10. Jahre sind auf 1900–2100 begrenzt. Dokumentensuche lädt keine externen PDFs nach.
+
+### Frage in natürlicher Sprache
+
+```http
+POST /api/v1/ask
+{"question": "Motionen zum Wolf im Wallis seit 2024", "page": 1}
+```
+
+```json
+{
+  "question": "Motionen zum Wolf im Wallis seit 2024",
+  "dataset": "affairs",
+  "filters": {"category": "biodiversity_landscape", "subcategory": "species_habitats",
+              "canton": "VS", "affair_type": "Motion", "date_from": "2024-01-01"},
+  "recognised": [{"kind": "affair_type", "value": "Motion", "text": "Motion"}, "..."],
+  "results": {"items": ["..."], "pagination": {"page": 1, "page_size": 10, "total_items": 3, "total_pages": 1}}
+}
+```
+
+Die Frage umfasst 3–300 Zeichen; höchstens 30 Fragen pro Minute und Client-Adresse. `recognised` nennt für jeden erkannten Teil Art (`dataset`, `category`, `subcategory`, `canton`, `affair_type`, `period`, `keyword`), Wert und Fundstelle.
 
 ## Authentifizierung und Konto
 
@@ -40,19 +61,29 @@ E-Mail- und Token-Endpunkte sind ratenbegrenzt und antworten bei Überschreitung
 
 ## Abonnements und Empfänger
 
-`GET /subscriptions` liest die Auswahl. `PUT /subscriptions` ersetzt die Filter; ausgelassene Listen erhalten leere Standardwerte. Kategorie-IDs aus `/categories` verwenden.
+Ein Konto besitzt bis zu zehn benannte Abonnements. Alle Routen benötigen eine Anmeldung; Anlegen und Ändern zusätzlich eine bestätigte E-Mail-Adresse.
+
+| Methode und Pfad | Funktion |
+|---|---|
+| `GET /subscriptions` | Übersicht: Abonnements, Watches, `active`, `max_profiles` |
+| `POST /subscriptions/profiles` | Abonnement anlegen (`201`; `409` ab dem elften) |
+| `PUT /subscriptions/profiles/{id}` | Abonnement vollständig ersetzen |
+| `DELETE /subscriptions/profiles/{id}` | Abonnement löschen |
+| `DELETE /subscriptions` | Alle Abonnements und Watches entfernen |
 
 ```json
 {
+  "name": "Energie-Motionen in Bern",
+  "active": true,
   "category_ids": [1],
   "canton_keys": ["BE"],
+  "affair_types": ["Motion", "Postulat"],
   "datasets": ["affairs", "documents"],
-  "keywords": ["Photovoltaik"],
-  "clear_watches": false
+  "keywords": ["Photovoltaik"]
 }
 ```
 
-Bis zu 20 Suchbegriffe mit je 1–200 Zeichen sind erlaubt. Innerhalb einer Gruppe gilt OR, zwischen Gruppen AND. Leere Dataset-Auswahl bedeutet alle Bereiche. Sind Themen, Kantone und Keywords alle leer, pausieren Filterabonnements; Einzel-Watches bleiben aktiv.
+Kategorie-IDs stammen aus `/categories`, Geschäftstypen aus `/affair-types`. Bis zu 20 Suchbegriffe mit je 1–200 Zeichen. Innerhalb einer Gruppe gilt OR, zwischen Gruppen AND, zwischen Abonnements OR. Leere Dataset-Auswahl bedeutet alle Bereiche. Sind Themen, Kantone, Geschäftstypen und Suchbegriffe leer, ist das Abonnement pausiert (`paused: true`); Einzel-Watches bleiben aktiv. Fremde oder unbekannte Abonnement-IDs ergeben `404`. Jede Änderung löst eine Bestätigungs-E-Mail mit der Zusammenfassung aus (höchstens 60 pro Stunde).
 
 `PUT /subscriptions/watches/{dataset}/{record_id}` beobachtet einen Inhalt, `DELETE` entfernt die Beobachtung. `record_id` ist die positive lokale ID; bei Dokumenten ist dies `pk`, nicht `source_id`.
 

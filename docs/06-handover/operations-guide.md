@@ -1,12 +1,12 @@
 # Betriebsleitfaden
 
-Der Betreiber benötigt Datenbank, API, genau einen zuständigen Scheduler, SMTP und persistente Jobdateien. Die konkrete Azure-Umgebung ist noch abzustimmen. [Deployment](deployment-guide.md), [Konfiguration](../configuration.md) und [Fehlerbehebung](../troubleshooting.md) ergänzen diesen Leitfaden.
+Der Betreiber benötigt Datenbank, API, genau einen zuständigen Scheduler, SMTP und persistente Jobdateien. Die vorgesehene Azure-Zielarchitektur beschreibt die [Azure-Integration](../03-architecture/azure-integration.md). [Deployment](deployment-guide.md), [Konfiguration](../configuration.md) und [Fehlerbehebung](../troubleshooting.md) ergänzen diesen Leitfaden.
 
 ## Regelbetrieb
 
 Themen und Regeln werden in `app/classification/taxonomy.json` gepflegt. Nach Änderungen `python -m scripts.seed_classification` ausführen und API/Scheduler neu starten; Container ohne Quellcode-Mount benötigen ein neues Image. Bestehende Zuordnungen anschliessend ausdrücklich mit `python -m scripts.reclassify_rules --apply --force` erneuern. Der Job prüft das Entwicklungsset, verwendet die Sync-Sperre und speichert Batches zur Wiederaufnahme. Ohne `--apply` ist die Neuberechnung schreibgeschützt. Er verändert Klassifikationen/Evidenz, keine Quellen oder Benachrichtigungen. `python -m scripts.rule_backfill_status` bestätigt danach fehlende/veraltete Zuordnungen. Details: [Konfiguration](../configuration.md#regelbasierte-klassifikation).
 
-Der separat gestartete Scheduler führt den Runner täglich um 03:00 Europe/Zurich aus. Alternativ ist `python -m scripts.sync.run_all` ein manueller Lauf. Die API kann einen geschützten Hintergrundlauf starten; diese Operationen benötigen `X-Sync-API-Key`, keine gewöhnliche Benutzeranmeldung.
+Der separat gestartete Scheduler führt den Runner täglich um `SYNC_TIME` aus (Standard 04:30 Europe/Zurich, nach den OpenParlData-Exporten gegen 02:15 UTC). Ein regulärer Lauf liest je Bereich nur Änderungen, neue und fehlende IDs und dauert deshalb meist Minuten; an Tagen mit fälligem vollständigem Vergleich (Intervalle in der [Synchronisierungsstrategie](../monitoring.md#synchronisierungsstrategie)) entsprechend länger. `sync_checkpoints.last_full_scan_at` zeigt den letzten vollständigen Vergleich je Bereich. Alternativ ist `python -m scripts.sync.run_all` ein manueller Lauf. Die API kann einen geschützten Hintergrundlauf starten; diese Operationen benötigen `X-Sync-API-Key`, keine gewöhnliche Benutzeranmeldung.
 
 Der Entwicklungs-Compose-Scheduler bindet `./logs` nach `/app/logs` ein. Dadurch bleiben Jobdateien beim Ersetzen des Containers erhalten und die lokale API kann dessen Laufberichte lesen. Bei einer bestehenden Installation vor dem ersten Umstellen auf diesen Mount alte Container-Logs separat sichern. Die SMTP-STARTTLS-Einstellung wird ebenfalls an den Scheduler durchgereicht.
 

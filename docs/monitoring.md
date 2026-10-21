@@ -2,7 +2,7 @@
 
 Technische Referenz zu Recherche, Abonnements, Benachrichtigungen und Datenabgleich. Einstieg und Benutzerhinweise stehen im [Dokumentationsindex](README.md).
 
-Das lokale Frontend wird von FastAPI unter `/` ausgeliefert. Alle neun öffentlichen Bereiche besitzen eigene Navigationseinträge und bleiben über die API und Links auf verknüpfte Listen erreichbar. Die Suche unterstützt Suchbegriff, Haupt-/Unterthema, Kanton und Datumsbereich mit serverseitiger Pagination. Geschäftsdetails enthalten verknüpfte Datensätze, Links zu den vollständigen verknüpften Listen und die letzten 100 erkannten Änderungen.
+Das lokale Frontend wird von FastAPI unter `/` ausgeliefert. Alle neun öffentlichen Bereiche besitzen eigene Navigationseinträge und bleiben über die API und Links auf verknüpfte Listen erreichbar. Die Suche unterstützt Suchbegriff, Haupt-/Unterthema, Kanton, Geschäftstyp (nur Geschäfte, Parameter `affair_type`) und Datumsbereich mit serverseitiger Pagination. Geschäftsdetails enthalten verknüpfte Datensätze, Links zu den vollständigen verknüpften Listen und die letzten 100 erkannten Änderungen.
 
 ## Lokal starten
 
@@ -19,6 +19,21 @@ Traktandenkarten verwenden ihren eigenen Titel, sonst den Titel des verknüpften
 
 Die Recherche ist ohne Konto möglich. Ein Bereich «Auf dem Laufenden bleiben» neben den Ergebnissen bietet Registrierung, Anmeldung und Abonnementverwaltung. Themen sind unter ihren Hauptthemen gruppiert; ein ausgewähltes Hauptthema umfasst alle Unterthemen. Weitere Bereiche stehen in einem aufklappbaren Abschnitt zur Verfügung. Die Auswahl von Geschäften umfasst auch Aktualisierungen verknüpfter Datensätze.
 
+## Fragen in natürlicher Sprache
+
+`POST /api/v1/ask` mit `{"question": "...", "page": 1}` übersetzt eine Frage in Suchfilter und liefert die erste Ergebnisseite. Die Antwort enthält den gewählten Bereich (`dataset`), die Filter (`filters`), die erkannten Teile mit ihrer Fundstelle (`recognised`) und die Ergebnisse im Format der Bereichssuche.
+
+| Erkannt | Beispiele | Regel |
+|---|---|---|
+| Bereich | «Sitzungen», «séances», «votazioni» | Wortstämme je Sprache; ohne Angabe Geschäfte |
+| WWF-Thema | «Wolf», «Photovoltaik», «Klima» | dieselben Regeln wie die Klassifikation; ein eindeutiges Unterthema wird direkt gesetzt |
+| Kanton | «im Wallis», «Genève», «BE» | Kantonsnamen in vier Sprachen; Kürzel nur in Grossbuchstaben |
+| Geschäftstyp | «Motionen», «Interpellation» | die in der Datenbank vorhandenen harmonisierten Typen |
+| Zeitraum | «seit 2024», «letztes Jahr», «letzten 30 Tage», «zwischen 2020 und 2022» | feste Muster; «bevorstehend» setzt das heutige Datum als Beginn |
+| Suchbegriff | «"Fernwärme"» oder das längste übrige Wort | nur, wenn kein Thema erkannt wurde; bereits erkannte Wörter werden nicht wiederholt |
+
+Die Oberfläche zeigt die erkannten Teile als Etiketten, setzt die Filter im Suchformular und bietet an, die Frage als Abonnement zu speichern. Die Erkennung arbeitet deterministisch und erfindet keine Inhalte; sie ist auf 30 Fragen pro Minute und Client-Adresse begrenzt. `app/services/query_interpreter.py` definiert mit `QueryInterpreter` die Schnittstelle, über die später ein Sprachmodell dieselbe Aufgabe übernehmen kann.
+
 ## Anmeldung und Schutz vor Missbrauch
 
 Registrierung und Anmeldung antworten unabhängig davon, ob ein Konto existiert, mit derselben Meldung. Bei einem bestehenden Konto erhält die Registrierung einen Anmeldelink, bei einem unbestätigten Konto die Anmeldung einen Bestätigungslink. Unbekannte Adressen erhalten keine E-Mail.
@@ -34,6 +49,8 @@ Abmelden widerruft alle bis dahin ausgestellten Tokens des Kontos (Sitzungsversi
 | Bestätigung von Links je Client-Adresse | 30 pro 15 Minuten |
 | Änderung der Empfängeradressen je Konto | 10 pro Stunde |
 | Bestätigungs-E-Mails zu Abonnementänderungen | 60 pro Stunde; darüber wird gespeichert, aber keine E-Mail gesendet |
+| Fragen (`/api/v1/ask`) je Client-Adresse | 30 pro Minute |
+| Abonnements je Konto | höchstens 10 |
 
 Überschreitungen ergeben HTTP 429 mit `Retry-After`. Die Grenzen gelten pro API-Prozess (In-Memory); bei mehreren API-Instanzen ist ein gemeinsamer Speicher wie Redis nötig. Hinter einem Reverse Proxy muss uvicorn mit `--proxy-headers` laufen. `RATE_LIMIT_ENABLED=false` ist nur für kontrollierte Testumgebungen gedacht.
 
@@ -49,11 +66,17 @@ Der Job umfasst alle neun Bereiche, setzt ein bestandenes Entwicklungsset voraus
 
 ## Abonnementverhalten
 
-Nutzer wählen Themen, Kantone, Stichwörter und optional Bereiche. Hauptthemen schliessen ihre Unterthemen ein. Innerhalb einer Auswahlgruppe gelten Werte als Alternativen (ODER); Themen- und Kantonseinschränkung müssen gemeinsam für denselben Datensatz oder dasselbe verknüpfte Geschäft passen. Eine leere Themen- oder Kantonsgruppe schränkt nicht ein. Filterabonnements pausieren, wenn Themen, Kantone und Stichwörter leer sind. Eine leere Bereichsauswahl bedeutet alle neun Bereiche.
+Ein Konto kann bis zu zehn benannte Abonnements (`subscription_profiles`) besitzen. Jedes Abonnement wählt Themen, Kantone, Geschäftstypen, Stichwörter und optional Bereiche und kann aktiv oder pausiert sein. Hauptthemen schliessen ihre Unterthemen ein. Innerhalb einer Auswahlgruppe gelten Werte als Alternativen (ODER); verschiedene Gruppen müssen gemeinsam für denselben Datensatz oder dasselbe verknüpfte Geschäft passen (UND). Eine leere Gruppe schränkt nicht ein. Ein Abonnement ohne Themen, Kantone, Geschäftstypen und Stichwörter gilt als pausiert. Eine leere Bereichsauswahl bedeutet alle neun Bereiche.
+
+Zwischen den Abonnements gilt ODER: Eine Änderung ist für ein Konto relevant, sobald ein Watch oder **ein** aktives Abonnement passt. Auch bei mehreren passenden Abonnements entsteht nur eine Benachrichtigung.
+
+Der Geschäftstyp-Filter verwendet `affairs.type_harmonized_de` (z. B. Motion, Postulat, Interpellation, Anfrage). Er gilt für Geschäfte und für verknüpfte Datensätze über ihr Geschäft: Ein Traktandum zu einer Motion passt zu einem Abonnement mit dem Typ «Motion».
+
+Die Migration `20261021_subscription_profiles` übernimmt die früheren Einzeltabellen (Themen, Kantone, Stichwörter, Bereiche) als Abonnement «Mein Abonnement» je Konto. Wird eine Kategorie in der Taxonomie ersetzt (`"replaces"`), übernimmt `scripts.seed_classification` die Nachfolger in bestehende Abonnements; so erhalten Abonnenten von «Rechenzentren & Grossverbraucher» künftig beide neuen Unterthemen.
 
 Stichwörter sind wörtliche Phrasen ohne Gross-/Kleinschreibung: eine pro Zeile, bis zu 20 Phrasen mit je bis zu 200 Zeichen. Jede Phrase genügt; Stichwort-, Themen- und Kantonsfilter gelten gemeinsam. Durchsucht werden dieselben gespeicherten Felder wie bei der Stichwortsuche. Verknüpfte Datensätze können zusätzlich über die Klassifikation ihres Geschäfts passen.
 
-Die Abonnementverwaltung bietet das Verfolgen einzelner Datensätze. Geschäfts-Watches umfassen verknüpfte Änderungen; Sitzungs-Watches umfassen Datensätze mit dieser Sitzungs-ID. Watches wirken unabhängig von Filtern und sich ändernden Klassifikationen. Der Abonnementdialog listet Watches und entfernt sie. Das Speichern leerer Filter lässt Watches aktiv; «Alle Benachrichtigungen beenden» entfernt Filter, Stichwörter und Watches.
+Die Abonnementverwaltung bietet das Verfolgen einzelner Datensätze. Geschäfts-Watches umfassen verknüpfte Änderungen; Sitzungs-Watches umfassen Datensätze mit dieser Sitzungs-ID. Watches wirken unabhängig von Abonnements und sich ändernden Klassifikationen. Der Abonnementdialog listet Watches und entfernt sie. Das Löschen oder Pausieren von Abonnements lässt Watches aktiv; «Alle Benachrichtigungen beenden» (`DELETE /api/v1/subscriptions`) entfernt alle Abonnements und Watches.
 
 Gruppendetails listen verknüpfte Sitzungen. Gruppen-Watches umfassen den Gruppendatensatz sowie seine Sitzungen und sitzungsbezogenen Datensätze. Gruppen erben Geschäftsklassifikationen über ihre Sitzungen. Interessenbindungen besitzen eigene Klassifikationen und Watches; sie zeigen die deklarierende Person, sofern sie in der importierten Datenbank vorhanden ist. Eine Geschäftsbeziehung wird für eine Interessenbindung nicht konstruiert. Weitere Interessenbindungen einer Person sind über `person_id` abrufbar, Sitzungen einer Gruppe über `group_id`. Datumsfilter für Gruppen verwenden `updated_at`, weil das Gruppenmodell kein Beginndatum besitzt. Datumsfilter für Interessenbindungen verwenden `begin_date`; fehlende Daten passen nicht zu einer Datumseinschränkung. Die Synchronisation von Mitgliedschaften liegt ausserhalb dieser beiden Quell-Datasets.
 
@@ -61,7 +84,7 @@ Jede relevante Quelländerung erzeugt ein Change-Event und höchstens eine Benac
 
 ## Benachrichtigung in der Demo testen
 
-Mit `DEMO_MODE=true` (in `docker-compose.demo.yml` gesetzt) zeigt die Startseite eine Anleitung in vier Schritten, und der Abonnementdialog enthält «Benachrichtigung testen (Demo)». Die Funktion speichert die aktuelle Auswahl und erstellt ein fiktives neues Geschäft mit eigener ID ab 900'000'000. Es durchläuft die echte regelbasierte Klassifikation, die Benachrichtigungsrichtlinie, den Abonnementabgleich und den Digest-Versand; zugestellt wird nur an das angemeldete Konto. Passt das Testgeschäft nicht zu den gespeicherten Filtern, erklärt die Oberfläche dies statt eine E-Mail zu senden. Pro Konto sind fünf Tests in zehn Minuten möglich.
+Mit `DEMO_MODE=true` (in `docker-compose.demo.yml` gesetzt) zeigt die Startseite eine Anleitung in vier Schritten, und der Abonnementdialog enthält «Benachrichtigung testen (Demo)». Die Funktion erstellt ein fiktives neues Geschäft mit eigener ID ab 900'000'000; Geschäftstyp und Suchbegriff übernimmt sie aus einem passenden aktiven Abonnement (sonst «Motion»). Es durchläuft die echte regelbasierte Klassifikation, die Benachrichtigungsrichtlinie, den Abonnementabgleich und den Digest-Versand; zugestellt wird nur an das angemeldete Konto. Ohne aktives Abonnement bittet die Oberfläche zuerst, eines anzulegen. Passt das Testgeschäft zu keinem Abonnement, erklärt die Oberfläche dies statt eine E-Mail zu senden. Pro Konto sind fünf Tests in zehn Minuten möglich.
 
 Über die Kommandozeile im Demo-Container:
 
@@ -73,7 +96,7 @@ Ohne `DEMO_MODE` antworten die Demo-Endpunkte mit 404 und das Skript bricht ab. 
 
 ## Tägliche und manuelle Synchronisation
 
-Der Docker-Scheduler und die geschützte Entwicklungs-API verwenden beide `scripts.sync.run_all`. Im öffentlichen Frontend gibt es keine Synchronisationssteuerung. Die manuelle Ausführung erfordert `SYNC_API_KEY` im Header `X-Sync-API-Key`. Eine Datenbanksperre verhindert parallele Gesamtläufe. Ein fehlgeschlagener Bereich wird protokolliert, die übrigen Bereiche laufen weiter. Der E-Mail-Versand beginnt erst, wenn alle Bereiche erfolgreich waren; andernfalls bleiben ausstehende Benachrichtigungen bis zu einer erfolgreichen Wiederaufnahme erhalten. JSON-Ergebnisse werden nach `logs/sync_<run_id>.json` geschrieben.
+Der Docker-Scheduler (täglich um `SYNC_TIME`, Standard 04:30 Europe/Zurich) und die geschützte Entwicklungs-API verwenden beide `scripts.sync.run_all`. Im öffentlichen Frontend gibt es keine Synchronisationssteuerung. Die manuelle Ausführung erfordert `SYNC_API_KEY` im Header `X-Sync-API-Key`. Eine Datenbanksperre verhindert parallele Gesamtläufe. Ein fehlgeschlagener Bereich wird protokolliert, die übrigen Bereiche laufen weiter. Der E-Mail-Versand beginnt erst, wenn alle Bereiche erfolgreich waren; andernfalls bleiben ausstehende Benachrichtigungen bis zu einer erfolgreichen Wiederaufnahme erhalten. JSON-Ergebnisse werden nach `logs/sync_<run_id>.json` geschrieben.
 
 ```powershell
 .venv\Scripts\python.exe -m scripts.sync.run_all
@@ -81,9 +104,30 @@ Der Docker-Scheduler und die geschützte Entwicklungs-API verwenden beide `scrip
 
 Dieser Befehl kontaktiert OpenParlData, verändert Datensätze und versendet ausstehende Benachrichtigungen. Er ist vom Klassifikations-Vorbereitungsjob getrennt.
 
-Geschäfte, Sitzungen und Dokumente verwenden Zeitstempel-Checkpoints. Bevor einem Checkpoint vertraut wird, wird die Quellanzahl der ersten API-Seite mit der lokalen Anzahl verglichen (eindeutige Identitäten; bei Dokumenten Zeilen inklusive Beziehungsvarianten). Eine Lücke löst einen Identitätsabgleich mit der Quelle aus, der auch Datensätze vor dem Checkpoint umfasst. Dieser Abgleichmodus wird mit jedem bestätigten Batch gespeichert, sodass ein wiederaufgenommener Job historische Datensätze weiter prüft. Hat «Dokumente» keine neueren Zeitstempel als der Cursor, werden alle fehlenden Identitäten und die aktuelle Live-Seite geladen. `--recheck` erzwingt eine vollständige Inhaltsprüfung, auch wenn die Anzahlen übereinstimmen; gleiche Anzahlen beweisen weder identische IDs noch erkennen sie historische Änderungen ohne neuen Zeitstempel. Dokumente prüfen zusätzlich die höchste Live-ID und erkennen so rückdatierte neue Dokumente, selbst wenn Löschungen die Gesamtzahl unverändert lassen.
+## Synchronisierungsstrategie
 
-Traktanden, Abstimmungen, Ereignisse und Texte werden vollständig durchlaufen, weil ihre Zeitstempel fehlen oder unzuverlässig sind. Auch Gruppen und Interessenbindungen werden wegen ihrer geringeren Grösse vollständig geprüft, um ältere Datensätze und fehlende Zeitstempel abzudecken. Vollständige Durchläufe sind beim Erstimport und täglich aufwendig, erkennen aber Änderungen an älteren IDs. Klassifikation und Benachrichtigungspipeline laufen nur bei Inhaltsänderungen, ergänzt um das oben beschriebene Nachholen fehlender Klassifikationen. Reine Zeitstempeländerungen erzeugen keine Benachrichtigungen. Wiederholte echte Übergänge wie A → B → A erzeugen jeweils ein neues Change-Event; das erneute Einspielen unveränderter Daten dupliziert keine Benachrichtigungen.
+Alle neun Bereiche verwenden denselben Ablauf in `scripts/sync/entity_sync.py`. Die Bereichsmodule (`agendas_sync.py`, `docs_sync.py` usw.) enthalten nur Quelle und Feldzuordnung. Die Strategie folgt dem, was die OpenParlData-API tatsächlich bietet (geprüft am 21. Oktober 2026): Sortierung über `sort_by`, `offset`/`limit` mit einer Grenze von 100'000, `exclude_null` sowie die undokumentierten, aber funktionierenden ID-Filter. Ein Filter nach Änderungsdatum existiert nicht; Traktanden besitzen kein `updated_at`.
+
+Ein regulärer Lauf eines Bereichs besteht aus bis zu drei Phasen:
+
+1. **Änderungen:** Die Quelle wird nach `-updated_at` sortiert gelesen (`exclude_null=updated_at`, sonst stünden Datensätze ohne Datum vorne), bis der gespeicherte Checkpoint erreicht ist. Traktanden prüfen stattdessen ein Fenster von ±60 Tagen um das Sitzungsdatum (`item_date`), weil dort Ergebnis und Status nachgetragen werden.
+2. **Neue IDs:** Die Quelle wird nach `-id` sortiert gelesen, bis die höchste lokale ID erreicht ist. So werden neue Datensätze gefunden, deren Änderungsdatum fehlt oder älter als der Checkpoint ist.
+3. **Fehlende IDs:** Nur wenn die Quelle danach noch mehr Datensätze meldet als lokal vorhanden sind, werden genau die fehlenden IDs geladen. Dokumente prüfen dazu gezielt ID-Bereiche, statt den mehrere GB grossen Export zu laden; Texte fallen auf einen vollständigen Vergleich zurück, weil die Text-API ID-Filter ignoriert.
+
+Ein **vollständiger Vergleich** liest jeden Datensatz (ID-Inventar aus dem Bulk-Export, Inhalte aus der Live-API) und erkennt auch Änderungen, die die Quelle ohne neues `updated_at` vornimmt. Er läuft, wenn er angefordert wird (`--recheck`), wenn ein Bereich noch nie vollständig verglichen wurde, oder wenn sein Intervall abgelaufen ist:
+
+| Bereich | Intervall des vollständigen Vergleichs |
+|---|---|
+| Traktanden, Abstimmungen, Ereignisse, Gruppen, Interessenbindungen | 7 Tage |
+| Texte | 14 Tage |
+| Geschäfte, Sitzungen | 30 Tage |
+| Dokumente | nur auf Anforderung (Umfang, extrahierte Volltexte) |
+
+Der Zeitpunkt steht in `sync_checkpoints.last_full_scan_at`. Die Checkpoints (`last_updated_at`, `last_id`) werden nach jedem erfolgreichen Lauf auf die neueste gelesene Quellposition gesetzt, nicht auf die Uhrzeit des Laufs; ein fehlerhafter Lauf schreibt sie nicht fort. Bestätigte Seiten können nach einem Fehler sicher erneut eingespielt werden.
+
+Messung am 21. Oktober 2026 auf dem vollständigen Bestand: Der tägliche Geschäftsabgleich dauerte rund 3 Sekunden statt zuvor 74 Minuten; der erste Lauf der Dokumente schloss die Lücke seit dem 11. Oktober mit 2'854 neuen Dokumenten. OpenParlData erzeugt die Tagesexporte gegen 02:05–02:18 UTC; der Standardstart 04:30 Europe/Zurich liegt danach.
+
+Klassifikation und Benachrichtigungspipeline laufen nur bei Inhaltsänderungen; unveränderte Datensätze ohne eigene Klassifikation werden beim Durchlauf nachklassifiziert. Reine Zeitstempeländerungen erzeugen keine Benachrichtigungen. Wiederholte echte Übergänge wie A → B → A erzeugen jeweils ein neues Change-Event; das erneute Einspielen unveränderter Daten dupliziert keine Benachrichtigungen.
 
 Verknüpfte Änderungen erscheinen in Geschäftsdetail und -verlauf und passen zu Geschäftsabonnements. Sie überschreiben das Quell-`updated_at` des Geschäfts nicht. Textänderungen bauen die Klassifikation betroffener Geschäfte neu auf; Titeländerungen eines Geschäfts lösen eine Neuklassifikation aus. Andere verknüpfte Datensätze erhalten eigene Inhaltsklassifikationen.
 
@@ -167,11 +211,11 @@ $syncRunId = $syncRun.run_id
 Invoke-RestMethod -Uri "$syncBase/runs/$syncRunId" -Headers $syncHeaders | ConvertTo-Json -Depth 8
 ```
 
-Vollständige Durchläufe lesen den offiziellen Bulk-Export **nur als ID-Inventar**, auch bei aufgeteilten Exporten, und laden die IDs anschliessend batchweise mit `offset=0` aus der Live-API. Der ID-Filter der API wird überprüft; ein ignorierter Filter oder ein abgeschnittener Batch führt zu einem Fehler statt zu stillschweigend übersprungenen Daten. Das umgeht die Offset-Grenze von 100'000 der Quelle und verhindert, dass Live-Werte mit einem älteren Export überschrieben werden. Neue höhere IDs seit dem Export werden berücksichtigt, bevor das Inventar fixiert wird. Inkrementelle Bereiche behalten ihren erfolgreichen Checkpoint und weichen auf ein ID-Inventar aus, wenn die Tiefengrenze der API erreicht wird. Der ursprüngliche obere Update-Cursor begrenzt den Job; spätere Änderungen prüft ein nachfolgender Job.
+Vollständige Vergleiche lesen den offiziellen Bulk-Export **nur als ID-Inventar**, auch bei aufgeteilten Exporten, und laden die IDs anschliessend batchweise mit `offset=0` aus der Live-API. Der ID-Filter der API wird überprüft; ein ignorierter Filter oder ein abgeschnittener Batch führt zu einem Fehler statt zu stillschweigend übersprungenen Daten. Das umgeht die Offset-Grenze von 100'000 der Quelle und verhindert, dass Live-Werte mit einem älteren Export überschrieben werden. Neue höhere IDs seit dem Export werden berücksichtigt, bevor das Inventar fixiert wird. Die Änderungsphase behält ihren erfolgreichen Checkpoint und weicht auf ein ID-Inventar aus, wenn die Tiefengrenze der API erreicht wird. Der ursprüngliche obere Update-Cursor begrenzt den Job; spätere Änderungen prüft ein nachfolgender Job.
 
 Der Fortschritt wird nach jedem bestätigten Datenbank-Batch unter `logs/sync_jobs/JOB_ID/` gespeichert. Bei inventarbasierten Durchläufen überspringt die Wiederaufnahme bestätigte Inventar-Batches; ein Absturz zwischen Datenbank-Commit und Fortschrittsspeicherung spielt den letzten Batch sicher erneut ein. Inkrementelle API-Durchläufe beginnen bei der Wiederaufnahme an ihrem erfolgreichen Checkpoint, weil ein Offset bei sich ändernder Sortierung unsicher wäre. Der erfolgreiche Abschluss eines Bereichs wird gespeichert, bevor der Runner zum nächsten wechselt. Jeder der neun Bereiche gibt Zähler, Dauer und Checkpoint-Ergebnis aus.
 
-Ältere abgebrochene Jobs können über explizite `OK`-Zeilen in ihren Logs fortgesetzt werden. Ihre unvollständigen Bereiche besitzen kein stabiles Batch-Manifest und werden einmal von Beginn an erneut geprüft. Bestehende Daten und Benachrichtigungen bleiben erhalten. Job-Verzeichnis und Logs müssen Neustarts überdauern; API- und Worker-Container müssen diesen Speicher teilen, damit die Wiederaufnahme funktioniert. Bulk-Inventare benötigen Netzwerk- und Speicherplatz: Der aktuelle Texte-Export ist auf mehrere Dateien verteilt, ein seltener vollständiger Dokumente-Fallback kann mehrere GB benötigen. Aus fehlenden Export- oder API-IDs werden keine Löschungen abgeleitet.
+Ältere abgebrochene Jobs können über explizite `OK`-Zeilen in ihren Logs fortgesetzt werden. Ihre unvollständigen Bereiche besitzen kein stabiles Batch-Manifest und werden einmal von Beginn an erneut geprüft. Bestehende Daten und Benachrichtigungen bleiben erhalten. Job-Verzeichnis und Logs müssen Neustarts überdauern; API- und Worker-Container müssen diesen Speicher teilen, damit die Wiederaufnahme funktioniert. Bulk-Inventare benötigen Netzwerk- und Speicherplatz: Der aktuelle Texte-Export ist auf mehrere Dateien verteilt, ein angeforderter vollständiger Dokumentenvergleich kann mehrere GB benötigen. Aus fehlenden Export- oder API-IDs werden keine Löschungen abgeleitet.
 
 ## Relevante Benachrichtigungen
 
@@ -207,6 +251,6 @@ Alle Quelländerungen aktualisieren weiterhin Datenbank, Klassifikation und Änd
 | Gruppen | Aktivstatus (und Lebenszyklusdaten, falls geliefert); Umbenennungen bleiben still |
 | Interessenbindungen | Person, Rolle, Lebenszyklusdaten und Ex-officio-Status; Namens- und URL-Korrekturen bleiben still |
 
-Leerraum, HTML-Wrapper, gleichwertige Anführungszeichen, reine Gross-/Kleinschreibung und einzelne Ein-Zeichen-Korrekturen in alphabetischen Wörtern ab sechs Zeichen bleiben still. Zahlenänderungen, Verneinungen, eingefügte oder gelöschte Wörter und grössere Ersetzungen bleiben relevant. Es handelt sich um eine deterministische, konservative Regel und keine Garantie politischer Bedeutung; komplexe Umformulierungen können redaktionell sein. Neue Datensätze unterliegen weiterhin den aktuellen Themen-, Kantons-, Stichwort- und Watch-Filtern.
+Leerraum, HTML-Wrapper, gleichwertige Anführungszeichen, reine Gross-/Kleinschreibung und einzelne Ein-Zeichen-Korrekturen in alphabetischen Wörtern ab sechs Zeichen bleiben still. Zahlenänderungen, Verneinungen, eingefügte oder gelöschte Wörter und grössere Ersetzungen bleiben relevant. Es handelt sich um eine deterministische, konservative Regel und keine Garantie politischer Bedeutung; komplexe Umformulierungen können redaktionell sein. Neue Datensätze unterliegen weiterhin den aktuellen Abonnements und Watches.
 
 Historische Update-Events ohne Vorher-/Nachher-Snapshot werden nicht versendet, weil Feldnamen allein keine inhaltliche Änderung belegen. Bereits stornierte Benachrichtigungen bleiben storniert; alte Benachrichtigungen werden nicht neu erzeugt. Nach dieser Richtlinie bleiben 77 der 1'329 Text-Snapshots des letzten Laufs relevant (schreibgeschützte Auswertung, keine E-Mails versendet).

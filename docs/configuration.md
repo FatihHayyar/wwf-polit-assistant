@@ -9,6 +9,7 @@ Die Einstellungen liegen in [app/core/config.py](../app/core/config.py). Lokal w
 | `JWT_ALGORITHM` | `HS256` | JWT-Signaturalgorithmus |
 | `JWT_EXPIRE_MINUTES` | `10080` | Sitzungsdauer, standardmässig sieben Tage |
 | `SYNC_API_KEY` | nicht gesetzt | Gemeinsamer Schlüssel für die Sync-Verwaltungs-API |
+| `SYNC_TIME` | `04:30` | Nur Scheduler: tägliche Startzeit (HH:MM, Europe/Zurich); nach den OpenParlData-Exporten gegen 02:15 UTC |
 | `SMTP_HOST` | nicht gesetzt | SMTP-Server für Verifikation und Benachrichtigungen |
 | `SMTP_PORT` | `587` | SMTP-Port |
 | `SMTP_STARTTLS` | `true` | STARTTLS; Mailpit verwendet lokal `false` |
@@ -31,7 +32,7 @@ Eine Vorlage befindet sich in [.env.example](../.env.example). Keine echten Zuga
 
 Eine `.env` für Docker Compose ersetzt nicht automatisch die `environment`-Liste des Containers. Die Demo hat eigene, feste lokale Werte in [docker-compose.demo.yml](../docker-compose.demo.yml). Google-Zugangsdaten werden dort derzeit nicht durchgereicht; dafür eine passende Compose-Override-Konfiguration ergänzen.
 
-[docker-compose.yml](../docker-compose.yml) enthält PostgreSQL (Port 5433, nur an `127.0.0.1` gebunden), den einmaligen Dienst `migrate` (`alembic upgrade head`), die API (Port 8000, nur lokal, mit `--proxy-headers`) und den Scheduler. API und Scheduler starten erst nach erfolgreicher Migration und teilen das Verzeichnis `logs/`. Alle drei verwenden dasselbe Image; das Dockerfile startet standardmässig den Scheduler.
+[docker-compose.yml](../docker-compose.yml) enthält PostgreSQL (Port 5433, nur an `127.0.0.1` gebunden), den einmaligen Dienst `migrate` (`alembic upgrade head`), die API (Port 8000, nur lokal, mit `--proxy-headers`) und den Scheduler. API und Scheduler starten erst nach erfolgreicher Migration und teilen das Verzeichnis `logs/`. Alle drei verwenden dasselbe Image; das Dockerfile startet standardmässig den Scheduler. Das Image läuft als unprivilegierter Benutzer `app` (UID 10001) und schreibt nur nach `/app/logs`; auf Linux-Hosts muss ein eingebundenes `logs/`-Verzeichnis für diese UID beschreibbar sein. Die API meldet ihren Zustand über einen Compose-Healthcheck auf `/health`.
 
 ## Google-Anmeldung
 
@@ -43,7 +44,9 @@ Beide Google-Variablen im API-Prozess setzen und neu starten. `GET /api/v1/auth/
 
 Die Kategorien und Regeln liegen in [app/classification/taxonomy.json](../app/classification/taxonomy.json). Mit der Prozess-Umgebungsvariable `CLASSIFICATION_TAXONOMY_PATH` kann eine andere UTF-8-JSON-Datei gewählt werden. Kategorien lassen sich dort hinzufügen, umbenennen oder entfernen; die Oberfläche verwendet die übersetzten Namen aus der Datenbank. Stabile, eindeutige `code`-Werte erhalten historische Referenzen. Jede normale Hauptkategorie benötigt genau eine Unterkategorie mit `fallback: true` (Sonstiges); genau eine Hauptkategorie dient als globaler Fallback für fachfremde Inhalte.
 
-Kategorien enthalten `names` für `de`, `fr`, `it`, `rm`, optional `descriptions`, `sort_order`, `threshold` (Standard 8) und `concepts`. Übersetzungen und Synonyme desselben Konzepts gehören unter denselben Konzeptcode und zählen nur einmal. `match_type: "phrase"` verlangt Wortgrenzen; `"prefix"` erlaubt Buchstaben-Endungen und Zusammensetzungen am letzten Wort ab fünf Buchstaben. Kurze Wörter bleiben exakt. `rule_type: "strong"` bezeichnet eindeutige Fachbegriffe. Generische `"context"`-Begriffe benötigen zusätzlich ein `"qualifier"`-Konzept derselben Kategorie, etwa einen ausdrücklichen Umweltbezug. Ein Qualifier allein löst keine Zuordnung aus.
+Kategorien enthalten `names` für `de`, `fr`, `it`, `rm`, optional `descriptions`, `sort_order`, `threshold` (Standard 8) und `concepts`. Übersetzungen und Synonyme desselben Konzepts gehören unter denselben Konzeptcode und zählen nur einmal. `match_type: "phrase"` verlangt Wortgrenzen; `"prefix"` erlaubt Buchstaben-Endungen und Zusammensetzungen am letzten Wort ab fünf Buchstaben; `"infix"` findet einen Begriff ab acht Zeichen auch mitten in Zusammensetzungen (z. B. «Kleinwasserkraftwerk»). Kurze Wörter bleiben exakt. `rule_type: "strong"` bezeichnet eindeutige Fachbegriffe. Generische `"context"`-Begriffe benötigen zusätzlich ein `"qualifier"`-Konzept derselben Kategorie, etwa einen ausdrücklichen Umweltbezug. Ein Qualifier allein löst keine Zuordnung aus. `"exclusion"`-Konzepte (Gewicht 0) verhindern bekannte Fehltreffer: Enthält ein Text z. B. den Ortsnamen «Plaines-du-Loup», zählt «Loup» dort nicht.
+
+Optional begrenzt `scopes` ein Konzept auf `["title"]` oder `["content"]`; öffentliche Akteure (Kanton, Verwaltung) werden nur aus Titeln gelesen, weil fast jeder Vorstosstext sie erwähnt. Eine Kategorie kann mit `"replaces": ["alter_code"]` eine frühere Kategorie ablösen; bestehende Abonnements der alten Kategorie erhalten beim Einspielen die Nachfolger.
 
 Ein starkes Titelkonzept reicht zur Zuordnung; reiner Inhalt benötigt zwei unterschiedliche starke Konzepte. Alternativ genügt die Kombination aus Kontext und Qualifier bei erreichtem Schwellenwert. Spezifische Unterkategorien verdrängen den lokalen Sonstiges-Fallback ihrer Hauptkategorie. Mehrere passende Themen bleiben erhalten. HTML, typografische Apostrophe und PDF-Zeilentrennungen werden normalisiert.
 
@@ -63,7 +66,7 @@ Der gemischte Qualitätstest verwendet 50 annotierte reale Datensätze in einer 
 .venv/Scripts/python.exe -m scripts.rule_quality
 ```
 
-Die Qualität auf ungesehenen Daten misst das blind annotierte Prüfset mit 300 zufälligen Geschäften. Es benötigt kein PostgreSQL und darf nicht zum Anpassen der Regeln verwendet werden; nach Regeländerungen erneut messen und für weitere Optimierungen ein neues Prüfset ziehen:
+Die Qualität auf ungesehenen Daten messen zwei blind annotierte Prüfsets mit je 300 zufälligen Geschäften. Prüfset A diente der Messung von v7 und floss danach in die Entwicklung ein; Prüfset B ist die unabhängige Messung von v8. Die Auswertung benötigt kein PostgreSQL. Ein Prüfset darf nicht zum Anpassen der Regeln verwendet werden; für weitere Optimierungen ein neues Prüfset ziehen:
 
 ```powershell
 .venv/Scripts/python.exe -m scripts.evaluate_holdout

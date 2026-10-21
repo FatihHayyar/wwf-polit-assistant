@@ -4,6 +4,25 @@ Dieses Protokoll beginnt mit dem aktuellen Entwicklungsstand. Es rekonstruiert k
 
 ## Unveröffentlicht
 
+### Anforderungen von WWF (21. Oktober 2026)
+
+- Mehrere benannte Abonnements je Konto (bis zu zehn) mit Themen, Kantonen, Geschäftstypen, Stichwörtern und Bereichen; bestehende Abonnements werden migriert (`20261021_subscription_profiles`).
+- Geschäftstyp als Such- und Abonnementfilter.
+- Dialogorientierte Abfrage: `POST /api/v1/ask` und Fragefeld in der Oberfläche; Speichern einer Frage als Abonnement.
+- Klassifikation `rule-based-v8`: Rechenzentren und Grossverbraucher getrennt, Vorbildfunktion der öffentlichen Hand unter Klima & Energie, Ausschluss- und Infix-Regeln, Titelbeschränkung für öffentliche Akteure. Zweites blindes Prüfset; Recall 0.36 → 0.67.
+
+### Synchronisierung (21. Oktober 2026)
+
+- Gemeinsamer Ablauf für alle neun Bereiche: Änderungen, Traktandenfenster, neue IDs, fehlende IDs; vollständige Vergleiche in festen Abständen (`last_full_scan_at`, Migration `20261021_full_scan_schedule`).
+- Checkpoints werden in allen Bereichen fortgeschrieben.
+- Täglicher Start um 04:30 Europe/Zurich, konfigurierbar über `SYNC_TIME`.
+- Veraltete Skripte entfernt (`affairs_sync`, `incremental_affairs`, `snapshot_diff`, `download_snapshot`, `dataset_config`, `db_upsert`, `repair_latest`).
+
+### Betrieb (21. Oktober 2026)
+
+- Container läuft als unprivilegierter Benutzer; Healthcheck der API in Compose.
+- Konkrete Azure-Zielarchitektur dokumentiert.
+
 ### Sicherheit (21. Oktober 2026)
 
 - Registrierung und Anmeldung antworten unabhängig vom Kontostatus identisch; E-Mails werden im Hintergrund versendet.
@@ -15,7 +34,7 @@ Dieses Protokoll beginnt mit dem aktuellen Entwicklungsstand. Es rekonstruiert k
 ### Demo und Oberfläche (21. Oktober 2026)
 
 - Testbenachrichtigung in der Demo: fiktives Geschäft durchläuft Klassifikation, Relevanzprüfung, Abonnementabgleich und Versand; Anleitung auf der Startseite und CLI-Skript.
-- Frontend in Module aufgeteilt (`core`, `search`, `detail`, `account`, `subscriptions`, `app`), Stylesheet formatiert.
+- Frontend in Module aufgeteilt (`core`, `search`, `detail`, `account`, `subscriptions`, `ask`, `app`), Stylesheet formatiert.
 
 ### Qualitätssicherung (21. Oktober 2026)
 

@@ -4,13 +4,19 @@ Der Erstimport und der laufende Sync sind unterschiedliche Verfahren. Bootstrap 
 
 ## Laufende Aktualisierung
 
-| Dataset | Verfahren |
-|---|---|
-| `affairs`, `meetings` | Aktualisierungscursor und Checkpoints |
-| `documents` | Aktualisierungscursor mit ergänzender Bestands-/ID-Prüfung |
-| `agendas`, `votings`, `events`, `texts`, `groups`, `interests` | Stabiles Inventar und API-Inhaltsvergleich bei unzuverlässigen Zeitstempeln |
+Die OpenParlData-API bietet Sortierung (`sort_by`), `offset`/`limit` mit einer Grenze von 100'000, `exclude_null` sowie funktionierende, aber undokumentierte ID-Filter; einen Filter nach Änderungsdatum gibt es nicht, und Traktanden besitzen kein `updated_at`. Die täglichen Exporte entstehen gegen 02:05–02:18 UTC.
 
-Das Inventar stammt aus Exporten und wird mit aktuellen API-IDs ergänzt. API-Inhalte werden batchweise verarbeitet; Quelllimits und zeitweise Fehler erfordern Wiederholungen. `texts` besitzt spezielle Quellfiltergrenzen, weshalb der Bezug über Geschäftsgruppen erfolgt. Ein Bestandsvergleich kann viele unveränderte Inhalte lesen und dauert nicht immer so kurz wie ein Cursorlauf.
+Alle neun Bereiche verwenden deshalb denselben Ablauf (`scripts/sync/entity_sync.py`):
+
+| Phase | Verfahren | Bereiche |
+|---|---|---|
+| Änderungen | Sortierung nach `-updated_at` ohne Nullwerte bis zum Checkpoint | alle ausser Traktanden |
+| Zeitfenster | Sitzungsdatum ±60 Tage | Traktanden |
+| Neue IDs | Sortierung nach `-id` bis zur höchsten lokalen ID | alle |
+| Fehlende IDs | nur bei Lücke zwischen Quell- und lokaler Anzahl; Dokumente über gezielte ID-Abfragen, Texte über Geschäftsgruppen | alle |
+| Vollständiger Vergleich | ID-Inventar aus dem Export, Inhalte aus der Live-API; in festen Intervallen (7–30 Tage, Dokumente nur auf Anforderung) | alle |
+
+API-Inhalte werden seitenweise verarbeitet und je Seite committed; Quelllimits und zeitweise Fehler erfordern Wiederholungen. `texts` besitzt spezielle Quellfiltergrenzen, weshalb der Bezug über Geschäftsgruppen erfolgt. Details: [Synchronisierungsstrategie](../monitoring.md#synchronisierungsstrategie).
 
 ## Korrektheit und Wiederaufnahme
 

@@ -14,7 +14,7 @@ flowchart LR
     affair --> event[Event]
     affair --> vote[Voting]
     person[Person] --> interest[Interest Declaration]
-    user[User] --> filter[Themen / Kantone / Keywords / Datasets]
+    user[User] --> profile[Subscription Profile: Themen / Kantone / Geschäftstypen / Keywords / Datasets]
     user --> watch[Record Watch]
     user --> recipient[Notification Recipient]
     user --> notification[Notification Queue]
@@ -28,6 +28,6 @@ Dokumente besitzen einen lokalen Primärschlüssel `pk`. Die externe `source_id`
 
 ## Klassifikation und Monitoring
 
-Kategorien besitzen Elternbeziehungen; Regeln, Klassifikationen und Evidenz speichern die regelbasierte Auswahl. Nutzerbezogene Tabellen halten Filter, Watches und Empfänger. Change Events repräsentieren Änderungen; die Benachrichtigungswarteschlange hält die daraus ausgewählten ausstehenden Zustellungen. Sync-Checkpoints und lokale Jobdateien dienen der Wiederaufnahme.
+Kategorien besitzen Elternbeziehungen; Regeln, Klassifikationen und Evidenz speichern die regelbasierte Auswahl. Nutzerbezogene Tabellen halten Abonnements (`subscription_profiles`, bis zu zehn je Konto, Filterlisten als JSON), Watches (`user_record_watches`) und Empfänger. Die früheren Einzeltabellen für Themen-, Kantons-, Stichwort- und Bereichsabonnements wurden mit der Migration `20261021_subscription_profiles` in Abonnements überführt und entfernt. Change Events repräsentieren Änderungen; die Benachrichtigungswarteschlange hält die daraus ausgewählten ausstehenden Zustellungen. Sync-Checkpoints (`last_updated_at`, `last_id`, `last_run_at`, `last_full_scan_at`) und lokale Jobdateien dienen dem inkrementellen Abgleich und der Wiederaufnahme.
 
 Löschung eines Kontos betrifft dessen zugehörige Einstellungen; öffentliche parlamentarische Quelldaten sind davon getrennt. Schemaänderungen erfolgen mit Alembic. Klassifikations- oder Taxonomieänderungen können zusätzliche Backfills und Migrationen von Abonnements erfordern.

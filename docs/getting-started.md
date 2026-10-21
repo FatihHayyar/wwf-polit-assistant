@@ -12,7 +12,7 @@ docker compose -f docker-compose.demo.yml up --build -d
 
 Öffnen: Anwendung unter `http://localhost:8081`, API-Dokumentation unter `http://localhost:8081/docs`, lokale E-Mails unter `http://localhost:8025`.
 
-Beim Start werden Migrationen ausgeführt und eine leere Demo-Datenbank mit der mitgelieferten Stichprobe befüllt. Bereits vorhandene Daten bleiben erhalten. Es läuft kein täglicher Sync. Mailpit fängt E-Mails lokal ab. Die Startseite zeigt im Demo-Modus, wie sich eine Benachrichtigung mit einem Testgeschäft ausprobieren lässt (Registrieren → Thema abonnieren → «Benachrichtigung testen» → E-Mail in Mailpit).
+Beim Start werden Migrationen ausgeführt und eine leere Demo-Datenbank mit der mitgelieferten Stichprobe befüllt. Bereits vorhandene Daten bleiben erhalten. Es läuft kein täglicher Sync. Mailpit fängt E-Mails lokal ab. Die Startseite zeigt im Demo-Modus, wie sich eine Benachrichtigung mit einem Testgeschäft ausprobieren lässt (Registrieren → Abonnement anlegen → «Benachrichtigung testen» → E-Mail in Mailpit).
 
 ```sh
 docker compose -f docker-compose.demo.yml logs -f app
@@ -72,4 +72,4 @@ Der neue Klassifikations-Backfill besitzt ohne `--apply` eine schreibgeschützte
 python -m scripts.sync.run_all
 ```
 
-Der Runner kann externe Daten lesen, Datenbankinhalte ändern und nach erfolgreichem Abgleich E-Mails versenden. Für den täglichen Betrieb kann separat `python -m scripts.sync.scheduler` oder der Compose-Dienst `scheduler` gestartet werden. Details stehen unter [Betrieb](deployment.md) und [Monitoring](monitoring.md).
+Der Runner kann externe Daten lesen, Datenbankinhalte ändern und nach erfolgreichem Abgleich E-Mails versenden. Direkt nach dem Erstimport besitzt noch kein Bereich einen vollständigen Vergleich; der erste Lauf vergleicht deshalb jeden Bereich vollständig und dauert entsprechend lange. Danach lesen reguläre Läufe nur Änderungen. Einzelne Bereiche lassen sich ohne E-Mail-Versand über ihr Modul abgleichen, z. B. `python -m scripts.sync.agendas_sync` (Geschäfte: `scripts.sync.incremental_sync`). Für den täglichen Betrieb kann separat `python -m scripts.sync.scheduler` oder der Compose-Dienst `scheduler` gestartet werden. Details stehen unter [Betrieb](06-handover/deployment-guide.md) und [Synchronisierungsstrategie](monitoring.md#synchronisierungsstrategie).

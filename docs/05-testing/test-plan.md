@@ -24,11 +24,11 @@ Remove-Item Env:DATABASE_URL
 Remove-Item Env:JWT_SECRET_KEY
 ```
 
-Die Suite prüft unter anderem Datenmapping, Beziehungen, Klassifikation, Änderungsrelevanz, Benachrichtigungen, Kontoeinstellungen und Sync-Fortschritt. `tests/test_api_security.py` testet über den echten FastAPI-Stack gleiche Antworten für bekannte und unbekannte Adressen, Ratenbegrenzung, Bestätigungsseiten, Ursprungsprüfung, Token-Widerruf, Sicherheits-Header und die Demo-Benachrichtigung. `tests/test_frontend.cjs` prüft Übersetzungen, Modulstruktur und Darstellungslogik ohne Browser. Diese Prüfungen ersetzen keine Integration mit PostgreSQL, SMTP oder OpenParlData.
+Die Suite prüft unter anderem Datenmapping, Beziehungen, Klassifikation, Änderungsrelevanz, Benachrichtigungen, Kontoeinstellungen und Sync-Fortschritt. `tests/test_sync_strategy.py` simuliert die OpenParlData-API und prüft die Sync-Phasen: Abbruch der Änderungsphase am Checkpoint, Traktandenfenster, neue und fehlende IDs, fällige vollständige Vergleiche und das Fortschreiben der Checkpoints. `tests/test_monitoring.py` prüft Abonnements (Anlegen, Grenze von zehn, fremde Abonnements, Pausieren, ODER zwischen Abonnements, Geschäftstyp auch für verknüpfte Datensätze) und Watches. `tests/test_query_interpreter.py` prüft die Fragenerkennung in mehreren Sprachen sowie `POST /api/v1/ask` mit Ratenbegrenzung. `tests/test_api_security.py` testet über den echten FastAPI-Stack gleiche Antworten für bekannte und unbekannte Adressen, Ratenbegrenzung, Bestätigungsseiten, Ursprungsprüfung, Token-Widerruf, Sicherheits-Header und die Demo-Benachrichtigung. `tests/test_frontend.cjs` prüft Übersetzungen, Modulstruktur und Darstellungslogik ohne Browser. Diese Prüfungen ersetzen keine Integration mit PostgreSQL, SMTP oder OpenParlData.
 
 ## Regelqualität und Ergebnisgruppen
 
-`python -m scripts.evaluate_holdout` misst die Klassifikation auf 300 zufällig gezogenen, blind annotierten Geschäften, die nicht zum Entwicklungsset gehören. Ausgegeben werden strenge Genauigkeit, Precision/Recall/F1 der WWF-Relevanz mit 95 %-Wilson-Intervall, Kennzahlen pro Hauptthema und eine Fehlerliste ([Auswertung](evidence/holdout-evaluation.md)). Das Prüfset darf nicht zum Anpassen der Regeln verwendet werden; `tests/test_holdout_evaluation.py` prüft deshalb nur Integrität und Bewertungslogik, keine Mindestwerte.
+`python -m scripts.evaluate_holdout` misst die Klassifikation auf zwei Prüfsets mit je 300 zufällig gezogenen, blind annotierten Geschäften, die nicht zum Entwicklungsset gehören. Prüfset B ist die unabhängige Messung von v8; Prüfset A wurde nach der Messung von v7 für die Entwicklung genutzt. Ausgegeben werden strenge Genauigkeit, Precision/Recall/F1 der WWF-Relevanz mit 95 %-Wilson-Intervall, Kennzahlen pro Hauptthema und eine Fehlerliste ([Auswertung](evidence/holdout-evaluation.md)). Ein Prüfset darf nicht zum Anpassen der Regeln verwendet werden; `tests/test_holdout_evaluation.py` prüft deshalb nur Integrität und Bewertungslogik, keine Mindestwerte.
 
 `python -m scripts.rule_quality` vergleicht in isolierten SQLite-Datenbanken das 50-Beispiele-Entwicklungsset mit dem festgelegten früheren Commit und der aktuellen Taxonomie. PostgreSQL wird dabei nicht verändert. Dafür werden Git-Historie und die lokale Fixture benötigt. Das Ergebnis ist eine Regression auf Entwicklungsbeispielen, keine unabhängige Expertenmessung.
 
@@ -51,9 +51,10 @@ python -m pip install playwright
 1. Alle neun Listen öffnen, Filter kombinieren und verknüpfte Details prüfen.
 2. Auf schmalem und breitem Bildschirm lange Details scrollen und die Schliessen-Schaltfläche prüfen.
 3. Registrierung, erneute Anmeldung (Bestätigungsseite) und Abmelden über Mailpit testen; prüfen, dass ein bereits verwendeter Link abgelehnt wird. Optional Google in einer eigenen Testkonfiguration prüfen.
-4. In der Demo ein Thema abonnieren und unter «Benachrichtigung testen» ein Testgeschäft erzeugen; die E-Mail in Mailpit und das Geschäft in der Oberfläche prüfen.
-5. Abonnements, Einzel-Watches und mehrere Empfänger speichern; Bestätigung und Adressverifikation prüfen.
-6. Pause, vollständige Abmeldung von Abonnements und Kontolöschung prüfen.
-7. Sync-Fehler und Wiederaufnahme in einer gesicherten Testumgebung prüfen; Quell-/DB-Stichproben vergleichen.
+4. Fragen stellen (z. B. «Motionen zum Wolf im Wallis seit 2024», eine französische Frage) und prüfen, ob erkannte Teile, Filter und Trefferzahl stimmen; eine Frage als Abonnement speichern.
+5. In der Demo zwei Abonnements anlegen und unter «Benachrichtigung testen» ein Testgeschäft erzeugen; die E-Mail in Mailpit und das Geschäft in der Oberfläche prüfen.
+6. Abonnements bearbeiten, pausieren und löschen; Einzel-Watches und mehrere Empfänger speichern; Bestätigung und Adressverifikation prüfen.
+7. «Alle Benachrichtigungen beenden» und Kontolöschung prüfen.
+8. Sync-Fehler und Wiederaufnahme in einer gesicherten Testumgebung prüfen; Quell-/DB-Stichproben vergleichen.
 
 Fachliche Klassifikationsqualität muss zusätzlich anhand von WWF bewerteten Beispielen geprüft werden; das Prüfset kann dafür von Fachpersonen nachannotiert werden. Historische Testnachweise stehen im [Review](../daily-review-2026-10-11.md); sie gelten für den dort angegebenen Stand.

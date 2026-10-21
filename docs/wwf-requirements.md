@@ -1,67 +1,57 @@
 # WWF-Anforderungsprüfung
 
-**Erstellt am 11. Oktober 2026, aktualisiert am 21. Oktober 2026.** Diese Prüfung vergleicht die von Attila Steinegger per E-Mail formulierten Anforderungen mit der Umsetzung. Fragen zu Umfang und endgültiger Taxonomie bleiben mit WWF abzustimmen.
+**Stand 21. Oktober 2026.** Diese Prüfung vergleicht die Aufgabenstellung «Open Data + AI: Ein smarter Polit-Assistant» und die per E-Mail von Attila Steinegger (WWF Schweiz, Head Digital Transformation & Data) formulierten Konkretisierungen mit der Umsetzung. Jede Zeile nennt, wo die Anforderung umgesetzt oder nachgewiesen ist. Fachliche Freigaben durch WWF stehen aus und sind als solche gekennzeichnet.
 
-| Anforderung | Aktueller Stand |
-| --- | --- |
-| Neue Datensätze nach Kanton und WWF-Thema | In neun Bereichen umgesetzt, einschliesslich Abgleich über Hauptthemen. |
-| Eigene Stichwörter in Abonnements | Umgesetzt: bis zu 20 wörtliche Phrasen ohne Gross-/Kleinschreibung. Jede Phrase genügt; Themen-, Stichwort- und Kantonseinschränkung gelten gemeinsam. |
-| Bestimmtes Geschäft oder bestimmte Sitzung verfolgen | Umgesetzt; seit dem 12. Oktober 2026 in der Abonnementverwaltung. Geschäfts-Watches umfassen verknüpfte Änderungen, Sitzungs-Watches Datensätze mit dieser Sitzungs-ID. Watches gelten unabhängig von Klassifikationsänderungen und allgemeinen Filtern. |
-| Abstimmungen | Als `votings` umgesetzt: Synchronisation, Suche, Klassifikation und Monitoring. |
-| Gruppen | Umgesetzt: Frontend, Filter, eigene und geerbte Klassifikation, tägliche/manuelle Synchronisation und Monitoring. Details enthalten verknüpfte Sitzungen; Gruppen-Watches umfassen sitzungsbezogene Änderungen. |
-| Interessenbindungen | Als `interests` umgesetzt: Frontend, Filter, eigene Klassifikation, tägliche/manuelle Synchronisation und Monitoring. Details zeigen die deklarierende Person aus den importierten Daten. Eine direkte Geschäftsbeziehung wird nicht angenommen. |
-| Python statt Java/Spring | FastAPI, SQLAlchemy, Alembic und Scheduler sind in Python umgesetzt; kein Java-Dienst. |
-| Bestehende Streamlit-Umgebung | Die Oberfläche ist schlichtes HTML/CSS/JavaScript und wird von FastAPI ausgeliefert. Streamlit wurde als vorhandene WWF-Technologie genannt, nicht als zwingende Vorgabe für die Oberfläche. |
-| Technische Dokumentation und Ergebnisse | Einrichtung, Monitoring, Tests und Betrieb sind dokumentiert; automatisierte Regressionstests und CI. Live-End-to-End- und Bereitstellungsprüfung in der WWF-Umgebung bleiben offen. |
+## Aufgabenstellung
 
-## Vorläufige Taxonomie
+| Anforderung | Umsetzung | Nachweis |
+|---|---|---|
+| Integration und **regelmässige Aktualisierung** der OpenParlData-Daten | Erstimport aller Exporte; tägliche Synchronisierung aller neun Bereiche um 04:30 (nach den Quellexporten). Gelesen werden nur Änderungen, neue und fehlende IDs; vollständige Vergleiche in festen Abständen | [Synchronisierungsstrategie](monitoring.md#synchronisierungsstrategie), `tests/test_sync_strategy.py` |
+| Strukturierte Speicherung und **Verknüpfung** | PostgreSQL mit normalisierten Tabellen; Geschäfte, Traktanden, Sitzungen, Abstimmungen, Ereignisse, Dokumente, Texte, Gruppen und Interessenbindungen sind verknüpft | [Datenmodell](03-architecture/data-model.md) |
+| **Regelbasierte Klassifikation** nach WWF-Themen, auch anhand von Texten und Dokumenten | `rule-based-v8`, konfigurierbar in `taxonomy.json`; Titel, Texte und Dokumentinhalte werden ausgewertet. Unabhängiges Prüfset: Precision 1.0, Recall 0.667 | [Klassifikationskonzept](04-technical-concepts/classification-concept.md), [Prüfset-Auswertung](05-testing/evidence/holdout-evaluation.md) |
+| **Suche und Filterung** nach relevanten Kriterien | Suchbegriff, Haupt-/Unterthema, Kanton, Geschäftstyp, Zeitraum in allen neun Bereichen | [API](api.md), [Benutzerhandbuch](06-handover/user-guide.md) |
+| Erkennung neuer relevanter Geschäfte und **Sessionstraktanden** | Neue Datensätze und relevante Änderungen erzeugen Change-Events; Traktanden werden täglich in einem Fenster von ±60 Tagen um das Sitzungsdatum geprüft | [Benachrichtigungsregeln](monitoring.md#aktuelle-richtlinie-meaningful-v3) |
+| Themen **abonnieren** und Benachrichtigungen an eine angegebene **E-Mail-Adresse** | Registrierung per E-Mail-Link; bis zu zehn Abonnements; bis zu zehn bestätigte Empfängeradressen | `tests/test_api_security.py`, Demo-Durchlauf |
+| Dokumentierte **REST-API** und einfach nutzbare **Oberfläche** | FastAPI mit OpenAPI unter `/docs`; Weboberfläche in vier Sprachen | [API](api.md) |
+| **Dialogorientierte Abfragemöglichkeit** | Fragen in natürlicher Sprache (DE/FR/IT/EN) werden in Filter übersetzt; die Antwort zeigt das Verstandene, die Treffer und bietet das Speichern als Abonnement | [Fragen](monitoring.md#fragen-in-natürlicher-sprache), `tests/test_query_interpreter.py` |
+| Architektur für eine **spätere Integration von AI** | Definierte Schnittstellen für Fragenerkennung (`QueryInterpreter`) und Klassifikation (`classifier_version`), Prüfsets für den Vergleich | [Erweiterungspunkte für KI](03-architecture/system-architecture.md#erweiterungspunkte-für-ki) |
+| Test und Validierung anhand konkreter **Anwendungsfälle** | 151 automatisierte Tests, CI, Browser-Durchlauf der Demo; zwei blinde Prüfsets für die Klassifikation | [Testplan](05-testing/test-plan.md), [Testergebnisse](05-testing/test-results.md) |
+| **Technische Dokumentation**, Ergebnisse und Weiterentwicklungen | Dokumentation in `docs/`, Übergabe-, Betriebs- und Azure-Anleitung, Evaluationsbericht | [Dokumentationsindex](README.md) |
+| Weiterführend: AI-Zusammenfassungen, Visualisierungen | Bewusst nicht umgesetzt (laut Aufgabenstellung abhängig von Fortschritt und Feedback); Ansatzpunkte beschrieben | [Evaluationsbericht](07-academic/evaluation-report.md) |
 
-Laut E-Mail werden die endgültigen Themen mit WWF-Fachpersonen geklärt. Die aktuellen Regeln sind vorläufig und dürfen nicht als von WWF freigegeben bezeichnet werden.
+## Konkretisierungen per E-Mail
 
-| Gewünschtes Startthema | Aktuelle Zuordnung / Lücke |
-| --- | --- |
-| Erneuerbare Wärme (heizen/kühlen) | `climate_energy / renewable_heat`; die Abdeckung von Kühlung braucht eine fachliche Prüfung. |
-| Erneuerbare Stromerzeugung (Wind/PV) | `climate_energy / renewable_electricity`; Konzepte für PV und Wind vorhanden. |
+| Anforderung | Umsetzung |
+|---|---|
+| Benachrichtigung über **neue Inhalte** (Geschäfte, Abstimmungen, Sitzungen …) im eigenen Kanton | Abonnements kombinieren Kanton mit Themen, Bereichen und weiteren Filtern; alle neun Bereiche werden überwacht |
+| Filter über Themen hinaus: **Kanton, WWF-Klassifikation, Unterkategorie, individuelle Keywords, Geschäftstyp** | Alle fünf Filter sind in einem Abonnement kombinierbar (ODER innerhalb einer Gruppe, UND zwischen Gruppen) |
+| **Mehrere Abonnements** über einen einfachen E-Mail-basierten Zugang verwalten | Bis zu zehn benannte Abonnements je Konto; passwortlose Anmeldung per E-Mail-Link; Bearbeiten, Pausieren, Löschen; Bestätigungs-E-Mail nach jeder Änderung |
+| **Bestehende Inhalte weiterverfolgen** (Update zu einem Geschäft) | Watches für einzelne Geschäfte, Sitzungen, Gruppen und weitere Datensätze; Geschäfts-Watches umfassen verknüpfte Änderungen |
+| Einfache **Integration in die Azure-Umgebung** | Container ohne Root-Rechte, Konfiguration über Umgebungsvariablen, Healthcheck; konkrete Zielarchitektur mit Container Apps, PostgreSQL Flexible Server, Azure Files und Key Vault ([Azure-Integration](03-architecture/azure-integration.md)). Die Bereitstellung selbst ist nicht getestet |
+| Technologie nahe an **Python/Azure/AI-Data**, Python statt Java/Spring | Python 3.13, FastAPI, SQLAlchemy, Alembic; kein Java-Dienst |
+| Streamlit als vorhandene WWF-Technologie | Die Oberfläche ist schlichtes HTML/CSS/JavaScript ohne Build-Schritt, von FastAPI ausgeliefert. Streamlit wurde als vorhandene Technologie genannt, nicht als Vorgabe; die REST-API kann auch von einer Streamlit-Oberfläche genutzt werden |
+| **Votes, Groups und Interest Declarations** | Als `votings`, `groups` und `interests` vollständig umgesetzt: Synchronisierung, Suche, Klassifikation, Watches und Benachrichtigungen |
+
+## WWF-Themen (Startfokus Energie & Klima)
+
+| Gewünschtes Thema | Umsetzung |
+|---|---|
+| Erneuerbare Wärme (heizen/kühlen) | `climate_energy / renewable_heat` (u. a. Wärmepumpen, Fernwärme); Begriffe zur Kühlung (z. B. Fernkälte) fehlen noch und sind mit WWF zu ergänzen |
+| Erneuerbare Stromerzeugung (Wind/PV) | `climate_energy / renewable_electricity` |
 | Effizienz in Gebäuden | `climate_energy / building_efficiency` |
-| Elektromobilität | `climate_energy / sustainable_mobility`; umfasst auch weiteren nachhaltigen Verkehr. |
-| Vorbildfunktion der öffentlichen Hand | `environment_policy / public_sector`; allgemeine Begriffe zur öffentlichen Hand benötigen einen Umweltbezug und bleiben ausserhalb von Klima & Energie. |
-| Rechenzentren | Gemeinsame Kategorie `climate_energy / large_consumers_datacenters`. |
-| Grossverbraucher | Dieselbe gemeinsame Kategorie; getrennte Abonnements sind nicht möglich. Stichwörter unterscheiden vorläufig. |
+| Elektromobilität | `climate_energy / sustainable_mobility`; umfasst auch weiteren nachhaltigen Verkehr |
+| Vorbildfunktion der öffentlichen Hand | `climate_energy / public_sector`; öffentliche Akteure werden nur aus Titeln gelesen und benötigen einen Umweltbezug |
+| Rechenzentren | `climate_energy / data_centers` (eigenes Unterthema seit v8) |
+| Grossverbraucher | `climate_energy / large_consumers` (eigenes Unterthema seit v8) |
 
-Abzustimmen ist, ob Rechenzentren und Grossverbraucher getrennt werden, ob die Vorbildfunktion unter Klima & Energie gehört, ob Mobilität auf Elektromobilität beschränkt wird und ob weitere Hauptthemen während des Startfokus angezeigt werden. Das Aufteilen oder Verschieben von Kategorien erfordert eine Migration bestehender Abonnements und historischer Klassifikationen.
+Bestehende Abonnements der früheren gemeinsamen Kategorie «Rechenzentren & Grossverbraucher» wurden automatisch auf beide neuen Unterthemen übertragen. Daneben bestehen die Hauptthemen Biodiversität & Landschaft, nachhaltige Wirtschaft & Konsum sowie Umwelt & Politik, da die Aufgabenstellung auch Biodiversität, Gewässer, Landwirtschaft und Raumplanung nennt. **Offen:** Die fachliche Freigabe der Themen und Begriffe durch die Energie- & Klima-Fachpersonen von WWF sowie eine Nachannotation der Prüfsets durch WWF.
 
-## Architektur und Umfang
+## Offene Punkte für WWF
 
-Seit dem 13. Oktober werden Kategorien und Regeln in `app/classification/taxonomy.json` gepflegt, mit einer lokalen Kategorie «Sonstiges» je Hauptthema und einem separaten globalen Fallback. Etiketten zeigen Haupt-/Unterthema. Die Regelversion `rule-based-v7` deckt alle 2'951'254 lokalen Quelldatensätze ab.
-
-Qualität: Auf dem 50-Beispiele-Entwicklungsset, an dem die Regeln verbessert wurden, erreicht v7 50/50. Auf einem am 21. Oktober gezogenen, blind annotierten Prüfset von 300 zufälligen Geschäften erkennt v7 WWF-relevante Geschäfte mit Precision 1.0 und Recall 0.325 (13 von 40). Die Regeln sind also sehr präzise, übersehen aber die Mehrheit relevanter Geschäfte. Details: [Prüfset-Auswertung](05-testing/evidence/holdout-evaluation.md). Eine Bewertung durch WWF-Fachpersonen steht weiterhin aus.
-
-```mermaid
-flowchart LR
-    Source[OpenParlData] --> Sync[Python-Sync: neun Bereiche]
-    Source --> Bootstrap[Bootstrap inkl. Gruppen und Interessen]
-    Sync --> DB[(PostgreSQL)]
-    Bootstrap --> DB
-    DB --> API[FastAPI / OpenAPI]
-    API --> UI[Web-Frontend]
-    Sync --> Classify[WWF-Klassifikation]
-    Classify --> Events[Relevante Change-Events]
-    Events --> Match[Filter und Watches]
-    Match --> Mail[SMTP-Benachrichtigungen]
-```
-
-## Azure-Integration
-
-Docker, PostgreSQL, Konfiguration über Umgebungsvariablen und OpenAPI sind Bausteine für eine Integration. Die Kompatibilität mit der internen Azure-Umgebung von WWF wurde nicht geprüft; es wurde keine Cloud-Infrastruktur gewählt oder bereitgestellt.
-
-`docker-compose.yml` startet PostgreSQL (nur lokal erreichbar), einen einmaligen Migrationsdienst, die API und den Scheduler aus demselben Image. Abzustimmen sind Hosting von API und Worker, PostgreSQL-Sicherheit, Secret-Management für JWT-, API- und SMTP-Schlüssel, eine öffentliche HTTPS-URL, ausgehender API- und E-Mail-Zugriff, organisatorische Authentifizierung und die erwartete Synchronisationsdauer. Lokale Subprozesse und JSON-Dateien sind kein verteiltes Job-Monitoring: Getrennte API- und Worker-Container benötigen einen gemeinsamen Ergebnisspeicher oder einen anderen Statusspeicher. Die Ratenbegrenzung arbeitet pro API-Prozess; mehrere Instanzen benötigen einen gemeinsamen Speicher. Container-Logs und Datenbanksicherungen brauchen eine vereinbarte Betriebsverantwortung.
-
-## Prüfung
-
-Stand 21. Oktober 2026: 124 isolierte Backend-, API- und Klassifikationstests sowie die Frontend-Prüfungen sind erfolgreich; die CI prüft zusätzlich Lint, Migrationen auf PostgreSQL 17 und den Docker-Build. Ein Edge-Durchlauf in einer isolierten Demo-Umgebung bestätigte Recherche, Registrierung über Mailpit, Bestätigungsseite, Demo-Benachrichtigung und Abmeldung. Azure-Integration, zuverlässiger Organisationsversand, fachliche Taxonomiefreigabe und die Abnahme der WWF-Anwendungsfälle bleiben offen. Historische Nachweise: [Review vom 11. Oktober](daily-review-2026-10-11.md).
-
-## Öffentliche Navigation und Abonnements
-
-Die öffentliche Recherche bietet alle neun Inhaltstypen als eigene Bereiche in der linken Navigation. Stichwort-, Themen-, Kantons- und Datumsfilter gelten für den gewählten Bereich und werden pro Bereich gemerkt. Jede Karte öffnet Details und Links zu verknüpften Geschäften, Sitzungen, Traktanden und Datensätzen. Die Abonnementverwaltung gruppiert Unterthemen unter Hauptthemen und bietet Kantons-, Stichwort- und Bereichsfilter. Nach der E-Mail-Bestätigung kehrt die Anwendung zurück und aktualisiert einen offenen Tab, ohne dessen Ansicht und Filter zu verlieren.
-
-Die Benachrichtigungsrelevanz folgt ausdrücklichen Regeln pro Bereich und ist von der Speicherung der Quelldaten getrennt. Technische und reine Formatierungsänderungen werden gespeichert, lösen aber keine E-Mail aus. Ausstehende Benachrichtigungen werden erneut geprüft, und verknüpfte Änderungen werden pro Nutzer und Geschäft zusammengefasst. Die Regeltabelle steht in der [Monitoring-Dokumentation](monitoring.md).
+| Punkt | Art |
+|---|---|
+| Freigabe der Taxonomie und Nachannotation der Prüfsets | Fachliche Abnahme |
+| Abnahme der Anwendungsfälle in einem gemeinsamen Durchlauf | Abnahme |
+| Bereitstellung in Azure, Organisations-SMTP, Domain und Secrets | Betrieb durch WWF |
+| Organisations-SSO (Microsoft Entra ID) statt E-Mail-Link | mögliche Erweiterung |
+| KI-gestützte Klassifikation, Zusammenfassungen, Chat mit Quellenangaben | zweite Entwicklungsstufe |
