@@ -23,6 +23,7 @@ def available_entities():
 @router.get("/search")
 def unified_search(datasets: list[Dataset] | None = Query(None), q: str | None = None,
                    canton: str | None = None, category: str | None = None, subcategory: str | None = None,
+                   affair_type: str | None = Query(None, max_length=100),
                    date_from: date | None = None, date_to: date | None = None,
                    page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=50),
                    db: Session = Depends(get_db)):
@@ -31,12 +32,13 @@ def unified_search(datasets: list[Dataset] | None = Query(None), q: str | None =
     from app.services.entity_service import search_all_entities
     return search_all_entities(db, datasets, q=q, canton=canton, category=category,
                               subcategory=subcategory, date_from=date_from, date_to=date_to,
-                              page=page, page_size=page_size)
+                              affair_type=affair_type, page=page, page_size=page_size)
 
 
 @router.get("/{dataset}")
 def search_entities(dataset: Dataset, q: str | None = None, canton: str | None = None,
                     category: str | None = None, subcategory: str | None = None,
+                    affair_type: str | None = Query(None, max_length=100),
                     year: int | None = Query(None, ge=1900, le=2100),
                     month: int | None = Query(None, ge=1, le=12),
                     date_from: date | None = None, date_to: date | None = None,
@@ -53,7 +55,8 @@ def search_entities(dataset: Dataset, q: str | None = None, canton: str | None =
         raise HTTPException(422, "Invalid relationship filter for this dataset.")
     return list_entities(db, dataset, q=q, canton=canton, category=category, subcategory=subcategory,
                          year=year, month=month, date_from=date_from, date_to=date_to,
-                         affair_id=affair_id, group_id=group_id, person_id=person_id, agenda_id=agenda_id, meeting_id=meeting_id, page=page, page_size=page_size)
+                         affair_id=affair_id, group_id=group_id, person_id=person_id, agenda_id=agenda_id, meeting_id=meeting_id,
+                         affair_type=affair_type, page=page, page_size=page_size)
 
 
 @router.get("/{dataset}/{record_id}")

@@ -13,14 +13,13 @@ from app.models import Affair, Agenda, Body, Meeting, Document, ParliamentaryTex
 from app.models.classification import AffairClassification, ClassificationCategory, ClassificationRule
 from app.models.change_event import ChangeEvent
 from app.models.change_event_affair import ChangeEventAffair
-from app.models.dataset_subscription import UserDatasetSubscription
-from app.models.subscription import UserCategorySubscription, UserCantonSubscription
+from app.models.subscription_profile import SubscriptionProfile
 from app.schemas.affair_filters import AffairFilters
 from app.services.affair_service import get_affairs, get_affair_detail
 from app.services.entity_service import list_entities
 from scripts.sync.entity_sync import choose_document, sync_record
 from app.services.entity_relations import related_affair_ids
-from app.models.monitoring_subscription import UserKeywordSubscription, UserRecordWatch
+from app.models.monitoring_subscription import UserRecordWatch
 
 
 @compiles(BigInteger, "sqlite")
@@ -58,7 +57,7 @@ class MonitoringTests(unittest.TestCase):
             self.db.add(AffairClassification(affair_id=affair_id,category_id=cat_id,score=10,confidence="high",classifier_version="test",classified_at=datetime(2026,1,1)))
         self.db.add(User(id=1,email="test@example.com",is_active=True,email_verified=True,is_admin=False))
         self.db.flush()
-        self.db.add(UserCategorySubscription(user_id=1,category_id=1))
+        self.db.add(SubscriptionProfile(id=1,user_id=1,name="Klima",category_ids=[1]))
         self.db.commit()
 
     def test_numeric_api_value_matches_persisted_text(self):
@@ -92,7 +91,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.commit()
         records=[{"id":1,"body_id":1,"title":{"de":"Neue Photovoltaik"},"updated_at":"2026-10-11T00:00:00"}]
         with patch("scripts.sync.entity_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.incremental_sync.SessionLocal",side_effect=lambda:Session(self.engine,autoflush=False)), patch("scripts.sync.entity_sync.make_source",side_effect=lambda *args:MemorySource(records)):
@@ -106,7 +105,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
         self.db.add(Document(source_id=10, name="Existing"))
         self.db.commit()
@@ -123,7 +122,9 @@ class MonitoringTests(unittest.TestCase):
         with patch("scripts.sync.entity_sync.SessionLocal", side_effect=lambda: Session(self.engine, autoflush=False)), patch("scripts.sync.entity_sync.make_source", return_value=source):
             run_dataset("documents")
         self.db.expire_all()
-        self.assertEqual(source.mode, "inventory")
+        # The new-identity phase finds the record despite its old timestamp,
+        # so no inventory download is needed.
+        self.assertEqual(source.mode, "api")
         self.assertEqual(self.db.scalar(select(func.count()).select_from(Document)), 2)
         self.assertEqual(self.db.scalar(text("SELECT records_new FROM sync_checkpoints WHERE dataset='docs'")), 1)
         self.assertEqual(self.db.scalar(text("SELECT last_id FROM sync_checkpoints WHERE dataset='docs'")), 99)
@@ -137,7 +138,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
         self.db.add(Document(source_id=10, name="Existing"))
         self.db.commit()
@@ -153,9 +154,11 @@ class MonitoringTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "interrupted reconciliation"):
                 run_dataset("documents")
             state = json.loads((Path(folder) / "documents.json").read_text())
-            self.assertTrue(state["full_scan"])
-            self.assertEqual(state["position"], 1)
-            self.assertEqual(state["reconciliation_ids"], [12, 11])
+            # Document 12 was found by the new-identity phase; only 11 is missing.
+            self.assertFalse(state["full_scan"])
+            self.assertEqual(state["mode"], "inventory")
+            self.assertEqual(state["position"], 0)
+            self.assertEqual(state["reconciliation_ids"], [11])
             fail[0] = False
             run_dataset("documents")
         self.db.expire_all()
@@ -168,7 +171,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
         self.db.add(Document(source_id=1, name="Existing"))
         self.db.add(Document(source_id=2, name="Historical record removed upstream"))
@@ -184,8 +187,9 @@ class MonitoringTests(unittest.TestCase):
             run_dataset("documents")
         self.db.expire_all()
         self.assertEqual(self.db.scalar(select(func.count()).select_from(Document)), 3)
-        self.assertEqual(len(calls), 3)
-        self.assertEqual(calls[-1].url.params["id"], "3")
+        # One incremental page and one new-identity page sorted by ID.
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[-1].url.params["sort_by"], "-id")
 
     def test_document_variants_do_not_trigger_a_false_count_gap(self):
         import httpx
@@ -193,7 +197,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_updated_at,last_id,status) VALUES ('docs','2030-01-01',99,'idle')"))
         self.db.add_all([Document(source_id=10, affair_id=1), Document(source_id=10, affair_id=2)])
         self.db.commit()
@@ -211,7 +215,9 @@ class MonitoringTests(unittest.TestCase):
                 return source
             with patch("scripts.sync.entity_sync.make_source", side_effect=make):
                 run_dataset("documents")
-        self.assertEqual(sources[0].mode, "api")
+        # sources[0] only checks for resumable state; the API phases never
+        # switch to an inventory download.
+        self.assertTrue(all(source.mode == "api" for source in sources[1:]))
         self.assertEqual(len(calls), 2)
         self.db.expire_all()
         self.assertEqual(self.db.scalar(select(func.count()).select_from(Document)), 2)
@@ -224,7 +230,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.commit()
         requested=[];fail=[True]
         def handler(request):
@@ -331,8 +337,9 @@ class MonitoringTests(unittest.TestCase):
         return self.db.scalar(select(func.count()).select_from(model))
 
     def test_keyword_subscription_requires_keyword_and_canton(self):
-        self.db.add(UserKeywordSubscription(user_id=1, keyword="solaranlage"))
-        self.db.add(UserCantonSubscription(user_id=1, canton_key="BE"))
+        profile = self.db.get(SubscriptionProfile, 1)
+        profile.keywords = ["solaranlage"]
+        profile.canton_keys = ["BE"]
         self.db.commit()
         sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Sitzung","item_result":"Neue Sitzung"},self.db.get(Agenda,1))
         self.db.commit()
@@ -345,17 +352,17 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(self.count(Notification),1)
 
     def test_keyword_only_subscription(self):
-        self.db.query(UserCategorySubscription).delete()
-        self.db.add(UserKeywordSubscription(user_id=1, keyword="wärmepumpe"))
+        self.db.query(SubscriptionProfile).delete()
+        self.db.add(SubscriptionProfile(user_id=1, name="Wärmepumpen", keywords=["wärmepumpe"]))
         self.db.commit()
         sync_record(self.db,"agendas",{"id":50,"body_id":1,"item_title":"Wärmepumpe für Schule","item_result":"Wärmepumpe für Schule"})
         self.db.commit()
         self.assertEqual(self.count(Notification),1)
 
     def test_affair_watch_survives_category_and_dataset_changes(self):
-        self.db.query(UserCategorySubscription).delete()
+        self.db.query(SubscriptionProfile).delete()
         self.db.add(UserRecordWatch(user_id=1, dataset="affairs", record_id=1))
-        self.db.add(UserDatasetSubscription(user_id=1, dataset="texts"))
+        self.db.add(SubscriptionProfile(user_id=1, name="Texte", category_ids=[1], datasets=["texts"]))
         self.db.commit()
         sync_record(self.db,"agendas",{"id":1,"item_title":"Verfahren geändert","item_result":"Verfahren geändert"},self.db.get(Agenda,1))
         sync_record(self.db,"agendas",{"id":2,"item_title":"Anderes Verfahren","item_result":"Anderes Verfahren"},self.db.get(Agenda,2))
@@ -363,7 +370,7 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(self.count(Notification),1)
 
     def test_meeting_watch_includes_linked_agenda(self):
-        self.db.query(UserCategorySubscription).delete()
+        self.db.query(SubscriptionProfile).delete()
         self.db.add(UserRecordWatch(user_id=1, dataset="meetings", record_id=1))
         self.db.commit()
         sync_record(self.db,"agendas",{"id":1,"item_title":"Agenda geändert","item_result":"Agenda geändert"},self.db.get(Agenda,1))
@@ -372,7 +379,7 @@ class MonitoringTests(unittest.TestCase):
 
     def test_unwatch_cancels_pending_email(self):
         from app.services.notification_email_service import send_pending_notifications
-        self.db.query(UserCategorySubscription).delete()
+        self.db.query(SubscriptionProfile).delete()
         self.db.add(UserRecordWatch(user_id=1, dataset="affairs", record_id=1))
         self.db.commit()
         sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Agenda","item_result":"Neue Agenda"},self.db.get(Agenda,1))
@@ -384,8 +391,9 @@ class MonitoringTests(unittest.TestCase):
             self.assertEqual(send_pending_notifications(),(0,0))
             send.assert_not_called()
 
-    def test_subscription_keyword_roundtrip_and_clear_watches(self):
-        from app.api.routes.subscriptions import SubscriptionUpdate, update_all_subscriptions, subscription_summary, watch_record
+    def test_profile_roundtrip_and_stop_all(self):
+        from app.api.routes.subscriptions import (ProfileInput, create_profile, delete_profile, stop_all,
+                                                   subscription_overview, update_profile, watch_record)
         from fastapi import HTTPException
         user = self.db.get(User,1)
         watch_record("affairs",1,user,self.db)
@@ -394,12 +402,72 @@ class MonitoringTests(unittest.TestCase):
         with self.assertRaises(HTTPException):
             watch_record("affairs",999,user,self.db)
         with patch("app.api.routes.subscriptions.send_email"):
-            update_all_subscriptions(SubscriptionUpdate(keywords=["  Solar  ","solar"]),user,self.db)
-            result=subscription_summary(user,self.db)
-            self.assertEqual(result["keywords"],["solar"])
-            self.assertTrue(result["active"])
-            update_all_subscriptions(SubscriptionUpdate(clear_watches=True),user,self.db)
-        self.assertFalse(subscription_summary(user,self.db)["active"])
+            created=create_profile(ProfileInput(name="  Solar   Bern ",keywords=["  Solar  ","solar"],canton_keys=["be"],
+                                                affair_types=["Motion"]),user,self.db)
+            self.assertEqual((created.name,created.keywords,created.canton_keys),("Solar Bern",["solar"],["BE"]))
+            self.assertFalse(created.paused)
+            paused=update_profile(created.id,ProfileInput(name="Leer"),user,self.db)
+            self.assertTrue(paused.paused)
+            with self.assertRaises(HTTPException) as invalid:
+                create_profile(ProfileInput(name="x",canton_keys=["XX"]),user,self.db)
+            self.assertEqual(invalid.exception.status_code,422)
+            overview=subscription_overview(user,self.db)
+            self.assertEqual(len(overview.profiles),2)
+            self.assertTrue(overview.active)
+            delete_profile(created.id,user,self.db)
+            self.assertEqual(len(subscription_overview(user,self.db).profiles),1)
+            stop_all(user,self.db)
+        overview=subscription_overview(user,self.db)
+        self.assertEqual((overview.profiles,overview.watches,overview.active),([],[],False))
+
+    def test_profile_limit_and_ownership(self):
+        from app.api.routes.subscriptions import ProfileInput, create_profile, delete_profile, update_profile
+        from app.models.subscription_profile import MAX_PROFILES_PER_USER
+        from fastapi import HTTPException
+        self.db.add(User(id=2,email="other@example.com",is_active=True,email_verified=True,is_admin=False))
+        self.db.commit()
+        user, other = self.db.get(User,1), self.db.get(User,2)
+        with patch("app.api.routes.subscriptions.send_email"):
+            for number in range(MAX_PROFILES_PER_USER - 1):
+                create_profile(ProfileInput(name=f"P{number}",keywords=["wald"]),user,self.db)
+            with self.assertRaises(HTTPException) as limit:
+                create_profile(ProfileInput(name="zu viel",keywords=["wald"]),user,self.db)
+            self.assertEqual(limit.exception.status_code,409)
+            for action in (lambda: update_profile(1,ProfileInput(name="fremd"),other,self.db),
+                           lambda: delete_profile(1,other,self.db)):
+                with self.assertRaises(HTTPException) as foreign:
+                    action()
+                self.assertEqual(foreign.exception.status_code,404)
+        self.assertEqual(self.db.get(SubscriptionProfile,1).name,"Klima")
+
+    def test_any_matching_profile_notifies_once(self):
+        # Profile 1 (climate) matches; a second non-matching profile does not block it.
+        self.db.add(SubscriptionProfile(user_id=1,name="Zürich",category_ids=[1],canton_keys=["ZH"]))
+        self.db.commit()
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neu","item_result":"Neu"},self.db.get(Agenda,1))
+        self.db.commit()
+        self.assertEqual(self.count(Notification),1)
+
+    def test_paused_profile_does_not_notify(self):
+        self.db.get(SubscriptionProfile,1).active=False
+        self.db.commit()
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neu","item_result":"Neu"},self.db.get(Agenda,1))
+        self.db.commit()
+        self.assertEqual(self.count(Notification),0)
+
+    def test_affair_type_filter_applies_to_linked_records(self):
+        self.db.get(Affair,1).type_harmonized_de="Motion"
+        profile=self.db.get(SubscriptionProfile,1)
+        profile.affair_types=["Postulat"]
+        self.db.commit()
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neu","item_result":"Neu"},self.db.get(Agenda,1))
+        self.db.commit()
+        self.assertEqual(self.count(Notification),0)
+        profile.affair_types=["Motion"]
+        self.db.commit()
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Wieder neu","item_result":"Wieder neu"},self.db.get(Agenda,1))
+        self.db.commit()
+        self.assertEqual(self.count(Notification),1)
 
     def test_category_filter_and_pagination(self):
         result=list_entities(self.db,"affairs",category="climate",page_size=1)
@@ -462,7 +530,7 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(self.count(Notification),3)
 
     def test_dataset_subscription(self):
-        self.db.add(UserDatasetSubscription(user_id=1,dataset="texts"))
+        self.db.get(SubscriptionProfile, 1).datasets = ["texts"]
         self.db.commit()
         sync_record(self.db,"agendas",{"id":1,"item_title":"Changed","item_result":"Changed"},self.db.get(Agenda,1))
         self.db.commit()
@@ -506,7 +574,7 @@ class MonitoringTests(unittest.TestCase):
         from app.services.notification_email_service import send_pending_notifications
         sync_record(self.db,"agendas",{"id":1,"item_title":"Neue Traktanden","item_result":"Neue Traktanden"},self.db.get(Agenda,1))
         self.db.commit()
-        self.db.query(UserCategorySubscription).delete()
+        self.db.query(SubscriptionProfile).delete()
         self.db.commit()
         with patch("app.services.notification_email_service.SessionLocal",side_effect=lambda:Session(self.engine)), patch("app.services.notification_email_service.send_email") as send:
             self.assertEqual(send_pending_notifications(),(0,0))
@@ -518,7 +586,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.execute(text("INSERT INTO sync_checkpoints (dataset,last_id,status) VALUES ('agendas',100,'idle')"))
         self.db.commit()
         records=[{"id":2,"body_id":2,"meeting_id":1,"item_affair_id":2,"item_title":"Wind"},
@@ -560,7 +628,7 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(list_entities(self.db,"interests",affair_id=1)["items"],[])
 
     def test_group_watch_covers_meeting_and_agenda_changes(self):
-        self.db.query(UserCategorySubscription).delete()
+        self.db.query(SubscriptionProfile).delete()
         self.db.add(PoliticalGroup(id=42,body_id=1,name_de="Kommission"))
         self.db.get(Meeting,1).group_id=42
         self.db.add(UserRecordWatch(user_id=1,dataset="groups",record_id=42))
@@ -587,7 +655,7 @@ class MonitoringTests(unittest.TestCase):
         from scripts.sync.entity_sync import run_dataset
         self.db.execute(text("""CREATE TABLE sync_checkpoints (dataset TEXT PRIMARY KEY, last_updated_at TIMESTAMP,
             last_id BIGINT, last_run_at TIMESTAMP, status TEXT, records_processed BIGINT, records_new BIGINT,
-            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT)"""))
+            records_changed BIGINT, records_unchanged BIGINT, records_error BIGINT, error_message TEXT, last_full_scan_at TIMESTAMP)"""))
         self.db.commit()
         self.add_rule("Photovoltaik","solar_title")
         for dataset in ("groups","interests"):
@@ -631,7 +699,7 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(result["items"][0]["title"],"Eigener Traktandentitel")
 
     def test_primary_affair_subscription_includes_supporting_changes(self):
-        self.db.add(UserDatasetSubscription(user_id=1,dataset="affairs"))
+        self.db.get(SubscriptionProfile, 1).datasets = ["affairs"]
         self.db.commit()
         sync_record(self.db,"agendas",{"id":1,"item_title":"Änderung zum Geschäft","item_result":"Änderung zum Geschäft"},self.db.get(Agenda,1))
         self.db.commit()

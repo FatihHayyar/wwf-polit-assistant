@@ -6,17 +6,21 @@
 <script src="/assets/detail.js" defer></script>
 <script src="/assets/account.js" defer></script>
 <script src="/assets/subscriptions.js" defer></script>
+<script src="/assets/ask.js" defer></script>
 <script src="/assets/app.js" defer></script>
 </head>
 <body>
 <aside><a class="brand" href="/">WWF <span>Polit-Assistant</span></a><p class="eyebrow" data-i18n="monitoring"></p><nav id="datasets" data-i18n-aria="datasets"></nav><div class="side-bottom"><p><span data-i18n="sourceData"></span><br>OpenParlData · CC BY 4.0</p></div></aside>
 <main>
 <header><div><p class="eyebrow" data-i18n="eyebrow"></p><h1 id="heading"></h1><p data-i18n="intro"></p></div><div class="header-right"><div class="header-actions"><label class="language-select"><span data-i18n="language"></span><select id="language"><option value="de">Deutsch</option><option value="fr">Français</option><option value="it">Italiano</option><option value="en">English</option></select></label></div></div></header>
-<div class="content-layout"><div class="browse-content"><section class="filters"><form id="search-form">
+<div class="content-layout"><div class="browse-content">
+<section class="ask" aria-labelledby="ask-title"><h2 id="ask-title" data-i18n="askTitle"></h2><form id="ask-form"><label class="search"><span data-i18n="askLabel"></span><input id="ask-input" name="question" type="search" minlength="3" maxlength="300" data-i18n-placeholder="askPlaceholder" required></label><button class="primary" data-i18n="askButton"></button></form><p class="hint" data-i18n="askHelp"></p><div id="ask-log" aria-live="polite"></div></section>
+<section class="filters"><form id="search-form">
 <label class="search"><span data-i18n="keyword"></span><input name="q" type="search" data-i18n-placeholder="searchPlaceholder"></label>
 <label><span data-i18n="topic"></span><select id="category" name="category"></select></label>
 <label><span data-i18n="subtopic"></span><select id="subcategory" name="subcategory"></select></label>
 <label><span data-i18n="canton"></span><select id="canton" name="canton"></select></label>
+<label id="affair-type-filter"><span data-i18n="affairType"></span><select id="affair-type" name="affair_type"></select></label>
 <label><span data-i18n="from"></span><input name="date_from" type="date"></label><label><span data-i18n="to"></span><input name="date_to" type="date"></label>
 <button class="primary" data-i18n="search"></button><button type="reset" data-i18n="reset"></button></form></section>
 <div id="context-navigation" hidden></div>
@@ -26,14 +30,20 @@
 <dialog id="detail-dialog"><div class="dialog-header"><h2 id="detail-title"></h2><button data-close="detail-dialog" data-i18n-aria="close">✕</button></div><div id="detail-content"></div></dialog>
 <div id="toast" role="status" popover="manual" hidden></div>
 <dialog id="account-dialog"><div class="dialog-header"><h2 id="account-title" data-i18n="login"></h2><button data-close="account-dialog" data-i18n-aria="close">✕</button></div><p id="account-help" data-i18n="loginHelp"></p><p id="account-summary" hidden></p><a id="google-login" class="provider-button" href="/api/v1/auth/google" data-i18n="googleLogin" hidden></a><form id="account-form"><label><span data-i18n="email"></span><input name="email" type="email" required autocomplete="email"></label><label><span data-i18n="action"></span><select name="action"><option value="login" data-i18n="loginLink"></option><option value="register" data-i18n="register"></option></select></label><button class="primary" data-i18n="sendLink"></button></form><p id="account-message" role="status"></p><button id="logout" data-i18n="logout" hidden></button></dialog>
-<dialog id="subscription-dialog"><div class="dialog-header"><h2 data-i18n="subscriptions"></h2><button data-close="subscription-dialog" data-i18n-aria="close">✕</button></div><div class="dialog-body"><p data-i18n="subscriptionHelp"></p><form id="subscription-form">
-<fieldset><legend data-i18n="recipients"></legend><p data-i18n="recipientHelp"></p><label class="recipient-own"><input id="recipient-own" type="checkbox" checked><span data-i18n="thisAccount"></span></label><label><span data-i18n="otherAccounts"></span><textarea id="recipient-emails" rows="2" placeholder="name@example.com"></textarea></label><div id="recipient-status"></div></fieldset>
+<dialog id="subscription-dialog"><div class="dialog-header"><h2 data-i18n="subscriptions"></h2><button data-close="subscription-dialog" data-i18n-aria="close">✕</button></div><div class="dialog-body"><p data-i18n="subscriptionHelp"></p>
+<form id="recipients-form"><fieldset><legend data-i18n="recipients"></legend><p data-i18n="recipientHelp"></p><label class="recipient-own"><input id="recipient-own" type="checkbox" checked><span data-i18n="thisAccount"></span></label><label><span data-i18n="otherAccounts"></span><textarea id="recipient-emails" rows="2" placeholder="name@example.com"></textarea></label><div id="recipient-status"></div><button class="primary" data-i18n="recipientsSave"></button></fieldset></form>
+<section class="profiles" aria-labelledby="profiles-title"><h3 id="profiles-title" data-i18n="profilesTitle"></h3><p data-i18n="profilesHelp"></p><div id="profile-list"></div><button type="button" id="profile-new" data-i18n="profileNew"></button></section>
+<form id="profile-form" class="profile-form" hidden><h3 id="profile-form-title"></h3>
+<label><span data-i18n="profileName"></span><input id="profile-name" maxlength="100" required data-i18n-placeholder="profileNamePlaceholder"></label>
+<label class="recipient-own"><input id="profile-active" type="checkbox" checked><span data-i18n="profileActive"></span></label>
 <fieldset><legend data-i18n="topics"></legend><div id="subscription-categories" class="choices"></div></fieldset>
 <fieldset><legend data-i18n="cantons"></legend><div id="subscription-cantons" class="choices"></div></fieldset>
+<fieldset><legend data-i18n="affairTypes"></legend><p data-i18n="affairTypesHelp"></p><div id="subscription-affair-types" class="choices"></div></fieldset>
 <fieldset><legend data-i18n="datasets"></legend><p data-i18n="datasetSubscriptionHelp"></p><div id="subscription-datasets" class="choices"></div></fieldset>
 <fieldset><legend data-i18n="keywords"></legend><label><span data-i18n="onePerLine"></span><textarea id="subscription-keywords" rows="4" maxlength="4020"></textarea></label><p data-i18n="keywordHelp"></p></fieldset>
+<div class="profile-actions"><button class="primary" data-i18n="profileSave"></button><button type="button" id="profile-cancel" data-i18n="profileCancel"></button></div></form>
 <fieldset><legend data-i18n="watched"></legend><div id="subscription-watches"></div><label><span data-i18n="watchReference"></span><select id="watch-dataset"></select></label><label><span data-i18n="recordId"></span><input id="watch-record" type="number" min="1" step="1"></label><button type="button" id="watch-add" data-i18n="watch"></button><p data-i18n="watchHelp"></p></fieldset>
 <fieldset id="demo-test" class="demo-test" hidden><legend data-i18n="demoTestTitle"></legend><p data-i18n="demoTestHelp"></p><label><span data-i18n="demoTopic"></span><select id="demo-topic"></select></label><button type="button" id="demo-send" class="primary" data-i18n="demoSend"></button><div id="demo-result" role="status" aria-live="polite"></div></fieldset>
-<div class="delete-account"><p data-i18n="deleteHelp"></p><button type="button" id="delete-account" data-i18n="deleteAccount"></button></div></form></div>
-<div class="subscription-toolbar"><p id="subscription-message" role="status" hidden></p><div><button type="submit" form="subscription-form" class="primary" data-i18n="save"></button><button type="button" id="subscription-logout" data-i18n="logout"></button><button type="button" id="unsubscribe" data-i18n="stopAll"></button></div></div></dialog>
+<div class="delete-account"><p data-i18n="deleteHelp"></p><button type="button" id="delete-account" data-i18n="deleteAccount"></button></div></div>
+<div class="subscription-toolbar"><p id="subscription-message" role="status" hidden></p><div><button type="button" id="subscription-logout" data-i18n="logout"></button><button type="button" id="unsubscribe" data-i18n="stopAll"></button></div></div></dialog>
 </body></html>

@@ -972,13 +972,15 @@ dialog {
   margin: 20px 24px;
 }
 
-#subscription-form {
-  display: block;
-  margin: 0;
+#subscription-dialog .dialog-body {
   padding: 0 24px;
 }
 
-#subscription-form>fieldset {
+#subscription-dialog .dialog-body>p {
+  margin: 18px 0;
+}
+
+#subscription-dialog .dialog-body>fieldset, #recipients-form>fieldset {
   margin: 20px 0;
 }
 
@@ -1069,7 +1071,7 @@ dialog {
   .dialog-header {
     padding: 14px 16px;
   }
-  #subscription-form {
+  #subscription-dialog .dialog-body {
     padding: 0 16px;
   }
   #detail-content {
@@ -1244,4 +1246,130 @@ dialog {
 
 .link-card p {
   line-height: 1.6;
+}
+
+/* Dialogue-oriented query */
+.ask {
+  margin-bottom: 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+}
+
+.ask h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.hint {
+  margin: 10px 0 0;
+  color: #6c7e68;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+#ask-log {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.ask-entry {
+  display: grid;
+  gap: 8px;
+}
+
+.ask-question {
+  justify-self: end;
+  max-width: 85%;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px 12px 2px 12px;
+  background: #e6efdf;
+  color: #255133;
+}
+
+.ask-answer {
+  max-width: 92%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 2px;
+  background: #fafcf8;
+}
+
+.ask-answer p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.ask-understood {
+  font-size: 12px;
+  font-weight: 700;
+  color: #52674c;
+  align-self: center;
+}
+
+/* Subscription profiles */
+.profiles {
+  margin: 18px 0;
+}
+
+.profiles h3 {
+  margin: 0 0 6px;
+}
+
+#profile-list {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.profile-card {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: white;
+}
+
+.profile-card h4 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+}
+
+.profile-card .card-meta {
+  margin: 3px 0;
+}
+
+.tag.paused {
+  background: #fff4dd;
+  color: #8a5a00;
+}
+
+.profile-form {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 18px;
+  border: 1px solid #bfd4b1;
+  border-radius: 12px;
+  background: #fbfdf9;
+}
+
+.profile-form h3 {
+  margin: 0;
+}
+
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#recipients-form fieldset > button {
+  justify-self: start;
+  margin-top: 10px;
 }

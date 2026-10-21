@@ -1,9 +1,9 @@
 
 from sqlalchemy import Index
 from app.models.notification_recipient import NotificationRecipient
-from app.models.monitoring_subscription import UserKeywordSubscription, UserRecordWatch
+from app.models.monitoring_subscription import UserRecordWatch
+from app.models.subscription_profile import SubscriptionProfile
 from app.models.change_event_affair import ChangeEventAffair
-from app.models.dataset_subscription import UserDatasetSubscription
 from app.models.entity_classification import EntityClassification
 
 from app.models.change_event import ChangeEvent
@@ -29,10 +29,6 @@ from app.models.entities import (
     Voting,
 )
 from app.models.notification import Notification
-from app.models.subscription import (
-    UserCantonSubscription,
-    UserCategorySubscription,
-)
 from app.models.user import User
 
 
@@ -114,8 +110,8 @@ __all__ = [
     "ParliamentaryText",
     "Person",
     "PoliticalGroup",
+    "SubscriptionProfile",
     "User",
-    "UserCantonSubscription",
-    "UserCategorySubscription",
+    "UserRecordWatch",
     "Voting",
 ]

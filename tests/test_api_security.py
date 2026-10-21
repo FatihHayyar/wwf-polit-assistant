@@ -21,7 +21,7 @@ from app.main import app as fastapi_app
 from app.models.classification import ClassificationCategory
 from app.models.entities import Affair, Body
 from app.models.notification import Notification
-from app.models.subscription import UserCantonSubscription, UserCategorySubscription
+from app.models.subscription_profile import SubscriptionProfile
 from app.models.user import User
 from app.services.demo_notification_service import DEMO_TITLES
 from scripts.seed_classification import seed_taxonomy
@@ -128,9 +128,10 @@ class RateLimitTests(ApiTestCase):
         self.sign_in()
         with patch("app.api.routes.subscriptions.send_email") as send, \
                 patch("app.api.routes.subscriptions.SUBSCRIPTION_CHANGE_PER_USER", Limit(2, 3600)):
-            codes = [self.client.put("/api/v1/subscriptions", json={"canton_keys": ["BE"]}).status_code
-                     for _ in range(4)]
-        self.assertEqual(codes, [200] * 4)
+            codes = [self.client.post("/api/v1/subscriptions/profiles",
+                                      json={"name": f"Bern {number}", "canton_keys": ["BE"]}).status_code
+                     for number in range(4)]
+        self.assertEqual(codes, [201] * 4)
         self.assertEqual(send.call_count, 2)
 
 
@@ -192,7 +193,10 @@ class SessionTests(ApiTestCase):
 
     def test_subscriptions_require_authentication(self):
         self.assertEqual(self.client.get("/api/v1/subscriptions").status_code, 401)
-        self.assertEqual(self.client.put("/api/v1/subscriptions", json={}).status_code, 401)
+        self.assertEqual(self.client.post("/api/v1/subscriptions/profiles", json={"name": "x"}).status_code, 401)
+        self.assertEqual(self.client.put("/api/v1/subscriptions/profiles/1", json={"name": "x"}).status_code, 401)
+        self.assertEqual(self.client.delete("/api/v1/subscriptions/profiles/1").status_code, 401)
+        self.assertEqual(self.client.delete("/api/v1/subscriptions").status_code, 401)
 
 
 class SecurityHeaderTests(ApiTestCase):
@@ -268,9 +272,8 @@ class DemoNotificationTests(ApiTestCase):
         with self.Session() as db:
             user_id = db.scalar(select(User.id).where(User.email == "owner@example.com"))
             category_id = db.scalar(select(ClassificationCategory.id).where(ClassificationCategory.code == topic_code))
-            db.add(UserCategorySubscription(user_id=user_id, category_id=category_id))
-            for canton in cantons:
-                db.add(UserCantonSubscription(user_id=user_id, canton_key=canton))
+            db.add(SubscriptionProfile(user_id=user_id, name=topic_code, category_ids=[category_id],
+                                       canton_keys=list(cantons)))
             db.commit()
 
     def test_demo_endpoints_are_hidden_outside_demo_mode(self):

@@ -33,6 +33,8 @@ OAUTH_START_PER_IP = Limit(20, 15 * 60)
 RECIPIENT_UPDATE_PER_USER = Limit(10, 60 * 60)
 SUBSCRIPTION_CHANGE_PER_USER = Limit(60, 60 * 60)
 DEMO_NOTIFICATION_PER_USER = Limit(5, 10 * 60)
+# Natural-language questions run several queries each.
+ASK_PER_IP = Limit(30, 60)
 
 
 class RateLimiter:

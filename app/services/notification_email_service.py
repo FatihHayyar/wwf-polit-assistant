@@ -8,71 +8,12 @@ from sqlalchemy import case, func, select
 from app.db.database import SessionLocal
 from app.models.change_event import ChangeEvent
 from app.core.config import settings
-from app.models.entities import Affair, Body
 from app.models.notification import Notification
-from app.models.subscription import (
-    UserCategorySubscription,
-    UserCantonSubscription,
-)
 from app.models.user import User
 from app.services.email_service import (
     EmailServiceError,
     send_email,
 )
-from app.services.notification_service import (
-    get_category_and_ancestor_ids,
-)
-
-
-def user_still_subscribed(db, user_id: int, affair: Affair) -> bool:
-    category_ids = set(
-        db.scalars(
-            select(UserCategorySubscription.category_id).where(
-                UserCategorySubscription.user_id == user_id
-            )
-        ).all()
-    )
-
-    canton_keys = set(
-        db.scalars(
-            select(UserCantonSubscription.canton_key).where(
-                UserCantonSubscription.user_id == user_id
-            )
-        ).all()
-    )
-
-    # Both empty means no active notification subscription.
-    if not category_ids and not canton_keys:
-        return False
-
-    # Empty category selection means all themes.
-    if category_ids:
-        affair_category_ids = get_category_and_ancestor_ids(
-            db,
-            affair.id,
-        )
-
-        if not category_ids.intersection(affair_category_ids):
-            return False
-
-    # Empty canton selection means all cantons.
-    if canton_keys:
-        if affair.body_id is None:
-            return False
-
-        canton_key = db.scalar(
-            select(Body.canton_key).where(
-                Body.id == affair.body_id
-            )
-        )
-
-        if (
-            canton_key is None
-            or canton_key.strip().upper() not in canton_keys
-        ):
-            return False
-
-    return True
 
 
 def send_pending_individual_notifications(

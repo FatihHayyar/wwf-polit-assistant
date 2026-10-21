@@ -15,6 +15,7 @@ window.Polit = (() => {
     pages: 0,
     categories: [],
     cantons: [],
+    affairTypes: [],
     account: null,
     // Context filters set when browsing records related to another record.
     affairId: null,
@@ -128,6 +129,8 @@ window.Polit = (() => {
 
   function categoryName(item) {
     const code = item.code || item.category_code;
+    // The taxonomy names topics in DE/FR/IT/RM; English uses the UI translations.
+    if (state.language === "en" && ui.translations[code]) return t(code);
     const category = state.categories
       .flatMap((parent) => [parent, ...parent.subcategories])
       .find((row) => row.code === code);

@@ -12,6 +12,7 @@ from app.api.routes.sync import router as sync_router
 from app.api.routes.google_auth import router as google_router
 from app.api.routes.recipient_routes import router as recipients_router
 from app.api.routes.demo import router as demo_router
+from app.api.routes.ask import router as ask_router
 
 api_router = APIRouter()
 api_router.include_router(entities_router)
@@ -28,3 +29,4 @@ api_router.include_router(subscriptions_router)
 api_router.include_router(google_router)
 api_router.include_router(recipients_router)
 api_router.include_router(demo_router)
+api_router.include_router(ask_router)

@@ -1,4 +1,4 @@
-from sqlalchemy import distinct, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.entities import Affair
@@ -9,7 +9,8 @@ def get_affair_types(
     db: Session,
 ) -> list[AffairTypeResponse]:
     statement = (
-        select(distinct(Affair.type_harmonized_de))
+        select(Affair.type_harmonized_de)
+        .distinct()
         .where(
             Affair.type_harmonized_de.is_not(None),
             Affair.type_harmonized_de != "",

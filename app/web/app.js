@@ -27,11 +27,10 @@
 
   /** Re-render open views in the new language without losing form input. */
   function changeLanguage(value) {
-    const draft = Polit.subscriptions.isOpen() ? Polit.subscriptions.capture() : null;
     state.language = value;
     ui.saveLanguage(value);
     translatePage();
-    if (draft) Polit.subscriptions.render(draft);
+    if (Polit.subscriptions.isOpen()) Polit.subscriptions.render();
     if (state.detail && $("detail-dialog").open) Polit.detail.render();
     if (state.result) Polit.search.renderResults(state.result);
   }
@@ -71,10 +70,15 @@
     Polit.search.bindEvents();
     Polit.account.bindEvents();
     Polit.subscriptions.bindEvents();
+    Polit.ask.bindEvents();
 
     translatePage();
     try {
-      [state.categories, state.cantons] = await Promise.all([api("/api/v1/categories"), api("/api/v1/cantons")]);
+      const [categories, cantons, affairTypes] = await Promise.all(
+        [api("/api/v1/categories"), api("/api/v1/cantons"), api("/api/v1/affair-types")]);
+      state.categories = categories;
+      state.cantons = cantons;
+      state.affairTypes = affairTypes.map((item) => item.value);
       translatePage();
     } catch (error) {
       showStatus("message", error.message, true);

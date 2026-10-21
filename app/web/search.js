@@ -55,6 +55,20 @@
     addOption($("canton"), "", t("allCantons"));
     for (const row of state.cantons) addOption($("canton"), row.code, row.name);
     $("canton").value = canton;
+
+    const affairType = $("affair-type").value;
+    $("affair-type").replaceChildren();
+    addOption($("affair-type"), "", t("allAffairTypes"));
+    for (const value of state.affairTypes) addOption($("affair-type"), value, value);
+    $("affair-type").value = affairType;
+    updateAffairTypeFilter();
+  }
+
+  /** Affair types only exist for affairs; a disabled select is not submitted. */
+  function updateAffairTypeFilter() {
+    const visible = state.dataset === "affairs";
+    $("affair-type-filter").hidden = !visible;
+    $("affair-type").disabled = !visible;
   }
 
   function hasContextFilter() {
@@ -74,8 +88,19 @@
 
   /** Switch dataset; each dataset keeps its own filter draft. */
   function chooseDataset(dataset, filters = {}) {
-    state.result = null;
     state.filterDrafts[state.dataset] = Object.fromEntries(new FormData($("search-form")));
+    showDataset(dataset, filters);
+  }
+
+  /** Show a dataset with the given filter values, e.g. from a question. */
+  function applyFilters(dataset, values) {
+    state.filterDrafts[state.dataset] = Object.fromEntries(new FormData($("search-form")));
+    state.filterDrafts[dataset] = { ...values };
+    showDataset(dataset);
+  }
+
+  function showDataset(dataset, filters = {}) {
+    state.result = null;
     state.dataset = dataset;
     state.page = 1;
 
@@ -89,6 +114,7 @@
 
     $("heading").textContent = state.names[dataset];
     markActiveDataset();
+    updateAffairTypeFilter();
     loadResults();
     renderContextNavigation();
   }
@@ -231,7 +257,7 @@
   }
 
   Polit.search = {
-    bindEvents, chooseDataset, browseRelated, renderDatasetNavigation, renderFilterOptions,
+    bindEvents, chooseDataset, applyFilters, browseRelated, renderDatasetNavigation, renderFilterOptions,
     renderContextNavigation, renderResults,
   };
 })();

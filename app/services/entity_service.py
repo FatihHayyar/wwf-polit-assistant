@@ -36,7 +36,8 @@ def search_expression(dataset):
 
 def entity_statement(db, dataset, *, q=None, canton=None, category=None, subcategory=None,
                      year=None, month=None, date_from=None, date_to=None, affair_id=None,
-                     group_id=None, person_id=None, agenda_id=None, meeting_id=None, direct_search=False):
+                     group_id=None, person_id=None, agenda_id=None, meeting_id=None, affair_type=None,
+                     direct_search=False):
     spec = ENTITIES[dataset]
     model = spec.model
     key = model.pk if dataset == "documents" else model.id
@@ -67,6 +68,10 @@ def entity_statement(db, dataset, *, q=None, canton=None, category=None, subcate
         statement = statement.where(or_(*matches))
     if canton:
         statement = statement.where(model.body_id.in_(select(Body.id).where(Body.canton_key == canton.upper())))
+    if affair_type and affair_type.strip():
+        # Only affairs carry a type; other datasets ignore this filter.
+        if dataset == "affairs":
+            statement = statement.where(model.type_harmonized_de == affair_type.strip())
     date_column = getattr(model, spec.date_field)
     if year:
         statement = statement.where(extract("year", date_column) == year)
@@ -105,7 +110,7 @@ def group_affairs(statement):
 def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategory=None,
                   year=None, month=None, date_from=None, date_to=None, affair_id=None,
                   group_id=None, person_id=None,
-                  agenda_id=None, meeting_id=None,
+                  agenda_id=None, meeting_id=None, affair_type=None,
                   page=1, page_size=10, record_ids=None):
     spec = ENTITIES[dataset]
     model = spec.model
@@ -113,7 +118,7 @@ def list_entities(db, dataset, *, q=None, canton=None, category=None, subcategor
     date_column = getattr(model, spec.date_field)
     statement = entity_statement(db, dataset, q=q, canton=canton, category=category, subcategory=subcategory,
         year=year, month=month, date_from=date_from, date_to=date_to, affair_id=affair_id,
-        group_id=group_id, person_id=person_id, agenda_id=agenda_id, meeting_id=meeting_id)
+        group_id=group_id, person_id=person_id, agenda_id=agenda_id, meeting_id=meeting_id, affair_type=affair_type)
     ungrouped_statement = statement
     if record_ids is not None:
         statement = statement.where(key.in_(record_ids))
