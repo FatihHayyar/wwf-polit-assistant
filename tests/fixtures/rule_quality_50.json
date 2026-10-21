@@ -1,5 +1,5 @@
 {
-  "annotation_method": "Independent source-based expectations, not model outputs.",
+  "annotation_method": "Unabhängig aus den Quellen festgelegte Erwartungen, keine Modellausgaben. Die Regeln wurden anhand dieser Beispiele verbessert (Entwicklungsset).",
   "records": [
     {
       "dataset": "affairs",
@@ -24,7 +24,7 @@
           "renewable_electricity"
         ],
         "optional": [],
-        "reason": "Okul binası üzerindeki fotovoltaik tesis doğrudan yenilenebilir elektrik konusudur."
+        "reason": "Die Photovoltaikanlage auf einem Schulhaus betrifft direkt erneuerbaren Strom."
       },
       "sampling_main": "climate_energy"
     },
@@ -51,7 +51,7 @@
           "renewable_electricity"
         ],
         "optional": [],
-        "reason": "Rüzgâr enerjisinin kullanımı açıkça belirtiliyor."
+        "reason": "Die Nutzung der Windenergie wird ausdrücklich genannt."
       },
       "sampling_main": "climate_energy"
     },
@@ -80,7 +80,7 @@
         "optional": [
           "public_sector"
         ],
-        "reason": "Belediye taşınmazlarının enerji verimliliği açıkça konu ediliyor; kamu çevre performansı ikincil olabilir."
+        "reason": "Die Energieeffizienz städtischer Liegenschaften ist ausdrücklich Thema; die Umweltleistung der öffentlichen Hand kann ergänzend gelten."
       },
       "sampling_main": "climate_energy"
     },
@@ -107,7 +107,7 @@
           "sustainable_mobility"
         ],
         "optional": [],
-        "reason": "Elektrikli ulaşım için şarj altyapısı açıkça belirtiliyor."
+        "reason": "Ladeinfrastruktur für die Elektromobilität wird ausdrücklich genannt."
       },
       "sampling_main": "climate_energy"
     },
@@ -149,7 +149,7 @@
           "building_efficiency",
           "soil_spatial_planning"
         ],
-        "reason": "Winterthur'un ısı ağları ve bireysel yenilenebilir ısı çözümleri için belediye enerji planı. İçerikte fosil ısıdan geçiş, bağlayıcı planlama ve bina ısı ihtiyacı da var; genel bütçe belgesi değildir."
+        "reason": "Kommunale Energieplanung Winterthurs für Wärmenetze und individuelle erneuerbare Wärmelösungen. Der Inhalt behandelt auch den Ausstieg aus fossiler Wärme, verbindliche Planung und den Wärmebedarf von Gebäuden; kein allgemeines Budgetdokument."
       },
       "sampling_main": "climate_energy"
     },
@@ -176,7 +176,7 @@
           "species_habitats"
         ],
         "optional": [],
-        "reason": "Ebabil ve tür koruma başlığı açıkça doğal türleri konu ediniyor."
+        "reason": "Der Titel zu Seglern (Vögeln) und Artenschutz betrifft ausdrücklich wildlebende Arten."
       },
       "sampling_main": "biodiversity_landscape"
     },
@@ -221,7 +221,7 @@
           "climate_energy_other",
           "soil_spatial_planning"
         ],
-        "reason": "Ruggeller Riet doğal koruma alanı; bağlı içerik sulak alan habitatı, su tutma, turba ve ikincil karbon depolamayı ele alıyor."
+        "reason": "Naturschutzgebiet Ruggeller Riet; der verknüpfte Inhalt behandelt Feuchtgebietslebensräume, Wasserrückhalt, Torf und ergänzend Kohlenstoffspeicherung."
       },
       "sampling_main": "biodiversity_landscape"
     },
@@ -250,7 +250,7 @@
         "optional": [
           "protected_areas"
         ],
-        "reason": "Orman rezervlerinin korunması, orman alt kategorisine doğrudan uyar."
+        "reason": "Der Schutz von Waldreservaten passt direkt zur Unterkategorie Wald."
       },
       "sampling_main": "biodiversity_landscape"
     },
@@ -279,7 +279,7 @@
         "optional": [
           "companies_supply_chains"
         ],
-        "reason": "Ren Nehri'nde su koruma açıkça belirtiliyor; ilaç sanayisinin çevresel sorumluluğu ikincil olabilir."
+        "reason": "Gewässerschutz im Rhein wird ausdrücklich genannt; die Umweltverantwortung der Pharmaindustrie kann ergänzend gelten."
       },
       "sampling_main": "biodiversity_landscape"
     },
@@ -306,7 +306,7 @@
           "agriculture_biodiversity"
         ],
         "optional": [],
-        "reason": "Tarımda kimyasal-sentetik pestisitlerin kullanılmaması doğrudan tarımsal çevre konusudur."
+        "reason": "Der Verzicht auf chemisch-synthetische Pestizide in der Landwirtschaft ist direkt ein Agrarumweltthema."
       },
       "sampling_main": "biodiversity_landscape"
     },
@@ -333,7 +333,7 @@
           "circular_economy"
         ],
         "optional": [],
-        "reason": "Başlık doğrudan döngüsel ekonomidir."
+        "reason": "Der Titel lautet direkt Kreislaufwirtschaft."
       },
       "sampling_main": "sustainable_economy_consumption"
     },
@@ -390,7 +390,7 @@
           "environmental_research_education",
           "international_environment"
         ],
-        "reason": "Gıda israfını azaltma; içerikte kaynak tasarrufu, farkındalık eğitimi ve uluslararası sürdürülebilir tüketim programı var."
+        "reason": "Reduktion von Lebensmittelverschwendung; der Inhalt nennt Ressourcenschonung, Sensibilisierung und ein internationales Programm für nachhaltigen Konsum."
       },
       "sampling_main": "sustainable_economy_consumption"
     },
@@ -417,7 +417,7 @@
           "sustainable_finance"
         ],
         "optional": [],
-        "reason": "Kantonal bankanın sürdürülebilir finans uygulamaları açıkça konu ediliyor."
+        "reason": "Nachhaltige Finanzpraktiken der Kantonalbank sind ausdrücklich Thema."
       },
       "sampling_main": "sustainable_economy_consumption"
     },
@@ -444,7 +444,7 @@
           "food_consumption"
         ],
         "optional": [],
-        "reason": "Sürdürülebilir tüketim bu alt kategorinin açık kapsamındadır."
+        "reason": "Nachhaltiger Konsum gehört ausdrücklich zu dieser Unterkategorie."
       },
       "sampling_main": "sustainable_economy_consumption"
     },
@@ -494,7 +494,7 @@
           "environmental_law",
           "environmental_research_education"
         ],
-        "reason": "Başlık döngüsel ekonomi ve kaynak verimliliğini birlikte istiyor; içerik çevre yasasında bilgi platformu kurulmasını öngörüyor."
+        "reason": "Der Titel verlangt Kreislaufwirtschaft und Ressourceneffizienz; der Inhalt sieht eine Informationsplattform im Umweltrecht vor."
       },
       "sampling_main": "sustainable_economy_consumption"
     },
@@ -533,7 +533,7 @@
           "waters",
           "circular_economy"
         ],
-        "reason": "Kantonal çevre yasasının revizyonu; mevcut içerikte jeotermi, kirli toprak, atık su ve ambalaj azaltma maddeleri de var."
+        "reason": "Revision des kantonalen Umweltgesetzes; der Inhalt enthält auch Bestimmungen zu Geothermie, belasteten Böden, Abwasser und Verpackungsreduktion."
       },
       "sampling_main": "environment_policy"
     },
@@ -560,7 +560,7 @@
           "environmental_research_education"
         ],
         "optional": [],
-        "reason": "Başlık açıkça çevre eğitimi ve çevre terbiyesidir; genel okul konusu değildir."
+        "reason": "Der Titel betrifft ausdrücklich Umweltbildung und -erziehung, kein allgemeines Schulthema."
       },
       "sampling_main": "environment_policy"
     },
@@ -589,7 +589,7 @@
         "optional": [
           "climate_energy_other"
         ],
-        "reason": "Özel bir iklim fonu; çevresel amaçlı finansman açıkça belirtiliyor."
+        "reason": "Ein spezifischer Klimafonds; die Finanzierung mit Umweltzweck wird ausdrücklich genannt."
       },
       "sampling_main": "environment_policy"
     },
@@ -616,7 +616,7 @@
           "public_sector"
         ],
         "optional": [],
-        "reason": "Kantonun ekolojik ölçütlerle kamu alımı, kamu sektörünün çevre uygulamasıdır."
+        "reason": "Öffentliche Beschaffung des Kantons nach ökologischen Kriterien ist Umweltpraxis der öffentlichen Hand."
       },
       "sampling_main": "environment_policy"
     },
@@ -645,7 +645,7 @@
         "optional": [
           "climate_energy_other"
         ],
-        "reason": "Paris İklim Anlaşması'na uyum açıkça konu ediliyor."
+        "reason": "Die Einhaltung des Pariser Klimaabkommens ist ausdrücklich Thema."
       },
       "sampling_main": "environment_policy"
     },
@@ -672,7 +672,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Sınıf ve okul mekânı ihtiyacı; çevre bağlantısı yok."
+        "reason": "Klassen- und Schulraumbedarf; kein Umweltbezug."
       }
     },
     {
@@ -698,7 +698,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "İstatistik kurumu personeli; çevresel konu belirtilmiyor."
+        "reason": "Personal des Statistischen Amts; kein Umweltthema genannt."
       }
     },
     {
@@ -724,7 +724,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Devlet başkanları; çevre politikası belirtilmiyor."
+        "reason": "Staatspräsidenten; keine Umweltpolitik genannt."
       }
     },
     {
@@ -750,7 +750,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Genel üniversite ve araştırma ihtiyaçları; çevre araştırması belirtilmiyor."
+        "reason": "Allgemeine Bedürfnisse von Universität und Forschung; keine Umweltforschung genannt."
       }
     },
     {
@@ -776,7 +776,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Parlamentoda kişisel bütünlük; tür/habitat koruması veya çevre eğitimi değildir."
+        "reason": "Persönliche Integrität im Parlament; weder Arten- und Lebensraumschutz noch Umweltbildung."
       }
     },
     {
@@ -802,7 +802,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Öğrenci konutu ihtiyacı; enerji verimliliği veya doğal habitat konusu belirtilmiyor."
+        "reason": "Wohnraum für Studierende; weder Energieeffizienz noch natürliche Lebensräume genannt."
       }
     },
     {
@@ -828,7 +828,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Genel vergi indirimleri; yeşil finans konusu belirtilmiyor."
+        "reason": "Allgemeine Steuerabzüge; keine grüne Finanzierung genannt."
       }
     },
     {
@@ -854,7 +854,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Üniversite çalışanlarının çalışma koşulları; çevre araştırması değildir."
+        "reason": "Arbeitsbedingungen von Universitätsangestellten; keine Umweltforschung."
       }
     },
     {
@@ -880,7 +880,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Okul mekânı planlaması; çevresel arazi planlaması belirtilmiyor."
+        "reason": "Schulraumplanung; keine umweltbezogene Raumplanung genannt."
       }
     },
     {
@@ -906,7 +906,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Kamusal alanda video gözetimi; kamu çevre uygulaması değildir."
+        "reason": "Videoüberwachung im öffentlichen Raum; keine Umweltpraxis der öffentlichen Hand."
       }
     },
     {
@@ -932,7 +932,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Tiyatro konusu; çevre bağlantısı yok."
+        "reason": "Theater; kein Umweltbezug."
       }
     },
     {
@@ -958,7 +958,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Konsey üyesi seçimi; genel parlamento işlemidir."
+        "reason": "Wahl eines Ratsmitglieds; allgemeines Parlamentsgeschäft."
       }
     },
     {
@@ -984,7 +984,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Bir soruşturma için şeffaflık bütçesi; çevre fonu değildir."
+        "reason": "Budget für Transparenz in einer Untersuchung; kein Umweltfonds."
       }
     },
     {
@@ -1010,7 +1010,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Belediye binasında AB bayrağı; uluslararası çevre politikası değildir."
+        "reason": "EU-Flagge am Stadthaus; keine internationale Umweltpolitik."
       }
     },
     {
@@ -1036,7 +1036,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Seçim bürosu üyeliği; genel idari konudur."
+        "reason": "Mitgliedschaft im Wahlbüro; allgemeines Verwaltungsgeschäft."
       }
     },
     {
@@ -1062,7 +1062,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "LGBTI hakları; mevcut girdide çevre bağlantısı yok."
+        "reason": "Anliegen von LGBTI-Personen; in den vorhandenen Daten kein Umweltbezug."
       }
     },
     {
@@ -1088,7 +1088,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Cannabis testleri; çevre veya tarımsal biyolojik çeşitlilik konusu belirtilmiyor."
+        "reason": "Cannabis-Tests; weder Umwelt- noch Agrarbiodiversitätsthema genannt."
       }
     },
     {
@@ -1114,7 +1114,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Yenilikçi öğrenme mekânları; çevre eğitimi belirtilmiyor."
+        "reason": "Innovative Lernräume; keine Umweltbildung genannt."
       }
     },
     {
@@ -1140,7 +1140,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Evde sağlık hizmeti; çevre konusu değil."
+        "reason": "Spitex; kein Umweltthema."
       }
     },
     {
@@ -1166,7 +1166,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Okulda COVID; halk sağlığı konusudur, çevre eğitimi değildir."
+        "reason": "COVID an einer Schule; Thema der öffentlichen Gesundheit, keine Umweltbildung."
       }
     },
     {
@@ -1193,7 +1193,7 @@
           "environmental_law"
         ],
         "optional": [],
-        "reason": "Elektrikli ulaşım planı ve çevre yasasının değiştirilmesi iki ayrı açık konudur."
+        "reason": "Ein Konzept für Elektromobilität und die Änderung des Umweltgesetzes sind zwei ausdrücklich genannte Themen."
       },
       "case_type": "multilabel"
     },
@@ -1221,7 +1221,7 @@
           "climate_energy_other"
         ],
         "optional": [],
-        "reason": "Döngüsel ekonomi ve iklim krizi birlikte belirtiliyor; özel bir enerji teknolojisi yok."
+        "reason": "Kreislaufwirtschaft und Klimakrise werden gemeinsam genannt; keine spezifische Energietechnologie."
       },
       "case_type": "multilabel"
     },
@@ -1253,7 +1253,7 @@
           "environmental_law",
           "species_habitats"
         ],
-        "reason": "Ormanda pestisit kullanımı ve suların/organizmaların korunması birlikte belirtiliyor. Tarım uygulaması açık olmadığından tarım etiketi zorunlu değil."
+        "reason": "Pestizideinsatz im Wald sowie Schutz von Gewässern und Organismen werden gemeinsam genannt. Da keine landwirtschaftliche Praxis genannt wird, ist das Landwirtschaftsthema nicht erforderlich."
       },
       "case_type": "multilabel"
     },
@@ -1303,7 +1303,7 @@
         "optional": [
           "climate_energy_other"
         ],
-        "reason": "Döngüsel ekonomi, doğal kaynak verimliliği ve çevre yasası değişikliği; içerikte iklim yükünün azaltılması da anılıyor."
+        "reason": "Kreislaufwirtschaft, Ressourceneffizienz und eine Änderung des Umweltrechts; der Inhalt nennt zudem die Reduktion der Klimabelastung."
       },
       "case_type": "multilabel"
     },
@@ -1372,7 +1372,7 @@
           "environment_policy_other",
           "environmental_research_education"
         ],
-        "reason": "İklim ve biyolojik çeşitlilik birlikte korunuyor. İçerikte orman, sulak alan, toprak ve izleme örnekleri var; iklimle birlikte en az bir biyolojik çeşitlilik etiketi gerekli."
+        "reason": "Klima und Biodiversität werden gemeinsam geschützt. Der Inhalt nennt Wald, Feuchtgebiete, Boden und Monitoring; neben Klima ist mindestens ein Biodiversitätsthema erforderlich."
       },
       "case_type": "multilabel"
     },
@@ -1399,7 +1399,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Proje adı TransRUN II tek başına sürdürülebilir ulaşımı kanıtlamıyor; bağlı içerik yok."
+        "reason": "Der Projektname TransRUN II belegt allein keine nachhaltige Mobilität; kein verknüpfter Inhalt."
       },
       "case_type": "ambiguous"
     },
@@ -1426,7 +1426,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Genel yıllık rapor başlığından çevre içeriği çıkarılamaz."
+        "reason": "Aus dem Titel eines allgemeinen Geschäftsberichts lässt sich kein Umweltinhalt ableiten."
       },
       "case_type": "ambiguous"
     },
@@ -1453,7 +1453,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Belediye bahçecilik biriminin bütçesi çevresel olabilir; mevcut başlık amacı belirtmediğinden tahmin yapılmamalı."
+        "reason": "Das Budget der Stadtgärtnerei kann umweltbezogen sein; der Titel nennt den Zweck nicht, daher keine Annahme."
       },
       "case_type": "ambiguous"
     },
@@ -1480,7 +1480,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Alan adı tek başına çevresel arazi kullanım sorununu kanıtlamıyor."
+        "reason": "Der Arealname allein belegt keine umweltbezogene Bodennutzungsfrage."
       },
       "case_type": "ambiguous"
     },
@@ -1507,7 +1507,7 @@
           "other"
         ],
         "optional": [],
-        "reason": "Sürdürülebilir kış hizmeti ekonomik sürekliliği de ifade edebilir; mevcut metinde ekolojik etki açık değil."
+        "reason": "Ein nachhaltiger Winterdienst kann auch wirtschaftliche Dauerhaftigkeit meinen; eine ökologische Wirkung ist im vorhandenen Text nicht klar."
       },
       "case_type": "ambiguous"
     }
