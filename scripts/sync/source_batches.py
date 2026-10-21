@@ -56,6 +56,8 @@ class BatchSource:
         self.scanned = 0
         self.total_records = None
         self.reconciliation_ids = self.state.get("reconciliation_ids")
+        # Extra query parameters for API mode, e.g. {"exclude_null": "updated_at"}.
+        self.params = {}
 
     def inventory(self):
         if self.reconciliation_ids is not None:
@@ -142,7 +144,8 @@ class BatchSource:
     def next(self, sort_by):
         if self.mode == "api":
             try:
-                data = request(self.client, self.url, params={"offset": self.position, "limit": PAGE_SIZE, "sort_by": sort_by}).json()
+                data = request(self.client, self.url, params={"offset": self.position, "limit": PAGE_SIZE,
+                                                             "sort_by": sort_by, **self.params}).json()
             except httpx.HTTPStatusError as exc:
                 if exc.response.status_code != 400 or not exc.response.json().get("type", "").endswith("offset-cap-exceeded"):
                     raise

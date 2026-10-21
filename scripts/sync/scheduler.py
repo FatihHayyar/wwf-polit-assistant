@@ -1,6 +1,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from datetime import datetime
@@ -13,6 +14,19 @@ from apscheduler.triggers.cron import CronTrigger
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TIMEZONE = ZoneInfo("Europe/Zurich")
+# OpenParlData publishes its daily exports around 02:15 UTC (04:15 in summer,
+# 03:15 in winter Zurich time). Running afterwards picks up the night's changes
+# on the same day instead of one day later.
+DEFAULT_SYNC_TIME = "04:30"
+
+
+def sync_time() -> tuple[int, int]:
+    """Daily start time from SYNC_TIME (HH:MM, Europe/Zurich)."""
+    value = os.environ.get("SYNC_TIME", DEFAULT_SYNC_TIME).strip()
+    hour, _, minute = value.partition(":")
+    if not (hour.isdigit() and minute.isdigit() and int(hour) < 24 and int(minute) < 60):
+        raise ValueError(f"SYNC_TIME must be HH:MM, got {value!r}.")
+    return int(hour), int(minute)
 
 
 def run_scheduled_sync() -> None:
@@ -41,12 +55,13 @@ def run_scheduled_sync() -> None:
 
 def create_scheduler() -> BlockingScheduler:
     scheduler = BlockingScheduler(timezone=TIMEZONE)
+    hour, minute = sync_time()
 
     scheduler.add_job(
         run_scheduled_sync,
         trigger=CronTrigger(
-            hour=3,
-            minute=0,
+            hour=hour,
+            minute=minute,
             timezone=TIMEZONE,
         ),
         id="daily_parliamentary_sync",
@@ -64,7 +79,8 @@ def main() -> None:
 
     print("=" * 60, flush=True)
     print("WWF POLIT-ASSISTANT - AUTOMATIC SYNC SCHEDULER", flush=True)
-    print("Schedule: Every day at 03:00 Europe/Zurich", flush=True)
+    hour, minute = sync_time()
+    print(f"Schedule: Every day at {hour:02d}:{minute:02d} Europe/Zurich", flush=True)
     print(f"Next run: {scheduler.get_job('daily_parliamentary_sync').next_run_time if scheduler.running else 'Available after scheduler starts'}", flush=True)
     print("=" * 60, flush=True)
 

@@ -2,22 +2,13 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
 from datetime import datetime, timezone
 
-import httpx
-from sqlalchemy import text
 
-from app.db.database import SessionLocal
-from app.models.entities import Voting
 
 
 API_URL = "https://api.openparldata.ch/v1/votings/"
-DATASET = "votings"
-PAGE_SIZE = 500
 
-INITIAL_CREATED_AT = datetime(2026, 10, 6, 2, 53, 32)
-INITIAL_ID = 106401
 
 DIRECT_FIELDS = (
     "body_id",
@@ -46,12 +37,6 @@ LANGUAGE_FIELDS = {
     "meaning_of_yes": ("de", "fr", "it"),
     "meaning_of_no": ("de", "fr", "it"),
 }
-
-
-@dataclass
-class Checkpoint:
-    created_at: datetime
-    record_id: int
 
 
 def parse_datetime(value):
@@ -109,203 +94,6 @@ def map_voting(record: dict) -> dict:
     return values
 
 
-def get_checkpoint() -> Checkpoint:
-    with SessionLocal() as db:
-        row = db.execute(
-            text(
-                """
-                SELECT last_updated_at, last_id
-                FROM sync_checkpoints
-                WHERE dataset = :dataset
-                """
-            ),
-            {"dataset": DATASET},
-        ).first()
-
-        if row is None:
-            db.execute(
-                text(
-                    """
-                    INSERT INTO sync_checkpoints (
-                        dataset,
-                        last_updated_at,
-                        last_id,
-                        status
-                    )
-                    VALUES (
-                        :dataset,
-                        :created_at,
-                        :record_id,
-                        'idle'
-                    )
-                    ON CONFLICT (dataset) DO NOTHING
-                    """
-                ),
-                {
-                    "dataset": DATASET,
-                    "created_at": INITIAL_CREATED_AT,
-                    "record_id": INITIAL_ID,
-                },
-            )
-            db.commit()
-
-            row = db.execute(
-                text(
-                    """
-                    SELECT last_updated_at, last_id
-                    FROM sync_checkpoints
-                    WHERE dataset = :dataset
-                    """
-                ),
-                {"dataset": DATASET},
-            ).first()
-
-        if row is None or row[0] is None:
-            raise RuntimeError(
-                "Voting checkpoint bulunamadi."
-            )
-
-        return Checkpoint(
-            created_at=parse_datetime(row[0]),
-            record_id=int(row[1] or 0),
-        )
-
-
-def save_checkpoint(
-    checkpoint: Checkpoint,
-    counts: dict,
-    status: str,
-    error_message: str | None = None,
-) -> None:
-    with SessionLocal() as db:
-        db.execute(
-            text(
-                """
-                UPDATE sync_checkpoints
-                SET
-                    last_updated_at = :created_at,
-                    last_id = :record_id,
-                    last_run_at = CURRENT_TIMESTAMP,
-                    status = :status,
-                    records_processed = :processed,
-                    records_new = :new,
-                    records_changed = :changed,
-                    records_unchanged = :unchanged,
-                    records_error = :errors,
-                    error_message = :error_message
-                WHERE dataset = :dataset
-                """
-            ),
-            {
-                "dataset": DATASET,
-                "created_at": checkpoint.created_at,
-                "record_id": checkpoint.record_id,
-                "status": status,
-                "processed": (
-                    counts["NEW"]
-                    + counts["CHANGED"]
-                    + counts["UNCHANGED"]
-                ),
-                "new": counts["NEW"],
-                "changed": counts["CHANGED"],
-                "unchanged": counts["UNCHANGED"],
-                "errors": counts["ERROR"],
-                "error_message": error_message,
-            },
-        )
-        db.commit()
-
-
-def record_cursor(record: dict) -> tuple[datetime, int]:
-    created_at = parse_datetime(
-        record.get("created_at")
-    )
-
-    if created_at is None:
-        raise ValueError(
-            f"Voting {record.get('id')}: created_at eksik."
-        )
-
-    return created_at, int(record["id"])
-
-
-def fetch_page(
-    client: httpx.Client,
-    offset: int,
-) -> list[dict]:
-    response = client.get(
-        API_URL,
-        params={
-            "limit": PAGE_SIZE,
-            "offset": offset,
-            "sort_by": "-created_at,-id",
-        },
-    )
-
-    response.raise_for_status()
-
-    records = response.json().get("data")
-
-    if not isinstance(records, list):
-        raise RuntimeError(
-            "API response: data listesi bulunamadi."
-        )
-
-    return records
-
-
-def sync_one_voting(record: dict) -> tuple[str, list[str]]:
-    values = map_voting(record)
-
-    with SessionLocal() as db:
-        try:
-            voting = db.get(
-                Voting,
-                values["id"],
-            )
-
-            if voting is None:
-                db.add(Voting(**values))
-                db.commit()
-                return "NEW", []
-
-            changed_fields = []
-
-            for field, value in values.items():
-                if field in (
-                    "id",
-                    "created_at",
-                    "updated_at",
-                ):
-                    continue
-
-                if getattr(voting, field) != value:
-                    setattr(voting, field, value)
-                    changed_fields.append(field)
-
-            if changed_fields:
-                if "updated_at" in values:
-                    voting.updated_at = values["updated_at"]
-
-                db.commit()
-                return "CHANGED", changed_fields
-
-            if (
-                "updated_at" in values
-                and voting.updated_at != values["updated_at"]
-            ):
-                voting.updated_at = values["updated_at"]
-                db.commit()
-            else:
-                db.rollback()
-
-            return "UNCHANGED", []
-
-        except Exception:
-            db.rollback()
-            raise
-
-
 def run_sync(recheck: bool = False) -> None:
     from scripts.sync.entity_sync import run_dataset
     run_dataset("votings", recheck=recheck)
@@ -317,7 +105,7 @@ def main() -> None:
     parser.add_argument(
         "--recheck",
         action="store_true",
-        help="Eski Voting kayitlarini da kontrol et.",
+        help="Compare every voting record instead of an incremental run.",
     )
 
     args = parser.parse_args()
