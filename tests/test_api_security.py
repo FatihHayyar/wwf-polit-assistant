@@ -200,6 +200,14 @@ class SessionTests(ApiTestCase):
 
 
 class SecurityHeaderTests(ApiTestCase):
+    def test_assets_are_served_with_executable_types(self):
+        # "nosniff" makes browsers refuse scripts served as text/plain.
+        for name, expected in (("app.js", "text/javascript"), ("style.css", "text/css")):
+            with self.subTest(name=name):
+                response = self.client.get(f"/assets/{name}")
+                self.assertEqual(response.headers["x-content-type-options"], "nosniff")
+                self.assertTrue(response.headers["content-type"].startswith(expected), response.headers["content-type"])
+
     def test_frontend_sends_strict_headers(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)

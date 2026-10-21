@@ -1,4 +1,5 @@
 import hashlib
+import mimetypes
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -17,6 +18,10 @@ app = FastAPI(
 app.include_router(api_router)
 
 WEB_DIR = Path(__file__).parent / "web"
+# On Windows, mimetypes reads the registry, which may map .js to text/plain.
+# With "nosniff" the browser then refuses to run the scripts.
+mimetypes.add_type("text/javascript", ".js")
+mimetypes.add_type("text/css", ".css")
 app.mount("/assets", StaticFiles(directory=WEB_DIR), name="assets")
 
 # The frontend uses no inline scripts or styles, so a strict policy applies.
