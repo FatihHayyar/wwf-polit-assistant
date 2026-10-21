@@ -1,4 +1,8 @@
-"""Compare pushed rules with configured rules using independent real-data examples."""
+"""Compare the baseline rules with the configured rules on the 50-record development set.
+
+The rules were tuned against these records, so the result is a regression check and
+not an unbiased quality estimate. Use ``scripts.evaluate_holdout`` for the held-out set.
+"""
 import ast
 import json
 import subprocess
@@ -16,6 +20,7 @@ from app.db.database import Base
 from scripts.seed_classification import seed_taxonomy
 
 BASELINE_REVISION = "b20f074557c310f0b1a52df15ca3336de73ed56d"
+EVIDENCE_DIR = Path("docs/05-testing/evidence")
 
 
 @compiles(BigInteger, "sqlite")
@@ -70,21 +75,25 @@ def run():
                "groups": {group: {"total": sum(r["group"] == group for r in new),
                                    "correct": sum(r["correct"] for r in new if r["group"] == group)}
                           for group in {r["group"] for r in new}}}
-    Path("rule_quality_results.json").write_text(json.dumps({"summary": summary, "baseline": old, "results": new},
-                                                         ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    lines = ["# Kural tabanlı sınıflandırma testi", "",
-             f"Son push: {summary['baseline_correct']}/50; yeni kurallar: {summary['correct']}/50. "
-             "Gerçek veritabanına yazılmadı; iki sürüm ayrı geçici SQLite veritabanlarında aynı 50 kaynak kaydıyla test edildi.", "",
-             "Beklentiler kaynak metinlerinden bağımsız belirlenmiştir. Bu geliştirme seti tek başına tüm verinin doğruluğunu kanıtlamaz.", "",
-             "| Kaynak | Başlık | Beklenen zorunlu kodlar | Yeni öneri | Sonuç |", "|---|---|---|---|---|"]
+    EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
+    (EVIDENCE_DIR / "rule_quality_results.json").write_text(json.dumps({"summary": summary, "baseline": old, "results": new},
+                                                                      ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    lines = ["# Regelqualität auf dem Entwicklungsset", "",
+             f"Frühere Regeln: {summary['baseline_correct']}/50; aktuelle Regeln: {summary['correct']}/50. "
+             "Beide Versionen wurden mit denselben 50 Quelldatensätzen in getrennten temporären SQLite-Datenbanken geprüft; "
+             "PostgreSQL wurde nicht verändert.", "",
+             "**Einschränkung:** Die Regeln wurden anhand dieser Beispiele verbessert. Das Ergebnis ist eine Regressionsprüfung "
+             "und keine unverzerrte Qualitätsschätzung. Die Messung auf ungesehenen Daten steht in "
+             "[holdout-evaluation.md](holdout-evaluation.md).", "",
+             "| Quelle | Titel | Erwartete Pflichtcodes | Aktuelle Zuordnung | Ergebnis |", "|---|---|---|---|---|"]
     for source, result in zip(records, new):
         expected = ", ".join(source["expected"]["required"])
         if source["expected"].get("required_any"):
-            expected += "; ayrıca uygun bir biyolojik çeşitlilik etiketi"
+            expected += "; zusätzlich ein passendes Biodiversitätsthema"
         title = str(result["title"]).replace("|", "\\|").replace("\n", " ")
         lines.append(f"| {result['dataset']}:{result['id']} | {title} | {expected} | {', '.join(result['proposed'])} | "
-                     + ("Doğru" if result["correct"] else "Yanlış") + " |")
-    Path("rule_quality_report_tr.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+                     + ("korrekt" if result["correct"] else "falsch") + " |")
+    (EVIDENCE_DIR / "rule-quality-development-set.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps(summary))
     for r in new:
         if not r["correct"]:

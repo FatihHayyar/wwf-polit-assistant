@@ -16,10 +16,10 @@ class Settings(BaseSettings):
     google_client_id: str | None = None
     google_client_secret: str | None = None
 
-    # Verification başarılı olduktan sonra frontend'e yönlendirme
+    # Frontend address used for redirects after successful verification
     frontend_url: str = "http://localhost:3000"
     
-    # POST /api/v1/sync/run icin yonetici anahtari.
+    # Administrator key for the /api/v1/sync endpoints.
     sync_api_key: str | None = None
 
     # E-mail / verification
@@ -31,11 +31,11 @@ class Settings(BaseSettings):
     smtp_from_email: str | None = None
     smtp_from_name: str = "WWF Polit-Assistant"
 
-    # Frontend'e gönderilecek doğrulama linkinin temel adresi.
-    # Örn: https://polit-assistant.example.ch
+    # Public base URL used in verification and login links.
+    # Example: https://polit-assistant.example.ch
     verification_base_url: str = "http://localhost:8000"
 
-    # Verification token geçerlilik süresi.
+    # Lifetime of verification and login tokens.
     email_verification_minutes: int = 30
 
     model_config = SettingsConfigDict(

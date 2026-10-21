@@ -72,4 +72,4 @@ Erfolgreiche Stapel werden einzeln gespeichert. Unterbrochene Läufe überspring
 
 Dokumente und Texte werden standardmässig mit bis zu vier lokalen Prozessen parallel ausgewertet (`--workers 1` für serielle Verarbeitung). Die Hilfsprozesse lesen ausschliesslich Regeln; alle Datenbankänderungen erfolgen im Hauptprozess. `python -m scripts.verify_rule_workers` vergleicht beide Verfahren schreibgeschützt anhand des Testsets und 250 weiterer Dokumente.
 
-`python -m scripts.rule_backfill_status` prüft danach schreibgeschützt die Abdeckung aller neun Datensatztypen und meldet fehlende sowie veraltete Zuordnungen in `rule_backfill_status.json`.
+`python -m scripts.rule_backfill_status` prüft danach schreibgeschützt die Abdeckung aller neun Datensatztypen und meldet fehlende sowie veraltete Zuordnungen in `docs/05-testing/evidence/rule_backfill_status.json`.

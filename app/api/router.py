@@ -1,4 +1,4 @@
-﻿
+
 from fastapi import APIRouter
 from app.api.routes.entities import router as entities_router
 

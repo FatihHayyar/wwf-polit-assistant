@@ -43,3 +43,24 @@ logs/
 
 # Local coursework package: report drafts, correspondence and submission files
 wipro-submission/
+
+# Backup and scratch files
+*.bak
+*.orig
+*_backup.py
+*.tmp
+
+# Windows/PowerShell artefacts accidentally created in the project folder
+Microsoft/
+desktop.ini
+
+# Generated local reports (curated evidence lives in docs/05-testing/evidence/)
+/*_report*.txt
+/*_report*.md
+/*_results.json
+/*_status.json
+/export_structure.txt
+/sync_sources.txt
+
+# Node tooling for local browser checks
+node_modules/

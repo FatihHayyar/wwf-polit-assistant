@@ -202,8 +202,8 @@ def add_category_rules(
 
     seen_concept_codes: set[str] = set()
 
-    # category içindeki normalize edilmiş termlerin hangi
-    # semantic concept'e ait olduğunu takip eder.
+    # Tracks which semantic concept each normalized term
+    # of the category belongs to.
     seen_category_terms: dict[
         tuple[str, str],
         str,
@@ -276,9 +276,9 @@ def add_category_rules(
                 )
 
                 # Örn. Grossverbraucher / Großverbraucher:
-                # casefold() sonrasında aynı string olur.
-                # Aynı concept içindeyse ikinci DB rule'una
-                # ihtiyacımız yok; matcher zaten casefold eder.
+                # Terms become identical after casefold(). Within the
+                # same concept no second DB rule is needed because
+                # the matcher casefolds as well.
                 if normalized in seen_terms:
                     continue
 

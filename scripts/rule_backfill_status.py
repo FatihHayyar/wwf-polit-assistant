@@ -8,6 +8,8 @@ from app.models.classification import AffairClassification
 from app.models.entity_classification import EntityClassification
 from app.services.entity_registry import ENTITIES
 
+EVIDENCE_DIR = Path("docs/05-testing/evidence")
+
 
 def main():
     results = []
@@ -27,7 +29,8 @@ def main():
             results.append(dict(dataset=dataset, total=total, covered=covered, missing=total-covered, outdated_rows=outdated))
     result = dict(version=CLASSIFIER_VERSION, total=sum(r["total"] for r in results),
                   complete=all(r["missing"] == 0 and r["outdated_rows"] == 0 for r in results), datasets=results)
-    Path("rule_backfill_status.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
+    (EVIDENCE_DIR / "rule_backfill_status.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result))
 
 

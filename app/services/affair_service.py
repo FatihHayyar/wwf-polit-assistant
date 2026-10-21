@@ -1,4 +1,4 @@
-﻿import math
+import math
 
 from sqlalchemy import Select, extract, func, or_, select
 from sqlalchemy.orm import Session
