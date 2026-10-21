@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from types import MethodType, SimpleNamespace
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from app.classification.classifier import AffairClassifier, build_phrase_pattern, normalize_text
@@ -60,6 +60,54 @@ class RuleClassifierTests(unittest.TestCase):
         self.assertEqual(self.codes("Öffentliche Beschaffung"), set())
         self.assertEqual(self.codes("Ökologische Beschaffung der öffentlichen Hand"), {"public_sector"})
         self.assertEqual(self.codes("Ökologische Kriterien"), set())
+
+    def test_data_centres_and_large_consumers_are_separate_climate_topics(self):
+        self.assertEqual(self.codes("Neues Rechenzentrum in Dielsdorf"), {"data_centers"})
+        self.assertEqual(self.codes("Energieverbrauch von Grossverbrauchern"), {"large_consumers"})
+        parents = {child.code: parent.code for parent in get_categories(self.db) for child in parent.subcategories}
+        for code in ("data_centers", "large_consumers", "public_sector"):
+            self.assertEqual(parents[code], "climate_energy")
+
+    def test_infix_terms_match_inside_compounds(self):
+        self.assertEqual(self.codes("Kleinwasserkraftwerk am Rhein"), {"renewable_electricity"})
+        self.assertEqual(self.codes("Teilrevision Kantonales Energiegesetz"), {"climate_energy_other"})
+
+    def test_exclusions_block_place_and_school_names(self):
+        self.assertEqual(self.codes("Überbauung Plaines-du-Loup"), set())
+        self.assertEqual(self.codes("Don Bosco Schule"), set())
+
+    def test_public_actor_is_read_only_from_titles(self):
+        content = SimpleNamespace(id=1, title_de="Klimastrategie", **{field: None for field in (
+            "title_long_de", "title_fr", "title_long_fr", "title_it", "title_long_it", "title_rm", "title_long_rm")})
+        texts = [SimpleNamespace(id=1, text_de="Der Kanton beschafft ökologisch.", text_fr=None, text_it=None, text_rm=None)]
+        codes = {self.classifier.categories[m.category_id].code
+                 for m in self.classifier.accepted_matches(content, texts)}
+        self.assertNotIn("public_sector", codes)
+
+    def test_replaced_category_subscriptions_move_to_successors(self):
+        from app.models.subscription_profile import SubscriptionProfile
+        from app.models.user import User
+        from app.models.classification import ClassificationCategory
+        from scripts.seed_classification import transfer_replaced_subscriptions
+        engine = create_engine("sqlite:///:memory:")
+        try:
+            Base.metadata.create_all(engine)
+            with Session(engine) as db:
+                seed_taxonomy(db)
+                old = ClassificationCategory(code="large_consumers_datacenters", sort_order=0,
+                                             **{f"name_{lang}": "Alt" for lang in ("de", "fr", "it", "rm")},
+                                             active=False, is_fallback=False, classification_threshold=8)
+                db.add_all([old, User(id=1, email="a@example.com", is_active=True, email_verified=True)])
+                db.flush()
+                db.add(SubscriptionProfile(user_id=1, name="Alt", category_ids=[old.id]))
+                db.flush()
+                self.assertEqual(transfer_replaced_subscriptions(db, load_taxonomy()), 1)
+                ids = db.scalars(select(SubscriptionProfile.category_ids)).one()
+                codes = {db.get(ClassificationCategory, value).code for value in ids}
+                self.assertEqual(codes, {"large_consumers_datacenters", "data_centers", "large_consumers"})
+                self.assertEqual(transfer_replaced_subscriptions(db, load_taxonomy()), 0)
+        finally:
+            engine.dispose()
 
     def test_prefixes_preserve_word_boundaries_and_short_names(self):
         self.assertTrue(build_phrase_pattern("photovoltaik", "prefix").search("photovoltaikanlage"))

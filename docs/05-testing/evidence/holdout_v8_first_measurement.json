@@ -1,0 +1,132 @@
+{
+  "description": "Erste, unabhängige Messung von rule-based-v8 auf Prüfset B vom 21. Oktober 2026, vor jeder Korrektur anhand von B.",
+  "version": "rule-based-v8",
+  "B": {
+    "records": 300,
+    "strict_correct": 280,
+    "ambiguous_records": 41,
+    "ambiguous_classified_as_topic": 5,
+    "relevance": {
+      "tp": 24,
+      "fp": 0,
+      "fn": 12,
+      "tn": 223,
+      "precision": 1.0,
+      "recall": 0.667,
+      "f1": 0.8,
+      "precision_ci95": [
+        0.862,
+        1.0
+      ],
+      "recall_ci95": [
+        0.503,
+        0.798
+      ],
+      "accuracy": 0.954,
+      "records": 259
+    },
+    "main_topics": {
+      "micro_precision": 0.821,
+      "micro_recall": 0.605,
+      "counts": {
+        "fn": 15,
+        "tp": 23,
+        "fp": 5
+      },
+      "topics": {
+        "biodiversity_landscape": {
+          "tp": 6,
+          "fp": 1,
+          "fn": 2,
+          "precision": 0.857,
+          "recall": 0.75
+        },
+        "climate_energy": {
+          "tp": 14,
+          "fp": 3,
+          "fn": 4,
+          "precision": 0.824,
+          "recall": 0.778
+        },
+        "environment_policy": {
+          "tp": 1,
+          "fp": 1,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1.0
+        },
+        "sustainable_economy_consumption": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 3,
+          "precision": 1.0,
+          "recall": 0.4
+        }
+      }
+    }
+  },
+  "B_rule_based_v7": {
+    "records": 300,
+    "strict_correct": 271,
+    "ambiguous_records": 41,
+    "ambiguous_classified_as_topic": 1,
+    "relevance": {
+      "tp": 13,
+      "fp": 0,
+      "fn": 23,
+      "tn": 223,
+      "precision": 1.0,
+      "recall": 0.361,
+      "f1": 0.53,
+      "precision_ci95": [
+        0.772,
+        1.0
+      ],
+      "recall_ci95": [
+        0.225,
+        0.524
+      ],
+      "accuracy": 0.911,
+      "records": 259
+    },
+    "main_topics": {
+      "micro_precision": 0.75,
+      "micro_recall": 0.316,
+      "counts": {
+        "fn": 26,
+        "tp": 12,
+        "fp": 4
+      },
+      "topics": {
+        "biodiversity_landscape": {
+          "tp": 4,
+          "fp": 1,
+          "fn": 4,
+          "precision": 0.8,
+          "recall": 0.5
+        },
+        "climate_energy": {
+          "tp": 7,
+          "fp": 3,
+          "fn": 10,
+          "precision": 0.7,
+          "recall": 0.412
+        },
+        "environment_policy": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "sustainable_economy_consumption": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 5,
+          "precision": null,
+          "recall": 0.0
+        }
+      }
+    }
+  }
+}

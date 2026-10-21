@@ -1,4 +1,4 @@
-"""Measure the rule classifier on the held-out sample of real affairs.
+"""Measure the rule classifier on held-out samples of real affairs.
 
 The sample was drawn at random and labelled blind (see the fixture header).
 The script classifies the stored inputs in a temporary SQLite database, so
@@ -25,8 +25,13 @@ from app.classification.taxonomy import load_taxonomy
 from app.db.database import Base
 from scripts.seed_classification import seed_taxonomy
 
-FIXTURE = Path("tests/fixtures/classification_holdout_2026-10-21.json.gz")
+FIXTURE = Path("tests/fixtures/classification_holdout_a_2026-10-21.json.gz")
+FIXTURES = {"A": FIXTURE, "B": Path("tests/fixtures/classification_holdout_b_2026-10-21.json.gz")}
+# Codes that no longer exist in the taxonomy but occur in stored labels.
+LEGACY_PARENTS = {"large_consumers_datacenters": "climate_energy"}
 EVIDENCE_DIR = Path("docs/05-testing/evidence")
+# Frozen result of the first v8 run on set B, before any change informed by B.
+FIRST_MEASUREMENT = EVIDENCE_DIR / "holdout_v8_first_measurement.json"
 OTHER = "other"
 
 
@@ -42,7 +47,7 @@ def load_fixture(path: Path = FIXTURE) -> dict:
 
 def parent_map(taxonomy) -> dict[str, str]:
     """Map every category code to its main topic code."""
-    mapping = {}
+    mapping = dict(LEGACY_PARENTS)
     for parent in taxonomy:
         mapping[parent["code"]] = parent["code"]
         for child in parent.get("children", []):
@@ -76,11 +81,20 @@ def is_relevant(expected) -> bool:
     return bool(set(expected["required"]) - {OTHER} or expected.get("required_any"))
 
 
-def score_record(expected, proposed: set[str]) -> dict:
-    """Strict check: every required topic found and nothing outside the accepted set."""
+def score_record(expected, proposed: set[str], parents: dict[str, str] | None = None) -> dict:
+    """Strict check: every required topic found and nothing outside the accepted set.
+
+    A required local fallback ("<main>_other") is also satisfied by another
+    accepted subcategory of the same main topic: by definition the classifier
+    only assigns the fallback when no specific subcategory applies.
+    """
     required = set(expected["required"])
     groups = [set(group) for group in expected.get("required_any", [])]
     allowed = required | set(expected.get("optional", [])) | set().union(*groups)
+    if parents:
+        required = {code for code in required if not (
+            code.endswith("_other") and any(other in allowed and other != code and parents.get(other) == parents.get(code)
+                                            for other in proposed))}
     missing = sorted(required - proposed)
     missing_any = [sorted(group) for group in groups if not proposed & group]
     extra = sorted(proposed - allowed)
@@ -157,7 +171,7 @@ def evaluate(fixture: dict, predictions: dict[int, set[str]], parents: dict[str,
     records = fixture["records"]
     scored = [{"id": r["id"], "title": r["title"], "proposed": sorted(predictions[r["id"]]),
                "ambiguous": is_ambiguous(r["expected"]), "relevant": is_relevant(r["expected"]),
-               **score_record(r["expected"], predictions[r["id"]])} for r in records]
+               **score_record(r["expected"], predictions[r["id"]], parents)} for r in records]
     ambiguous = [s for s in scored if s["ambiguous"]]
     return {
         "records": len(records),
@@ -177,38 +191,15 @@ def topic_name(taxonomy, code) -> str:
     return code
 
 
-def report(fixture, current, production, taxonomy) -> str:
-    relevance = current["relevance"]
-    lines = [
-        "# Klassifikation auf einem unabhängigen Prüfset",
-        "",
-        f"**Stand: {fixture['sampling']['date']}, Klassifikator `{CLASSIFIER_VERSION}`.** "
-        "Erzeugt mit `python -m scripts.evaluate_holdout`.",
-        "",
-        "## Vorgehen",
-        "",
-        f"- **Stichprobe:** {current['records']} zufällige Geschäfte aus {fixture['sampling']['population_size']:,} "
-        "Geschäften (reproduzierbare Zufallsreihenfolge über einen festen Seed), ohne die 50 Entwicklungsbeispiele."
-        .replace(",", "'"),
-        "- **Annotation:** blind vor Einsicht in die Klassifikatorausgaben, anhand der Kategoriendefinitionen der "
-        "Taxonomie. Annotiert hat ein KI-Assistent, nicht WWF-Fachpersonen; die Labels sind deshalb eine "
-        "nachvollziehbare Referenz, aber keine fachliche Abnahme.",
-        "- **Mehrdeutige Datensätze** (z. B. allgemeine Raumplanung, öV-Angebot, Lärm) zählen in der "
-        "Relevanzmessung nicht und gelten als korrekt, solange die Zuordnung vertretbar ist.",
-        "- Die Stichprobe ist natürlich verteilt: Nur ein kleiner Teil der Geschäfte betrifft WWF-Themen. "
-        "Die Zahl der positiven Fälle ist deshalb klein, und die Konfidenzintervalle sind entsprechend breit.",
-        "",
-        "## Ergebnisse",
-        "",
-        "| Kennzahl | Aktuelle Regeln | Produktion (gespeichert) |",
-        "|---|---:|---:|",
-    ]
-    def with_ci(metrics, key):
-        interval = metrics[f"{key}_ci95"]
-        return f"{metrics[key]} ({interval[0]}–{interval[1]})" if interval else metrics[key]
+def with_ci(metrics, key):
+    interval = metrics[f"{key}_ci95"]
+    return f"{metrics[key]} ({interval[0]}–{interval[1]})" if interval else metrics[key]
 
-    rows = [
-        ("Datensätze streng korrekt", f"{current['strict_correct']}/{current['records']}", f"{production['strict_correct']}/{production['records']}"),
+
+def metric_rows(current, production):
+    return [
+        ("Datensätze streng korrekt", f"{current['strict_correct']}/{current['records']}",
+         f"{production['strict_correct']}/{production['records']}"),
         ("WWF-Relevanz: Precision (95 %-KI)", with_ci(current["relevance"], "precision"), with_ci(production["relevance"], "precision")),
         ("WWF-Relevanz: Recall (95 %-KI)", with_ci(current["relevance"], "recall"), with_ci(production["relevance"], "recall")),
         ("WWF-Relevanz: F1", current["relevance"]["f1"], production["relevance"]["f1"]),
@@ -216,10 +207,23 @@ def report(fixture, current, production, taxonomy) -> str:
         ("Hauptthemen: Precision (micro)", current["main_topics"]["micro_precision"], production["main_topics"]["micro_precision"]),
         ("Hauptthemen: Recall (micro)", current["main_topics"]["micro_recall"], production["main_topics"]["micro_recall"]),
     ]
-    lines += [f"| {label} | {a} | {b} |" for label, a, b in rows]
+
+
+def set_section(name, fixture, current, production, taxonomy, note) -> list[str]:
+    relevance = current["relevance"]
+    sampling = fixture["sampling"]
+    lines = [
+        f"## Prüfset {name}",
+        "",
+        f"{current['records']} zufällige Geschäfte, gezogen am {sampling['date']} ({sampling['method']}). {note}",
+        "",
+        f"| Kennzahl | Aktuelle Regeln (`{CLASSIFIER_VERSION}`) | Gespeichert beim Ziehen (`rule-based-v7`) |",
+        "|---|---:|---:|",
+    ]
+    lines += [f"| {label} | {a} | {b} |" for label, a, b in metric_rows(current, production)]
     lines += [
         "",
-        f"Relevanzmatrix (aktuelle Regeln, {relevance['records']} eindeutige Datensätze): "
+        f"Relevanzmatrix der aktuellen Regeln ({relevance['records']} eindeutige Datensätze): "
         f"TP {relevance['tp']}, FP {relevance['fp']}, FN {relevance['fn']}, TN {relevance['tn']}. "
         f"Mehrdeutige Datensätze: {current['ambiguous_records']}, davon "
         f"{current['ambiguous_classified_as_topic']} einem WWF-Thema zugeordnet.",
@@ -228,37 +232,84 @@ def report(fixture, current, production, taxonomy) -> str:
         "|---|---:|---:|---:|---:|---:|",
     ]
     for code, values in current["main_topics"]["topics"].items():
-        lines.append(f"| {topic_name(taxonomy, code)} | {values['tp']} | {values['fp']} | {values['fn']} | "
-                     f"{values['precision'] if values['precision'] is not None else '–'} | "
-                     f"{values['recall'] if values['recall'] is not None else '–'} |")
-    lines += ["", "## Abweichungen", "",
+        precision = values["precision"] if values["precision"] is not None else "–"
+        recall = values["recall"] if values["recall"] is not None else "–"
+        lines.append(f"| {topic_name(taxonomy, code)} | {values['tp']} | {values['fp']} | {values['fn']} | {precision} | {recall} |")
+    lines += ["", f"### Abweichungen der aktuellen Regeln in Prüfset {name}", "",
               "| Geschäft | Titel | Zuordnung | Fehlend | Zusätzlich |", "|---|---|---|---|---|"]
     for error in current["errors"]:
         title = error["title"].replace("|", "\\|")[:110]
         missing = ", ".join(error["missing"] + ["/".join(group) for group in error["missing_any"]]) or "–"
-        lines.append(f"| {error['id']} | {title} | {', '.join(error['proposed'])} | {missing} | {', '.join(error['extra']) or '–'} |")
-    lines += ["", "## Einordnung", "",
+        extra = ", ".join(error["extra"]) or "–"
+        lines.append(f"| {error['id']} | {title} | {', '.join(error['proposed'])} | {missing} | {extra} |")
+    return lines + [""]
+
+
+def report(results, taxonomy) -> str:
+    lines = [
+        "# Klassifikation auf unabhängigen Prüfsets",
+        "",
+        f"**Klassifikator `{CLASSIFIER_VERSION}`.** Erzeugt mit `python -m scripts.evaluate_holdout`.",
+        "",
+        "## Vorgehen",
+        "",
+        "- **Stichproben:** je 300 zufällige Geschäfte in reproduzierbarer Zufallsreihenfolge (fester Seed), ohne "
+        "Überschneidung mit dem Entwicklungsset und untereinander.",
+        "- **Annotation:** blind vor Einsicht in die Klassifikatorausgaben, anhand der Kategoriendefinitionen. "
+        "Annotiert hat ein KI-Assistent, nicht WWF-Fachpersonen; die Labels sind eine nachvollziehbare Referenz, "
+        "aber keine fachliche Abnahme.",
+        "- **Mehrdeutige Datensätze** (z. B. allgemeine Raumplanung, öV-Angebot, Lärm) zählen in der Relevanzmessung "
+        "nicht und gelten als korrekt, solange die Zuordnung vertretbar ist.",
+        "- **Natürliche Verteilung:** Nur ein kleiner Teil der Geschäfte betrifft WWF-Themen; die Konfidenzintervalle "
+        "(Wilson, 95 %) sind deshalb breit.",
+        "- **Reihenfolge:** Prüfset A wurde am 21. Oktober gezogen und hat `rule-based-v7` gemessen. Seine Fehlerliste "
+        "floss in die Entwicklung von `rule-based-v8` ein; für v8 ist A deshalb **nicht mehr unabhängig**. Prüfset B "
+        "wurde vor jeder Messung von v8 gezogen und annotiert und ist die massgebliche Messung für v8.",
+        "",
+    ]
+    b, a = results["B"], results["A"]
+    lines += set_section("B (massgeblich für v8)", b["fixture"], b["current"], b["production"], taxonomy,
+                         "Vor der Messung von v8 gezogen und annotiert.")
+    if FIRST_MEASUREMENT.exists():
+        first = json.loads(FIRST_MEASUREMENT.read_text(encoding="utf-8"))["B"]["relevance"]
+        lines += ["### Erstmessung auf Prüfset B", "",
+                  f"Die erste Messung von v8 auf B ist unverändert in `{FIRST_MEASUREMENT.name}` gespeichert: "
+                  f"TP {first['tp']}, FP {first['fp']}, FN {first['fn']}, TN {first['tn']}, Precision "
+                  f"{with_ci(first, 'precision')}, Recall {with_ci(first, 'recall')}, F1 {first['f1']}. Danach wurde eine Fehlerursache korrigiert, die "
+                  "auch ausserhalb von B auftrat (öffentliche Akteure wurden aus Vorstosstexten gelesen und verdrängten "
+                  "das Klima-Auffangthema). Die Werte oben enthalten diese Korrektur; da sie B gesehen hat, ist die "
+                  "Erstmessung die unabhängige Schätzung.", ""]
+    lines += set_section("A (für v8 nicht mehr unabhängig)", a["fixture"], a["current"], a["production"], taxonomy,
+                         "Unabhängige Messung von v7; für v8 nur noch Entwicklungsdaten.")
+    lines += ["## Einordnung", "",
               "Das Entwicklungsset (50/50) misst nur, ob die Regeln die Beispiele erfüllen, an denen sie verbessert wurden. "
-              "Dieses Prüfset schätzt die Qualität auf ungesehenen Daten. Es darf nicht zum Anpassen der Regeln verwendet "
-              "werden; nach Regeländerungen wird erneut gemessen und für weitere Optimierungen ein neues Prüfset gezogen. "
-              "Eine Bewertung durch WWF-Fachpersonen bleibt notwendig.", ""]
+              "Prüfsets schätzen die Qualität auf ungesehenen Daten. Sie dürfen nicht zum Anpassen der Regeln verwendet "
+              "werden; nach Regeländerungen wird ein neues Prüfset gezogen. Eine Bewertung durch WWF-Fachpersonen bleibt "
+              "notwendig.", ""]
     return "\n".join(lines)
 
 
 def run() -> dict:
-    fixture = load_fixture()
     taxonomy = load_taxonomy()
     parents = parent_map(taxonomy)
-    current = evaluate(fixture, classify(fixture["records"], taxonomy), parents)
-    production = evaluate(fixture, {r["id"]: set(r["production_v7"]) or {OTHER} for r in fixture["records"]}, parents)
+    results = {}
+    for name, path in FIXTURES.items():
+        fixture = load_fixture(path)
+        current = evaluate(fixture, classify(fixture["records"], taxonomy), parents)
+        stored = {r["id"]: set(r["production_v7"]) or {OTHER} for r in fixture["records"]}
+        results[name] = {"fixture": fixture, "current": current, "production": evaluate(fixture, stored, parents)}
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
-    result = {"version": CLASSIFIER_VERSION, "current_rules": current, "production_v7": production}
-    (EVIDENCE_DIR / "holdout_results.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    (EVIDENCE_DIR / "holdout-evaluation.md").write_text(report(fixture, current, production, taxonomy), encoding="utf-8")
-    summary = {key: current[key] for key in ("records", "strict_correct", "relevance")}
-    summary["main_topics"] = {k: current["main_topics"][k] for k in ("micro_precision", "micro_recall")}
-    print(json.dumps(summary, ensure_ascii=False))
-    return result
+    payload = {"version": CLASSIFIER_VERSION}
+    for name, value in results.items():
+        payload[name] = {"current_rules": value["current"], "production_v7": value["production"]}
+    (EVIDENCE_DIR / "holdout_results.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (EVIDENCE_DIR / "holdout-evaluation.md").write_text(report(results, taxonomy), encoding="utf-8")
+    for name, value in results.items():
+        current = value["current"]
+        summary = {key: current[key] for key in ("records", "strict_correct", "relevance")}
+        summary["main_topics"] = {k: current["main_topics"][k] for k in ("micro_precision", "micro_recall")}
+        print(name, json.dumps(summary, ensure_ascii=False))
+    return payload
 
 
 if __name__ == "__main__":

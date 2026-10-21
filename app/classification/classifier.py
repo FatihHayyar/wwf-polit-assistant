@@ -17,7 +17,7 @@ from app.models import (
 )
 
 
-CLASSIFIER_VERSION = "rule-based-v7"
+CLASSIFIER_VERSION = "rule-based-v8"
 
 SUPPORTED_LANGUAGES = ("de", "fr", "it", "rm")
 
@@ -67,6 +67,8 @@ class Evidence:
 class CategoryMatch:
     category_id: int
     score: float = 0.0
+    # Set by an exclusion rule, e.g. a place name that contains a topic word.
+    excluded: bool = False
     title_qualifier_concepts: set[str] = field(default_factory=set)
     content_qualifier_concepts: set[str] = field(default_factory=set)
 
@@ -164,6 +166,10 @@ class _SourceParser(HTMLParser):
 
 
 def build_phrase_pattern(term: str, match_type: str = "phrase") -> re.Pattern[str]:
+    if match_type == "infix":
+        # German compounds: the term may start or end inside a longer word,
+        # e.g. "wasserkraft" in "Grosswasserkraftwerk".
+        return re.compile(re.escape(term), re.IGNORECASE)
     # Prefix expansion is opt-in; short words/acronyms stay exact.
     suffix = r"[^\W\d_]*" if match_type == "prefix" and len(term.split()[-1]) >= 5 else ""
     return re.compile(rf"(?<!\w){re.escape(term)}{suffix}(?!\w)", re.IGNORECASE)
@@ -249,7 +255,7 @@ class AffairClassifier:
         for rule in rules:
             if rule.category_id not in self.categories:
                 continue
-            if rule.match_type not in {"phrase", "prefix"}:
+            if rule.match_type not in {"phrase", "prefix", "infix"}:
                 continue
             if rule.scope not in self.rules:
                 continue
@@ -289,9 +295,13 @@ class AffairClassifier:
             )
 
         self.anchor_indexes = {}
+        self.infix_rules = {}
         for scope, languages in self.rules.items():
             self.anchor_indexes[scope] = {}
-            for language, rules in languages.items():
+            self.infix_rules[scope] = {}
+            for language, all_rules in languages.items():
+                self.infix_rules[scope][language] = [r for r in all_rules if r.match_type == "infix"]
+                rules = [r for r in all_rules if r.match_type != "infix"]
                 exact, prefixes = {}, {}
                 order = {}
                 for position, rule in enumerate(rules):
@@ -327,6 +337,10 @@ class AffairClassifier:
                 category_id=rule.category_id
             ),
         )
+
+        if rule.rule_type == "exclusion":
+            match.excluded = True
+            return
 
         match.matched_terms.add(
             rule.term
@@ -432,6 +446,10 @@ class AffairClassifier:
                 if rule.id not in matched and rule.pattern.match(text, occurrence.start()):
                     matched.add(rule.id)
                     self._add_evidence(matches, rule=rule, source_type=source_type, source_id=source_id)
+        for rule in self.infix_rules[scope][language]:
+            if rule.id not in matched and rule.pattern.search(text):
+                matched.add(rule.id)
+                self._add_evidence(matches, rule=rule, source_type=source_type, source_id=source_id)
 
     def classify_title(
         self,
@@ -510,7 +528,8 @@ class AffairClassifier:
             for match in self.classify_title(
                 affair
             )
-            if match.title_strong >= 1 or (match.title_context_concepts and match.title_qualifier_concepts)
+            if not match.excluded
+            and (match.title_strong >= 1 or (match.title_context_concepts and match.title_qualifier_concepts))
         ]
 
         accepted.sort(
@@ -540,7 +559,7 @@ class AffairClassifier:
                 match.category_id
             )
 
-            if category is None:
+            if category is None or match.excluded:
                 continue
 
             if match.content_strong < 2 and not (match.content_context_concepts and match.content_qualifier_concepts):
@@ -602,6 +621,7 @@ class AffairClassifier:
                 ] = content_match
                 continue
 
+            existing.excluded = existing.excluded or content_match.excluded
             existing.content_qualifier_concepts.update(content_match.content_qualifier_concepts)
 
             for concept in (

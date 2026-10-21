@@ -4,7 +4,7 @@
     "correct": 50,
     "records": 50,
     "database_writes": 0,
-    "version": "rule-based-v7",
+    "version": "rule-based-v8",
     "groups": {
       "edge": {
         "total": 10,

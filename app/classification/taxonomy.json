@@ -22,13 +22,25 @@
             "code": "photovoltaics",
             "terms": {
               "de": [
-                "Photovoltaik"
+                "Photovoltaik",
+                "Fotovoltaik",
+                "PV-Anlage",
+                "Solarzelle",
+                "Solarpanel",
+                "Solarmodul"
               ],
               "fr": [
-                "photovoltaïque"
+                "photovoltaïque",
+                "panneau solaire",
+                "panneaux solaires",
+                "centrale solaire"
               ],
               "it": [
-                "fotovoltaico"
+                "fotovoltaico",
+                "fotovoltaic",
+                "pannelli solari",
+                "pannello solare",
+                "impianti solari"
               ],
               "rm": [
                 "fotovoltaica"
@@ -52,7 +64,7 @@
                 "implant solar"
               ]
             },
-            "match_type": "prefix"
+            "match_type": "infix"
           },
           {
             "code": "solar_electricity",
@@ -77,13 +89,21 @@
             "terms": {
               "de": [
                 "Windenergie",
-                "Windkraft"
+                "Windkraft",
+                "Windpark",
+                "Windrad",
+                "Windräder",
+                "Windturbine"
               ],
               "fr": [
-                "énergie éolienne"
+                "énergie éolienne",
+                "éolien",
+                "parc éolien"
               ],
               "it": [
-                "energia eolica"
+                "energia eolica",
+                "eolic",
+                "parco eolico"
               ],
               "rm": [
                 "energia da vent"
@@ -109,6 +129,60 @@
               ]
             },
             "match_type": "prefix"
+          },
+          {
+            "code": "solar_energy",
+            "terms": {
+              "de": [
+                "Solarenergie",
+                "Sonnenenergie",
+                "Solarinitiative",
+                "Solarkataster",
+                "Solarpflicht"
+              ],
+              "fr": [
+                "énergie solaire"
+              ],
+              "it": [
+                "solare fotovoltaico"
+              ]
+            },
+            "match_type": "prefix"
+          },
+          {
+            "code": "hydropower",
+            "terms": {
+              "de": [
+                "wasserkraft"
+              ],
+              "fr": [
+                "énergie hydraulique",
+                "centrale hydroélectrique",
+                "hydroélectri",
+                "force hydraulique"
+              ],
+              "it": [
+                "idroelettric",
+                "forza idrica"
+              ]
+            },
+            "match_type": "infix"
+          },
+          {
+            "code": "green_electricity",
+            "terms": {
+              "de": [
+                "Ökostrom",
+                "Strom aus erneuerbaren"
+              ],
+              "fr": [
+                "courant vert"
+              ],
+              "it": [
+                "corrente verde"
+              ]
+            },
+            "match_type": "prefix"
           }
         ]
       },
@@ -128,10 +202,12 @@
                 "Wärmepumpe"
               ],
               "fr": [
-                "pompe à chaleur"
+                "pompe à chaleur",
+                "pompes à chaleur"
               ],
               "it": [
-                "pompa di calore"
+                "pompa di calore",
+                "pompe di calore"
               ],
               "rm": [
                 "pumpa da chalira"
@@ -147,13 +223,19 @@
                 "Wärmenetz",
                 "Wärmeverbund",
                 "Quartierwärmeverbund",
-                "Nahwärme"
+                "Nahwärme",
+                "Energieverbund",
+                "Holzwärmeverbund"
               ],
               "fr": [
-                "chauffage à distance"
+                "chauffage à distance",
+                "réseau de chaleur",
+                "réseaux de chaleur",
+                "chauffage urbain"
               ],
               "it": [
-                "teleriscaldamento"
+                "teleriscaldamento",
+                "rete di teleriscaldamento"
               ],
               "rm": [
                 "chalira a distanza"
@@ -201,16 +283,64 @@
             "code": "geothermal",
             "terms": {
               "de": [
-                "Geothermie"
+                "Geothermie",
+                "geothermisch",
+                "Erdwärme",
+                "Erdsonde"
               ],
               "fr": [
-                "géothermie"
+                "géothermie",
+                "géothermique"
               ],
               "it": [
-                "geotermia"
+                "geotermia",
+                "geotermic"
               ],
               "rm": [
                 "geotermia"
+              ]
+            },
+            "match_type": "prefix"
+          },
+          {
+            "code": "wood_biomass",
+            "terms": {
+              "de": [
+                "Holzheizung",
+                "Holzfeuerung",
+                "Pelletheizung",
+                "Holzenergie",
+                "Energieholz",
+                "Biomasse",
+                "Biogas"
+              ],
+              "fr": [
+                "chauffage au bois",
+                "bois-énergie",
+                "biomasse",
+                "biogaz"
+              ],
+              "it": [
+                "riscaldamento a legna",
+                "biomassa",
+                "biogas"
+              ]
+            },
+            "match_type": "prefix"
+          },
+          {
+            "code": "waste_heat",
+            "terms": {
+              "de": [
+                "Abwärme"
+              ],
+              "fr": [
+                "rejets de chaleur",
+                "chaleur résiduelle"
+              ],
+              "it": [
+                "calore residuo",
+                "calore di scarto"
               ]
             },
             "match_type": "prefix"
@@ -231,15 +361,22 @@
             "terms": {
               "de": [
                 "Gebäudesanierung",
-                "energetische Sanierung"
+                "energetische Sanierung",
+                "energetischen Sanierung",
+                "Gebäudeprogramm",
+                "Gebäudehülle",
+                "Energieoptimierung"
               ],
               "fr": [
                 "rénovation énergétique",
-                "assainissement énergétique"
+                "assainissement énergétique",
+                "assainissement des bâtiments",
+                "rénovation des bâtiments"
               ],
               "it": [
                 "risanamento energetico",
-                "ristrutturazione energetica"
+                "ristrutturazione energetica",
+                "risanamento degli edifici"
               ],
               "rm": [
                 "sanaziun energetica"
@@ -260,10 +397,14 @@
             "code": "energy_efficiency",
             "terms": {
               "de": [
-                "Energieeffizienz"
+                "Energieeffizienz",
+                "energieeffizient",
+                "Minergie",
+                "Energiestandard"
               ],
               "fr": [
-                "efficacité énergétique"
+                "efficacité énergétique",
+                "performance énergétique"
               ],
               "it": [
                 "efficienza energetica"
@@ -325,13 +466,23 @@
             "code": "electric_vehicle",
             "terms": {
               "de": [
-                "Elektrofahrzeug"
+                "Elektrofahrzeug",
+                "Elektroauto",
+                "E-Auto",
+                "Elektrobus",
+                "Elektrofahrzeuge"
               ],
               "fr": [
-                "véhicule électrique"
+                "véhicule électrique",
+                "véhicules électriques",
+                "voiture électrique",
+                "bus électrique"
               ],
               "it": [
-                "veicolo elettrico"
+                "veicolo elettrico",
+                "veicoli elettrici",
+                "auto elettrica",
+                "bus elettrico"
               ],
               "rm": [
                 "vehichel electric"
@@ -344,15 +495,18 @@
             "terms": {
               "de": [
                 "Ladeinfrastruktur",
-                "Ladestation"
+                "Ladestation",
+                "Ladesäule"
               ],
               "fr": [
                 "infrastructure de recharge",
-                "borne de recharge"
+                "borne de recharge",
+                "bornes de recharge"
               ],
               "it": [
                 "infrastruttura di ricarica",
-                "stazione di ricarica"
+                "stazione di ricarica",
+                "colonnine di ricarica"
               ],
               "rm": [
                 "infrastructura da chargiar"
@@ -364,13 +518,17 @@
             "code": "slow_mobility",
             "terms": {
               "de": [
-                "Langsamverkehr"
+                "Langsamverkehr",
+                "Fussverkehr",
+                "Fusswegnetz"
               ],
               "fr": [
-                "mobilité douce"
+                "mobilité douce",
+                "mobilité piétonne"
               ],
               "it": [
-                "mobilità lenta"
+                "mobilità lenta",
+                "mobilità pedonale"
               ],
               "rm": [
                 "mobilitad plauna"
@@ -382,13 +540,57 @@
             "code": "cycling",
             "terms": {
               "de": [
-                "Veloverkehr"
+                "Veloverkehr",
+                "Velo",
+                "Veloweg",
+                "Velostreifen",
+                "Velonetz",
+                "Veloroute",
+                "Velovorzugsroute",
+                "Velostation",
+                "Veloförderung",
+                "Velostrategie",
+                "Velobahn",
+                "Veloparkier",
+                "Radweg",
+                "Radverkehr",
+                "E-Bike"
               ],
               "fr": [
-                "trafic cycliste"
+                "trafic cycliste",
+                "vélo",
+                "vélos",
+                "piste cyclable",
+                "réseau cyclable"
               ],
               "it": [
-                "traffico ciclistico"
+                "traffico ciclistico",
+                "pista ciclabile",
+                "piste ciclabili",
+                "bicicletta",
+                "biciclette"
+              ]
+            },
+            "match_type": "prefix"
+          },
+          {
+            "code": "public_transport",
+            "terms": {
+              "de": [
+                "öffentlicher Verkehr",
+                "öffentlichen Verkehr",
+                "öffentlichen Verkehrs",
+                "Verkehrsverlagerung",
+                "Carsharing"
+              ],
+              "fr": [
+                "transports publics",
+                "transport public",
+                "transports en commun"
+              ],
+              "it": [
+                "trasporto pubblico",
+                "trasporti pubblici"
               ]
             },
             "match_type": "prefix"
@@ -408,13 +610,21 @@
             "code": "electricity_grid",
             "terms": {
               "de": [
-                "Stromnetz"
+                "Stromnetz",
+                "Stromversorgung",
+                "Versorgungssicherheit",
+                "Pumpspeicher",
+                "Smart Grid"
               ],
               "fr": [
-                "réseau électrique"
+                "réseau électrique",
+                "approvisionnement en électricité",
+                "sécurité d'approvisionnement"
               ],
               "it": [
-                "rete elettrica"
+                "rete elettrica",
+                "approvvigionamento elettrico",
+                "sicurezza dell'approvvigionamento"
               ],
               "rm": [
                 "rait electrica"
@@ -554,13 +764,24 @@
             "code": "fossil_fuel",
             "terms": {
               "de": [
-                "fossiler Brennstoff"
+                "fossiler Brennstoff",
+                "Erdöl",
+                "Rohöl",
+                "Kohlekraftwerk",
+                "Gaskraftwerk",
+                "Flüssiggas"
               ],
               "fr": [
-                "combustible fossile"
+                "combustible fossile",
+                "pétrole",
+                "centrale à gaz",
+                "charbon"
               ],
               "it": [
-                "combustibile fossile"
+                "combustibile fossile",
+                "petrolio",
+                "centrale a gas",
+                "carbone fossile"
               ],
               "rm": [
                 "combustibel fossil"
@@ -598,43 +819,26 @@
         ]
       },
       {
-        "code": "large_consumers_datacenters",
+        "code": "data_centers",
+        "replaces": [
+          "large_consumers_datacenters"
+        ],
         "names": {
-          "de": "Grossverbraucher & Rechenzentren",
-          "fr": "Grands consommateurs & centres de données",
-          "it": "Grandi consumatori & centri dati",
-          "rm": "Gronds consuments & centers da datas"
+          "de": "Rechenzentren",
+          "fr": "Centres de données",
+          "it": "Centri dati",
+          "rm": "Centers da datas"
         },
         "concepts": [
-          {
-            "code": "large_consumer",
-            "terms": {
-              "de": [
-                "Grossverbraucher",
-                "Großverbraucher"
-              ],
-              "fr": [
-                "grand consommateur",
-                "grands consommateurs"
-              ],
-              "it": [
-                "grande consumatore",
-                "grandi consumatori"
-              ],
-              "rm": [
-                "grond consument",
-                "gronds consuments"
-              ]
-            },
-            "match_type": "prefix"
-          },
           {
             "code": "data_center",
             "terms": {
               "de": [
                 "Rechenzentrum",
                 "Rechenzentren",
-                "Datacenter"
+                "Datacenter",
+                "Datenzentrum",
+                "Serverfarm"
               ],
               "fr": [
                 "centre de données",
@@ -656,6 +860,211 @@
         ]
       },
       {
+        "code": "large_consumers",
+        "replaces": [
+          "large_consumers_datacenters"
+        ],
+        "names": {
+          "de": "Grossverbraucher",
+          "fr": "Grands consommateurs",
+          "it": "Grandi consumatori",
+          "rm": "Gronds consumaders"
+        },
+        "concepts": [
+          {
+            "code": "large_consumer",
+            "terms": {
+              "de": [
+                "Grossverbraucher",
+                "Großverbraucher",
+                "energieintensive Unternehmen",
+                "Grossverbraucherartikel"
+              ],
+              "fr": [
+                "grand consommateur",
+                "grands consommateurs",
+                "entreprises à forte consommation d'énergie"
+              ],
+              "it": [
+                "grande consumatore",
+                "grandi consumatori"
+              ],
+              "rm": [
+                "grond consument",
+                "gronds consuments"
+              ]
+            },
+            "match_type": "prefix"
+          }
+        ]
+      },
+      {
+        "code": "public_sector",
+        "names": {
+          "de": "Vorbildfunktion der öffentlichen Hand",
+          "fr": "Rôle exemplaire des pouvoirs publics",
+          "it": "Ruolo esemplare dell'ente pubblico",
+          "rm": "Rolla exemplara dal maun publica"
+        },
+        "concepts": [
+          {
+            "code": "public_procurement",
+            "terms": {
+              "de": [
+                "öffentliche Beschaffung",
+                "öffentliches Beschaffungswesen"
+              ],
+              "fr": [
+                "marchés publics",
+                "achats publics"
+              ],
+              "it": [
+                "appalti pubblici",
+                "acquisti pubblici"
+              ],
+              "rm": [
+                "acquisiziun publica"
+              ]
+            },
+            "match_type": "prefix",
+            "rule_type": "context"
+          },
+          {
+            "code": "cantonal_administration",
+            "rule_type": "context",
+            "terms": {
+              "de": [
+                "kantonale Verwaltung"
+              ],
+              "fr": [
+                "administration cantonale"
+              ],
+              "it": [
+                "amministrazione cantonale"
+              ],
+              "rm": [
+                "administraziun chantunala"
+              ]
+            },
+            "match_type": "prefix",
+            "scopes": [
+              "title"
+            ]
+          },
+          {
+            "code": "municipal_administration",
+            "rule_type": "context",
+            "terms": {
+              "de": [
+                "Gemeindeverwaltung"
+              ],
+              "fr": [
+                "administration communale"
+              ],
+              "it": [
+                "amministrazione comunale"
+              ],
+              "rm": [
+                "administraziun communala"
+              ]
+            },
+            "match_type": "prefix",
+            "scopes": [
+              "title"
+            ]
+          },
+          {
+            "code": "exemplary_role",
+            "terms": {
+              "de": [
+                "Vorbildfunktion",
+                "Vorbild",
+                "öffentliche Gebäude",
+                "kantonale Liegenschaften",
+                "städtische Liegenschaften",
+                "Verwaltungsgebäude"
+              ],
+              "fr": [
+                "rôle exemplaire",
+                "bâtiments publics"
+              ],
+              "it": [
+                "ruolo esemplare",
+                "edifici pubblici"
+              ]
+            },
+            "match_type": "prefix",
+            "rule_type": "context"
+          },
+          {
+            "code": "public_actor",
+            "rule_type": "context",
+            "match_type": "phrase",
+            "terms": {
+              "de": [
+                "Kanton",
+                "Kantone",
+                "Gemeinde",
+                "Gemeinden",
+                "Stadt",
+                "Städte",
+                "öffentliche Hand",
+                "öffentlichen Hand",
+                "öffentlicher Hand"
+              ],
+              "fr": [
+                "canton",
+                "commune",
+                "public"
+              ],
+              "it": [
+                "cantone",
+                "comune",
+                "pubblico"
+              ]
+            },
+            "scopes": [
+              "title"
+            ]
+          },
+          {
+            "code": "environmental_qualifier",
+            "rule_type": "qualifier",
+            "match_type": "prefix",
+            "terms": {
+              "de": [
+                "ökologisch",
+                "umweltfreundlich",
+                "Umweltschutz",
+                "Klimaschutz",
+                "Biodiversität",
+                "energetisch",
+                "erneuerbar",
+                "klimaneutral",
+                "Energieeffizienz"
+              ],
+              "fr": [
+                "écologique",
+                "protection du climat",
+                "biodiversité",
+                "énergétique",
+                "renouvelable"
+              ],
+              "it": [
+                "ecologico",
+                "protezione del clima",
+                "biodiversità",
+                "energetic",
+                "rinnovabil"
+              ],
+              "rm": [
+                "biodiversitad"
+              ]
+            }
+          }
+        ]
+      },
+      {
         "code": "climate_energy_other",
         "names": {
           "de": "Sonstiges",
@@ -671,15 +1080,23 @@
             "terms": {
               "de": [
                 "Klimawandel",
-                "Klimakrise"
+                "Klimakrise",
+                "Klimaerwärmung",
+                "Erderwärmung",
+                "Klimanotstand"
               ],
               "fr": [
                 "changement climatique",
-                "crise climatique"
+                "crise climatique",
+                "réchauffement climatique",
+                "urgence climatique"
               ],
               "it": [
                 "cambiamento climatico",
-                "crisi climatica"
+                "crisi climatica",
+                "cambiamenti climatici",
+                "riscaldamento climatico",
+                "emergenza climatica"
               ],
               "rm": [
                 "midada dal clima"
@@ -692,13 +1109,39 @@
             "terms": {
               "de": [
                 "Klimaschutz",
-                "Schutz von Klima"
+                "Schutz von Klima",
+                "Klimastrategie",
+                "Klimaplan",
+                "Klimaziel",
+                "klimaneutral",
+                "Klimaneutralität",
+                "Netto-Null",
+                "Netto Null",
+                "klimafreundlich",
+                "klimaschädlich",
+                "Klimabilanz",
+                "Klimaanpassung",
+                "klimaangepasst",
+                "Klimafolgen",
+                "Klimarisiken"
               ],
               "fr": [
-                "protection du climat"
+                "protection du climat",
+                "plan climat",
+                "stratégie climatique",
+                "objectifs climatiques",
+                "neutralité carbone",
+                "bilan carbone",
+                "neutralité climatique",
+                "adaptation au changement climatique"
               ],
               "it": [
-                "protezione del clima"
+                "protezione del clima",
+                "piano clima",
+                "strategia climatica",
+                "neutralità climatica",
+                "neutralità carbonica",
+                "obiettivi climatici"
               ],
               "rm": [
                 "protecziun dal clima"
@@ -711,13 +1154,19 @@
             "terms": {
               "de": [
                 "Treibhausgas",
-                "CO2-Emission"
+                "CO2-Emission",
+                "CO2",
+                "CO₂",
+                "Kohlendioxid",
+                "Emissionsreduktion"
               ],
               "fr": [
-                "gaz à effet de serre"
+                "gaz à effet de serre",
+                "émissions de CO2"
               ],
               "it": [
-                "gas serra"
+                "gas serra",
+                "emissioni di CO2"
               ]
             },
             "match_type": "prefix"
@@ -727,13 +1176,47 @@
             "terms": {
               "de": [
                 "Energiepolitik",
-                "Klimapolitik"
+                "Klimapolitik",
+                "Energiestrategie",
+                "Energiewende",
+                "Energiekonzept",
+                "Energiestadt",
+                "erneuerbare Energie",
+                "Energieversorgung",
+                "Energiesparen",
+                "energiesparend",
+                "Energieverbrauch",
+                "Stromverbrauch",
+                "Energieberatung",
+                "Kernenergie",
+                "Atomkraft",
+                "Kernkraftwerk",
+                "Atomausstieg",
+                "AKW"
               ],
               "fr": [
-                "politique énergétique"
+                "politique énergétique",
+                "politique climatique",
+                "stratégie énergétique",
+                "transition énergétique",
+                "énergies renouvelables",
+                "énergie renouvelable",
+                "économies d'énergie",
+                "énergie nucléaire",
+                "centrale nucléaire",
+                "consommation d'énergie"
               ],
               "it": [
-                "politica energetica"
+                "politica energetica",
+                "politica climatica",
+                "strategia energetica",
+                "transizione energetica",
+                "energie rinnovabili",
+                "energia rinnovabile",
+                "risparmio energetico",
+                "energia nucleare",
+                "centrale nucleare",
+                "consumo di energia"
               ]
             },
             "match_type": "prefix"
@@ -747,6 +1230,24 @@
               ]
             },
             "match_type": "prefix"
+          },
+          {
+            "code": "energy_law",
+            "terms": {
+              "de": [
+                "energiegesetz",
+                "energieverordnung",
+                "CO2-Gesetz"
+              ],
+              "fr": [
+                "loi sur l'énergie"
+              ],
+              "it": [
+                "legge sull'energia",
+                "legge cantonale sull'energia"
+              ]
+            },
+            "match_type": "infix"
           }
         ]
       }
@@ -888,6 +1389,151 @@
                 "biodiversitad"
               ]
             }
+          },
+          {
+            "code": "hunting",
+            "terms": {
+              "de": [
+                "Jagd",
+                "Jagdgesetz",
+                "Jagdverordnung",
+                "Jagdplanung",
+                "Jagdbanngebiet",
+                "Wildschutz",
+                "Wildruhezone",
+                "Wildruhegebiet",
+                "Schalenwild"
+              ],
+              "fr": [
+                "loi sur la chasse",
+                "chasseurs",
+                "faune"
+              ],
+              "it": [
+                "legge sulla caccia",
+                "caccia alta",
+                "caccia bassa",
+                "cacciatori",
+                "fauna"
+              ]
+            },
+            "match_type": "prefix"
+          },
+          {
+            "code": "large_predators",
+            "terms": {
+              "de": [
+                "Wolf",
+                "Wölfe",
+                "Wölfen",
+                "Wolfes",
+                "Wolfsregulierung",
+                "Wolfsregulation",
+                "Wolfsabschuss",
+                "Wolfsabschüsse",
+                "Wolfsangriff",
+                "Wolfsangriffe",
+                "Wolfsrisse",
+                "Wolfsrudel",
+                "Wolfsbestand",
+                "Wolfsmanagement",
+                "Grossraubtier",
+                "Grossraubtiere",
+                "Grossraubtieren",
+                "Herdenschutz",
+                "Herdenschutzhunde",
+                "Luchs",
+                "Luchse",
+                "Biber",
+                "Bären und Wölfe"
+              ],
+              "fr": [
+                "loup",
+                "loups",
+                "grands prédateurs",
+                "lynx",
+                "castor",
+                "castors",
+                "protection des troupeaux"
+              ],
+              "it": [
+                "lupo",
+                "lupi",
+                "grandi predatori",
+                "lince",
+                "linci",
+                "castoro",
+                "castori",
+                "protezione delle greggi"
+              ]
+            },
+            "match_type": "phrase"
+          },
+          {
+            "code": "insects_pollinators",
+            "terms": {
+              "de": [
+                "Insekten",
+                "Insektensterben",
+                "Wildbienen",
+                "Bienensterben",
+                "Amphibien",
+                "Reptilien",
+                "Vogelschutz"
+              ],
+              "fr": [
+                "insectes",
+                "abeilles sauvages",
+                "amphibiens",
+                "protection des oiseaux"
+              ],
+              "it": [
+                "insetti",
+                "api selvatiche",
+                "anfibi",
+                "protezione degli uccelli"
+              ]
+            },
+            "match_type": "prefix"
+          },
+          {
+            "code": "invasive_species",
+            "terms": {
+              "de": [
+                "invasive Arten",
+                "invasive Neophyten",
+                "Neophyten",
+                "Neobiota"
+              ],
+              "fr": [
+                "espèces invasives",
+                "néophytes",
+                "plantes invasives"
+              ],
+              "it": [
+                "specie invasive",
+                "neofite",
+                "piante invasive"
+              ]
+            },
+            "match_type": "prefix"
+          },
+          {
+            "code": "place_names",
+            "terms": {
+              "de": [
+                "Plaines-du-Loup"
+              ],
+              "fr": [
+                "plaines-du-loup",
+                "pont-du-loup"
+              ],
+              "it": [
+                "lupo solitario"
+              ]
+            },
+            "match_type": "phrase",
+            "rule_type": "exclusion"
           }
         ]
       },
@@ -922,13 +1568,29 @@
             "code": "protected_area",
             "terms": {
               "de": [
-                "Schutzgebiet"
+                "Schutzgebiet",
+                "Nationalpark",
+                "Moorlandschaft",
+                "Hochmoor",
+                "Flachmoor",
+                "Auengebiet",
+                "Smaragd-Gebiet",
+                "Ramsar",
+                "Landschaftsschutzgebiet"
               ],
               "fr": [
-                "aire protégée"
+                "aire protégée",
+                "parc national",
+                "zone protégée",
+                "zones humides",
+                "marais"
               ],
               "it": [
-                "area protetta"
+                "area protetta",
+                "parco nazionale",
+                "zona protetta",
+                "zone umide",
+                "paludi"
               ],
               "rm": [
                 "territori protegì"
@@ -985,13 +1647,44 @@
             "terms": {
               "de": [
                 "Waldschutz",
-                "Wald"
+                "Wald",
+                "Waldgesetz",
+                "Waldverordnung",
+                "Waldwirtschaft",
+                "Waldbau",
+                "Waldpflege",
+                "Waldentwicklung",
+                "Waldzustand",
+                "Waldschaden",
+                "Waldschäden",
+                "Waldfläche",
+                "Waldweide",
+                "Waldbrand",
+                "Waldstrategie",
+                "Waldes",
+                "Wälder",
+                "Wäldern",
+                "Waldrodung",
+                "Rodung"
               ],
               "fr": [
-                "protection des forêts"
+                "protection des forêts",
+                "forêt",
+                "forêts",
+                "forestier",
+                "loi forestière",
+                "loi sur les forêts",
+                "gestion des forêts"
               ],
               "it": [
-                "protezione delle foreste"
+                "protezione delle foreste",
+                "bosco",
+                "boschi",
+                "boschiv",
+                "foresta",
+                "foreste",
+                "forestal",
+                "legge forestale"
               ],
               "rm": [
                 "protecziun dal guaud"
@@ -1064,6 +1757,23 @@
               ]
             },
             "match_type": "prefix"
+          },
+          {
+            "code": "names",
+            "terms": {
+              "de": [
+                "Don Bosco"
+              ],
+              "fr": [
+                "don bosco"
+              ],
+              "it": [
+                "don bosco",
+                "via bosco"
+              ]
+            },
+            "match_type": "phrase",
+            "rule_type": "exclusion"
           }
         ]
       },
@@ -1082,19 +1792,40 @@
               "de": [
                 "Gewässerschutz",
                 "Gewässer",
-                "Schutz der Gewässer"
+                "Schutz der Gewässer",
+                "Grundwasser",
+                "Trinkwasser",
+                "Wasserqualität",
+                "Fischereigesetz",
+                "Mikroverunreinigung",
+                "Fischsterben",
+                "Fischbestand"
               ],
               "fr": [
-                "protection des eaux"
+                "protection des eaux",
+                "eaux souterraines",
+                "eau potable",
+                "qualité de l'eau",
+                "cours d'eau",
+                "revitalisation",
+                "micropolluants"
               ],
               "it": [
-                "protezione delle acque"
+                "protezione delle acque",
+                "acque sotterranee",
+                "acqua potabile",
+                "qualità dell'acqua",
+                "corsi d'acqua",
+                "corso d'acqua",
+                "rivitalizzazione",
+                "falda acquifera",
+                "microinquinanti"
               ],
               "rm": [
                 "protecziun da las auas"
               ]
             },
-            "match_type": "prefix"
+            "match_type": "infix"
           },
           {
             "code": "water_revitalization",
@@ -1189,13 +1920,21 @@
             "code": "soil_protection",
             "terms": {
               "de": [
-                "Bodenschutz"
+                "Bodenschutz",
+                "Kulturland",
+                "Bodenverbrauch",
+                "Altlasten",
+                "belastete Standorte"
               ],
               "fr": [
-                "protection des sols"
+                "protection des sols",
+                "sites contaminés",
+                "terres cultivables"
               ],
               "it": [
-                "protezione del suolo"
+                "protezione del suolo",
+                "siti inquinati",
+                "terreni agricoli"
               ],
               "rm": [
                 "protecziun dal terren"
@@ -1345,13 +2084,21 @@
             "code": "pesticide",
             "terms": {
               "de": [
-                "Pestizid"
+                "Pestizid",
+                "Glyphosat",
+                "Ammoniak",
+                "Stickstoffüberschuss",
+                "Nährstoffüberschuss"
               ],
               "fr": [
-                "pesticide"
+                "pesticide",
+                "glyphosate",
+                "produits phytosanitaires"
               ],
               "it": [
-                "pesticida"
+                "pesticida",
+                "glifosato",
+                "prodotti fitosanitari"
               ],
               "rm": [
                 "pesticid"
@@ -1391,6 +2138,27 @@
               ]
             },
             "match_type": "prefix"
+          },
+          {
+            "code": "organic_farming",
+            "terms": {
+              "de": [
+                "Biolandbau",
+                "biologische Landwirtschaft",
+                "Bio-Landwirtschaft",
+                "ökologische Landwirtschaft",
+                "Agrarökologie"
+              ],
+              "fr": [
+                "agriculture biologique",
+                "agroécologie"
+              ],
+              "it": [
+                "agricoltura biologica",
+                "agroecologia"
+              ]
+            },
+            "match_type": "prefix"
           }
         ]
       },
@@ -1427,13 +2195,25 @@
             "code": "nature_protection",
             "terms": {
               "de": [
-                "Naturschutz"
+                "Naturschutz",
+                "Landschaftsschutz",
+                "Natur- und Heimatschutz",
+                "naturnah",
+                "Baumschutz",
+                "Stadtbäume",
+                "Lichtverschmutzung",
+                "ökologische Infrastruktur"
               ],
               "fr": [
-                "protection de la nature"
+                "protection de la nature",
+                "protection du paysage",
+                "pollution lumineuse",
+                "infrastructure écologique"
               ],
               "it": [
-                "protezione della natura"
+                "protezione della natura",
+                "protezione del paesaggio",
+                "inquinamento luminoso"
               ]
             },
             "match_type": "prefix"
@@ -1540,6 +2320,42 @@
               ]
             },
             "match_type": "prefix"
+          },
+          {
+            "code": "waste",
+            "terms": {
+              "de": [
+                "Abfall",
+                "Abfallvermeidung",
+                "Kehricht",
+                "Kompost",
+                "Grüngut",
+                "Separatsammlung",
+                "Littering",
+                "Plastik",
+                "Mikroplastik",
+                "Kunststoff",
+                "Einweg",
+                "Verpackung"
+              ],
+              "fr": [
+                "déchet",
+                "compost",
+                "littering",
+                "plastique",
+                "emballage",
+                "usage unique"
+              ],
+              "it": [
+                "rifiut",
+                "compost",
+                "littering",
+                "plastic",
+                "imballagg",
+                "monouso"
+              ]
+            },
+            "match_type": "prefix"
           }
         ]
       },
@@ -1593,13 +2409,18 @@
             "code": "raw_material_extraction",
             "terms": {
               "de": [
-                "Rohstoffabbau"
+                "Rohstoffabbau",
+                "Rohstoff",
+                "Kiesabbau",
+                "Ressourcenschonung"
               ],
               "fr": [
-                "extraction de matières premières"
+                "extraction de matières premières",
+                "matières premières"
               ],
               "it": [
-                "estrazione di materie prime"
+                "estrazione di materie prime",
+                "materie prime"
               ]
             },
             "match_type": "prefix"
@@ -1648,6 +2469,27 @@
                 "biodiversitad"
               ]
             }
+          },
+          {
+            "code": "quarries",
+            "terms": {
+              "de": [
+                "Steinbruch",
+                "Steinbrüche",
+                "Kiesgrube",
+                "Kiesgruben"
+              ],
+              "fr": [
+                "gravière",
+                "gravières",
+                "carrière de pierre"
+              ],
+              "it": [
+                "cava di ghiaia",
+                "cave di ghiaia"
+              ]
+            },
+            "match_type": "phrase"
           }
         ]
       },
@@ -1665,13 +2507,20 @@
             "terms": {
               "de": [
                 "nachhaltige Finanzierung",
-                "Sustainable Finance"
+                "Sustainable Finance",
+                "ESG",
+                "Divestment",
+                "nachhaltige Anlage",
+                "nachhaltige Investition"
               ],
               "fr": [
-                "finance durable"
+                "finance durable",
+                "placements durables",
+                "investissements durables"
               ],
               "it": [
-                "finanza sostenibile"
+                "finanza sostenibile",
+                "investimenti sostenibili"
               ],
               "rm": [
                 "finanzas persistentas"
@@ -1787,13 +2636,16 @@
             "code": "sustainability_reporting",
             "terms": {
               "de": [
-                "Nachhaltigkeitsberichterstattung"
+                "Nachhaltigkeitsberichterstattung",
+                "Konzernverantwortung"
               ],
               "fr": [
-                "rapport de durabilité"
+                "rapport de durabilité",
+                "responsabilité des multinationales"
               ],
               "it": [
-                "rapporto di sostenibilità"
+                "rapporto di sostenibilità",
+                "multinazionali responsabili"
               ]
             },
             "match_type": "prefix"
@@ -1841,13 +2693,17 @@
             "terms": {
               "de": [
                 "Lebensmittelverschwendung",
-                "Food Waste"
+                "Food Waste",
+                "Lebensmittelabfälle",
+                "Foodwaste"
               ],
               "fr": [
-                "gaspillage alimentaire"
+                "gaspillage alimentaire",
+                "déchets alimentaires"
               ],
               "it": [
-                "spreco alimentare"
+                "spreco alimentare",
+                "rifiuti alimentari"
               ],
               "rm": [
                 "sfarlattim da victualias"
@@ -1877,13 +2733,22 @@
             "code": "sustainable_diet",
             "terms": {
               "de": [
-                "nachhaltige Ernährung"
+                "nachhaltige Ernährung",
+                "Ernährungssystem",
+                "Ernährungsstrategie",
+                "pflanzliche Ernährung",
+                "vegetarisch",
+                "vegan"
               ],
               "fr": [
-                "alimentation durable"
+                "alimentation durable",
+                "végétarien",
+                "alimentation végétale"
               ],
               "it": [
-                "alimentazione sostenibile"
+                "alimentazione sostenibile",
+                "vegetarian",
+                "alimentazione vegetale"
               ],
               "rm": [
                 "nutriment persistent"
@@ -1925,15 +2790,24 @@
               "de": [
                 "nachhaltige Wirtschaft",
                 "grüne Wirtschaft",
-                "ökologische Wirtschaft"
+                "ökologische Wirtschaft",
+                "Nachhaltigkeitsstrategie",
+                "nachhaltige Entwicklung",
+                "Agenda 2030",
+                "Nachhaltigkeitsziele",
+                "SDG"
               ],
               "fr": [
                 "économie durable",
-                "économie verte"
+                "économie verte",
+                "développement durable",
+                "stratégie de durabilité"
               ],
               "it": [
                 "economia sostenibile",
-                "economia verde"
+                "economia verde",
+                "sviluppo sostenibile",
+                "strategia di sostenibilità"
               ],
               "rm": [
                 "economia persistenta"
@@ -2009,160 +2883,23 @@
             "terms": {
               "de": [
                 "Umweltverträglichkeitsprüfung",
-                "UVP"
+                "UVP",
+                "Umweltverträglichkeit",
+                "Verbandsbeschwerde"
               ],
               "fr": [
                 "étude d'impact sur l'environnement",
-                "EIE"
+                "EIE",
+                "étude d'impact",
+                "droit de recours des organisations"
               ],
               "it": [
                 "esame dell'impatto sull'ambiente",
-                "EIA"
+                "EIA",
+                "esame d'impatto"
               ]
             },
             "match_type": "prefix"
-          }
-        ]
-      },
-      {
-        "code": "public_sector",
-        "names": {
-          "de": "Öffentliche Hand",
-          "fr": "Pouvoirs publics",
-          "it": "Settore pubblico",
-          "rm": "Maun public"
-        },
-        "concepts": [
-          {
-            "code": "public_procurement",
-            "terms": {
-              "de": [
-                "öffentliche Beschaffung",
-                "öffentliches Beschaffungswesen"
-              ],
-              "fr": [
-                "marchés publics",
-                "achats publics"
-              ],
-              "it": [
-                "appalti pubblici",
-                "acquisti pubblici"
-              ],
-              "rm": [
-                "acquisiziun publica"
-              ]
-            },
-            "match_type": "prefix",
-            "rule_type": "context"
-          },
-          {
-            "code": "cantonal_administration",
-            "rule_type": "context",
-            "terms": {
-              "de": [
-                "kantonale Verwaltung"
-              ],
-              "fr": [
-                "administration cantonale"
-              ],
-              "it": [
-                "amministrazione cantonale"
-              ],
-              "rm": [
-                "administraziun chantunala"
-              ]
-            },
-            "match_type": "prefix"
-          },
-          {
-            "code": "municipal_administration",
-            "rule_type": "context",
-            "terms": {
-              "de": [
-                "Gemeindeverwaltung"
-              ],
-              "fr": [
-                "administration communale"
-              ],
-              "it": [
-                "amministrazione comunale"
-              ],
-              "rm": [
-                "administraziun communala"
-              ]
-            },
-            "match_type": "prefix"
-          },
-          {
-            "code": "exemplary_role",
-            "terms": {
-              "de": [
-                "Vorbildfunktion"
-              ],
-              "fr": [
-                "rôle exemplaire"
-              ],
-              "it": [
-                "ruolo esemplare"
-              ]
-            },
-            "match_type": "prefix",
-            "rule_type": "context"
-          },
-          {
-            "code": "public_actor",
-            "rule_type": "context",
-            "match_type": "phrase",
-            "terms": {
-              "de": [
-                "Kanton",
-                "Kantone",
-                "Gemeinde",
-                "Gemeinden",
-                "Stadt",
-                "Städte",
-                "öffentliche Hand",
-                "öffentlichen Hand",
-                "öffentlicher Hand"
-              ],
-              "fr": [
-                "canton",
-                "commune",
-                "public"
-              ],
-              "it": [
-                "cantone",
-                "comune",
-                "pubblico"
-              ]
-            }
-          },
-          {
-            "code": "environmental_qualifier",
-            "rule_type": "qualifier",
-            "match_type": "prefix",
-            "terms": {
-              "de": [
-                "ökologisch",
-                "umweltfreundlich",
-                "Umweltschutz",
-                "Klimaschutz",
-                "Biodiversität"
-              ],
-              "fr": [
-                "écologique",
-                "protection du climat",
-                "biodiversité"
-              ],
-              "it": [
-                "ecologico",
-                "protezione del clima",
-                "biodiversità"
-              ],
-              "rm": [
-                "biodiversitad"
-              ]
-            }
           }
         ]
       },
@@ -2271,15 +3008,25 @@
             "terms": {
               "de": [
                 "Pariser Klimaabkommen",
-                "Klimaabkommen"
+                "Klimaabkommen",
+                "Klimakonferenz",
+                "Weltklimarat",
+                "IPCC",
+                "Biodiversitätskonferenz",
+                "Stockholmer Konvention",
+                "POPs-Konvention"
               ],
               "fr": [
                 "Accord de Paris",
-                "accord climatique"
+                "accord climatique",
+                "conférence sur le climat",
+                "GIEC"
               ],
               "it": [
                 "Accordo di Parigi",
-                "accordo sul clima"
+                "accordo sul clima",
+                "conferenza sul clima",
+                "IPCC"
               ],
               "rm": [
                 "Convenziun da Paris",
@@ -2382,10 +3129,13 @@
             "code": "environmental_education",
             "terms": {
               "de": [
-                "Umweltbildung"
+                "Umweltbildung",
+                "Umwelterziehung",
+                "Mensch und Umwelt"
               ],
               "fr": [
-                "éducation à l'environnement"
+                "éducation à l'environnement",
+                "éducation environnementale"
               ],
               "it": [
                 "educazione ambientale"
@@ -2500,13 +3250,39 @@
             "code": "environmental_protection",
             "terms": {
               "de": [
-                "Umweltschutz"
+                "Umweltschutz",
+                "umweltfreundlich",
+                "umweltschonend",
+                "Umweltzone",
+                "Umweltbelastung",
+                "Umweltverschmutzung",
+                "Umweltauswirkung",
+                "Umweltziel",
+                "umweltpolitisch",
+                "Umweltbilanz",
+                "Luftreinhaltung",
+                "Luftqualität",
+                "Feinstaub",
+                "PFAS",
+                "Chemikalien",
+                "besorgniserregende Stoffe",
+                "Schadstoff"
               ],
               "fr": [
-                "protection de l'environnement"
+                "protection de l'environnement",
+                "respectueux de l'environnement",
+                "impact environnemental",
+                "pollution",
+                "qualité de l'air",
+                "polluants"
               ],
               "it": [
-                "protezione dell'ambiente"
+                "protezione dell'ambiente",
+                "rispettoso dell'ambiente",
+                "impatto ambientale",
+                "inquinament",
+                "qualità dell'aria",
+                "sostanze nocive"
               ]
             },
             "match_type": "prefix"

@@ -1,68 +1,68 @@
 {
-  "version": "rule-based-v7",
-  "total": 2951254,
+  "version": "rule-based-v8",
+  "total": 2958331,
   "complete": true,
   "datasets": [
     {
       "dataset": "affairs",
-      "total": 326124,
-      "covered": 326124,
+      "total": 326499,
+      "covered": 326499,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "agendas",
-      "total": 423161,
-      "covered": 423161,
+      "total": 423580,
+      "covered": 423580,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "meetings",
-      "total": 33677,
-      "covered": 33677,
+      "total": 33711,
+      "covered": 33711,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "votings",
-      "total": 77144,
-      "covered": 77144,
+      "total": 79061,
+      "covered": 79061,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "events",
-      "total": 916688,
-      "covered": 916688,
+      "total": 918113,
+      "covered": 918113,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "documents",
-      "total": 909151,
-      "covered": 909151,
+      "total": 912005,
+      "covered": 912005,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "texts",
-      "total": 226062,
-      "covered": 226062,
+      "total": 226086,
+      "covered": 226086,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "groups",
-      "total": 8886,
-      "covered": 8886,
+      "total": 8891,
+      "covered": 8891,
       "missing": 0,
       "outdated_rows": 0
     },
     {
       "dataset": "interests",
-      "total": 30361,
-      "covered": 30361,
+      "total": 30385,
+      "covered": 30385,
       "missing": 0,
       "outdated_rows": 0
     }

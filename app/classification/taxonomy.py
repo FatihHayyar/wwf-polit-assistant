@@ -3,6 +3,9 @@ import json
 import os
 from pathlib import Path
 
+# Shorter infix terms would match inside unrelated words.
+MIN_INFIX_LENGTH = 8
+
 
 def load_taxonomy(path=None):
     source = Path(path or os.getenv("CLASSIFICATION_TAXONOMY_PATH") or Path(__file__).with_name("taxonomy.json"))
@@ -31,8 +34,16 @@ def load_taxonomy(path=None):
                 if not concept.get("code") or concept["code"] in concepts:
                     raise ValueError(f"Invalid or duplicate concept: {code}")
                 concepts.add(concept["code"])
-                if concept.get("match_type", "phrase") not in {"phrase", "prefix"} or concept.get("rule_type", "strong") not in {"strong", "context", "qualifier"}:
+                if concept.get("match_type", "phrase") not in {"phrase", "prefix", "infix"} or concept.get("rule_type", "strong") not in {"strong", "context", "qualifier", "exclusion"}:
                     raise ValueError(f"Invalid matching rule: {code}")
+                if concept.get("match_type") == "infix" and any(
+                        len(term.strip()) < MIN_INFIX_LENGTH for terms in concept.get("terms", {}).values() for term in terms or []):
+                    raise ValueError(f"Infix terms need at least {MIN_INFIX_LENGTH} characters: {code}/{concept['code']}")
+                if not set(concept.get("scopes", ["title", "content"])) <= {"title", "content"} or not concept.get("scopes", ["title"]):
+                    raise ValueError(f"Invalid scopes: {code}/{concept['code']}")
+            for replaced in category.get("replaces", []):
+                if not isinstance(replaced, str) or not replaced.strip():
+                    raise ValueError(f"Invalid replaced category code: {code}")
     if global_fallbacks != 1:
         raise ValueError("Exactly one global fallback is required")
     return taxonomy

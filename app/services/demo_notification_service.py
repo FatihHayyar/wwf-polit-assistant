@@ -16,9 +16,8 @@ from sqlalchemy.orm import Session
 from app.classification.classifier import CLASSIFIER_VERSION, AffairClassifier, confidence_for_match
 from app.models.classification import AffairClassification, ClassificationCategory
 from app.models.entities import Affair, Body
-from app.models.monitoring_subscription import UserKeywordSubscription
 from app.models.notification import Notification
-from app.models.subscription import UserCantonSubscription, UserCategorySubscription
+from app.models.subscription_profile import SubscriptionProfile
 from app.models.user import User
 from app.services.change_event_service import create_change_event
 
@@ -33,7 +32,9 @@ DEMO_TITLES = {
     "sustainable_mobility": "Ladeinfrastruktur für die Elektromobilität an Bahnhöfen ausbauen",
     "grids_storage": "Netzausbau und Batteriespeicher für die Versorgungssicherheit",
     "fossil_energy": "Ersatz von Ölheizungen und Gasheizungen in öffentlichen Gebäuden",
-    "large_consumers_datacenters": "Abwärmenutzung bei Rechenzentren und Grossverbrauchern",
+    "data_centers": "Abwärme von Rechenzentren für das Fernwärmenetz nutzen",
+    "large_consumers": "Zielvereinbarungen mit Grossverbrauchern zur Senkung des Energieverbrauchs",
+    "public_sector": "Nachhaltige Beschaffung nach ökologischen Kriterien beim Kanton und seinen Betrieben",
     "climate_energy_other": "Kantonale Strategie zum Klimaschutz bis 2040",
     "species_habitats": "Artenschutz: Biotope für bedrohte Wildtiere vernetzen",
     "protected_areas": "Erweiterung des Naturschutzgebiets am Seeufer",
@@ -49,7 +50,6 @@ DEMO_TITLES = {
     "food_consumption": "Lebensmittelverschwendung in Kantinen halbieren",
     "sustainable_economy_consumption_other": "Leitbild für eine nachhaltige Wirtschaft im Kanton",
     "environmental_law": "Teilrevision des kantonalen Umweltgesetzes",
-    "public_sector": "Nachhaltige Beschaffung nach ökologischen Kriterien beim Kanton und seinen Betrieben",
     "environmental_funding": "Einen Klimafonds für lokale Klimaschutzprojekte schaffen",
     "international_environment": "Umsetzung des Pariser Klimaabkommens auf kantonaler Ebene",
     "environmental_research_education": "Umweltbildung an Volksschulen ausbauen",
@@ -85,8 +85,7 @@ def demo_category_choices(db: Session, user: User) -> tuple[list[dict], str | No
          "name": f"{by_id[category.parent_id].name_de} / {category.name_de}" if category.parent_id in by_id else category.name_de}
         for category in categories if category.code in DEMO_TITLES
     ]
-    subscribed = db.scalars(select(UserCategorySubscription.category_id)
-                            .where(UserCategorySubscription.user_id == user.id)).all()
+    subscribed = [category_id for profile in active_profiles(db, user) for category_id in profile.category_ids]
     preselected = None
     for category_id in subscribed:
         category = by_id.get(category_id)
@@ -96,6 +95,20 @@ def demo_category_choices(db: Session, user: User) -> tuple[list[dict], str | No
                 preselected = leaf.code
                 break
     return choices, preselected
+
+
+def active_profiles(db: Session, user: User) -> list[SubscriptionProfile]:
+    return [profile for profile in db.scalars(select(SubscriptionProfile).where(
+        SubscriptionProfile.user_id == user.id).order_by(SubscriptionProfile.id)) if profile.active and profile.has_filters]
+
+
+def profile_for(db: Session, user: User, category: ClassificationCategory) -> SubscriptionProfile | None:
+    """The first active profile whose topics cover the demo topic (or have no topic filter)."""
+    lineage = {category.id, category.parent_id}
+    for profile in active_profiles(db, user):
+        if not profile.category_ids or lineage & set(profile.category_ids):
+            return profile
+    return None
 
 
 def leaf_for(db: Session, category: ClassificationCategory) -> ClassificationCategory | None:
@@ -109,9 +122,8 @@ def leaf_for(db: Session, category: ClassificationCategory) -> ClassificationCat
     return next((child for child in children if child.code in DEMO_TITLES), None)
 
 
-def choose_body(db: Session, user: User) -> Body:
-    cantons = db.scalars(select(UserCantonSubscription.canton_key)
-                         .where(UserCantonSubscription.user_id == user.id)).all()
+def choose_body(db: Session, profile: SubscriptionProfile | None) -> Body:
+    cantons = profile.canton_keys if profile else []
     query = select(Body).where(Body.canton_key.is_not(None))
     if cantons:
         query = query.where(func.upper(Body.canton_key).in_([key.upper() for key in cantons]))
@@ -134,11 +146,11 @@ def create_demo_affair(db: Session, user: User, category_code: str) -> DemoResul
     if leaf is None:
         raise DemoNotificationError("Unknown topic for the demo notification.")
 
-    body = choose_body(db, user)
+    profile = profile_for(db, user, leaf)
+    body = choose_body(db, profile)
     title = DEMO_TITLES[leaf.code]
-    keyword = db.scalars(select(UserKeywordSubscription.keyword)
-                         .where(UserKeywordSubscription.user_id == user.id)
-                         .order_by(UserKeywordSubscription.keyword).limit(1)).first()
+    keyword = profile.keywords[0] if profile and profile.keywords else None
+    affair_type = profile.affair_types[0] if profile and profile.affair_types else "Motion"
     if keyword and keyword.casefold() not in title.casefold():
         # Keyword filters must match too, so the subscribed phrase is included.
         title = f"{title} ({keyword})"
@@ -149,7 +161,7 @@ def create_demo_affair(db: Session, user: User, category_code: str) -> DemoResul
         id=affair_id, body_id=body.id, body_key=body.body_key,
         number=f"DEMO-{affair_id - DEMO_ID_START + 1}",
         title_de=title, title_long_de=f"Demo-Geschäft: {title}",
-        type_harmonized_de="Demo-Geschäft", state_name_harmonized_de="Eingereicht",
+        type_harmonized_de=affair_type, type_name_de=f"{affair_type} (Demo)", state_name_harmonized_de="Eingereicht",
         begin_date=now, created_at=now, updated_at=now,
     )
     db.add(affair)

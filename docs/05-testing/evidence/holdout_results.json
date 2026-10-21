@@ -1,1317 +1,2078 @@
 {
-  "version": "rule-based-v7",
-  "current_rules": {
-    "records": 300,
-    "strict_correct": 268,
-    "ambiguous_records": 33,
-    "ambiguous_classified_as_topic": 0,
-    "relevance": {
-      "tp": 13,
-      "fp": 0,
-      "fn": 27,
-      "tn": 227,
-      "precision": 1.0,
-      "recall": 0.325,
-      "f1": 0.491,
-      "precision_ci95": [
-        0.772,
-        1.0
-      ],
-      "recall_ci95": [
-        0.201,
-        0.48
-      ],
-      "accuracy": 0.899,
-      "records": 267
-    },
-    "main_topics": {
-      "micro_precision": 0.786,
-      "micro_recall": 0.268,
-      "counts": {
-        "fn": 30,
+  "version": "rule-based-v8",
+  "A": {
+    "current_rules": {
+      "records": 300,
+      "strict_correct": 280,
+      "ambiguous_records": 33,
+      "ambiguous_classified_as_topic": 1,
+      "relevance": {
+        "tp": 27,
         "fp": 3,
-        "tp": 11
+        "fn": 13,
+        "tn": 224,
+        "precision": 0.9,
+        "recall": 0.675,
+        "f1": 0.771,
+        "precision_ci95": [
+          0.744,
+          0.965
+        ],
+        "recall_ci95": [
+          0.52,
+          0.799
+        ],
+        "accuracy": 0.94,
+        "records": 267
       },
-      "topics": {
-        "biodiversity_landscape": {
-          "tp": 2,
-          "fp": 1,
-          "fn": 8,
-          "precision": 0.667,
-          "recall": 0.2
+      "main_topics": {
+        "micro_precision": 0.806,
+        "micro_recall": 0.625,
+        "counts": {
+          "fn": 15,
+          "tp": 25,
+          "fp": 6
         },
-        "climate_energy": {
-          "tp": 7,
-          "fp": 1,
-          "fn": 10,
-          "precision": 0.875,
-          "recall": 0.412
-        },
-        "environment_policy": {
-          "tp": 1,
-          "fp": 1,
-          "fn": 3,
-          "precision": 0.5,
-          "recall": 0.25
-        },
-        "sustainable_economy_consumption": {
-          "tp": 1,
-          "fp": 0,
-          "fn": 2,
-          "precision": 1.0,
-          "recall": 0.333
+        "topics": {
+          "biodiversity_landscape": {
+            "tp": 6,
+            "fp": 1,
+            "fn": 4,
+            "precision": 0.857,
+            "recall": 0.6
+          },
+          "climate_energy": {
+            "tp": 11,
+            "fp": 4,
+            "fn": 5,
+            "precision": 0.733,
+            "recall": 0.688
+          },
+          "environment_policy": {
+            "tp": 6,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "sustainable_economy_consumption": {
+            "tp": 2,
+            "fp": 1,
+            "fn": 1,
+            "precision": 0.667,
+            "recall": 0.667
+          }
         }
-      }
-    },
-    "errors": [
-      {
-        "id": 153693,
-        "title": "Einheimische Pflanzen",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
       },
-      {
-        "id": 49840,
-        "title": "Strategische Rohölreserven im Ausland",
-        "proposed": [
-          "soil_spatial_planning"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "fossil_energy"
-        ],
-        "missing_any": [],
-        "extra": [
-          "soil_spatial_planning"
-        ]
-      },
-      {
-        "id": 282827,
-        "title": "Abschaffung Eigenmietwert - Abzüge für energiesparende und umweltschonende Massnahmen erhalten",
-        "proposed": [
-          "environment_policy_other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "building_efficiency"
-        ],
-        "missing_any": [],
-        "extra": [
-          "environment_policy_other"
-        ]
-      },
-      {
-        "id": 27598,
-        "title": "\"In periferia?!? ...c'è ENERGIA! Parco GeoTermico del nucleo di Sonvico.\"",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "renewable_heat"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 126608,
-        "title": "Förderung der Biodiversität bei Verkehrsprojekten, Gebäudesanierungen und Areal-Entwicklungen",
-        "proposed": [
-          "biodiversity_landscape_other",
-          "building_efficiency"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [],
-        "extra": [
-          "building_efficiency"
-        ]
-      },
-      {
-        "id": 161502,
-        "title": "Bekämpfung der Verkehrsüberlastung. Die für den (abgelehnten) Autobahnausbau vorgesehen Milliarden für Projekte des Agglomerationsverkehrs verwenden",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 156704,
-        "title": "Ausführungsverordnung zum Jagdgesetz",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 298366,
-        "title": "Zu Fuss zur Schule statt “Elterntaxi“",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 14862,
-        "title": "Die Bekämpfung des Japankäfers und die Folgen für Riehen und die Region",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "agriculture_biodiversity",
-            "biodiversity_landscape_other",
+      "errors": [
+        {
+          "id": 153693,
+          "title": "Einheimische Pflanzen",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
             "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 210825,
-        "title": "Entwicklungszusammenarbeit und MSC-Zertifizierung. Unterstützung lokaler Fischer",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "companies_supply_chains",
-            "food_consumption",
-            "international_environment",
-            "sustainable_economy_consumption_other",
-            "waters"
+        },
+        {
+          "id": 210213,
+          "title": "Menschenrechtsdialog mit dem Präsidenten Aserbeidschans",
+          "proposed": [
+            "fossil_energy"
+          ],
+          "ambiguous": false,
+          "relevant": false,
+          "correct": false,
+          "missing": [
+            "other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "fossil_energy"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 267553,
-        "title": "Einzelinitiative Dr. Marianne Klug Arter, Zürich, betreffend Änderung des Gesetzes über die Finanzierung von Massnahmen für den Natur - und Heimatschutz und für Erholungsgebiete",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "biodiversity_landscape_other",
-            "environmental_funding",
-            "environmental_law",
-            "protected_areas"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 142964,
-        "title": "Waldweiden",
-        "proposed": [
-          "public_sector"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "forest"
-        ],
-        "missing_any": [],
-        "extra": [
-          "public_sector"
-        ]
-      },
-      {
-        "id": 244702,
-        "title": "Compostage de déchets ménagers",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "circular_economy"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 310094,
-        "title": "Waldentwicklungsplan WEP für das Waldareal der Gemeinden Basel, Bettingen und Riehen 2021-2035",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "forest"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 334039,
-        "title": "Energie aus Fluss- und Trinkwasser",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
+        },
+        {
+          "id": 282827,
+          "title": "Abschaffung Eigenmietwert - Abzüge für energiesparende und umweltschonende Massnahmen erhalten",
+          "proposed": [
             "climate_energy_other",
-            "renewable_electricity",
-            "renewable_heat"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 215590,
-        "title": "Was genau sind besonders besorgniserregende Stoffe und wie viele davon sind in der Schweiz zugelassen?",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "environment_policy_other",
-            "environmental_law"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 188205,
-        "title": "Un Eco-quartier à la Concorde: favorisons une expérience innovatrice de logements à haute qualité environnementale intégrant un processus participatif de quartier",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "building_efficiency",
-            "climate_energy_other"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 247922,
-        "title": "Changement de système d'imposition de la propriété du logement : quelles conséquences pour la politique climatique et énergétique cantonale ?",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "climate_energy_other"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 139104,
-        "title": "Persistente organische Schadstoffe (POPs-Konvention)",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "international_environment"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 59926,
-        "title": "Minimaler Schutz der Wässermatten",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "agriculture_biodiversity",
-            "biodiversity_landscape_other",
-            "species_habitats",
-            "waters"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 10592,
-        "title": "Umsetzung des Unterrichtsfachs «Mensch und Umwelt» an den Volksschulen",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "environmental_research_education"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 247092,
-        "title": "Papier- und Kartonsammlung durch Horwer Vereine",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "circular_economy"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 146725,
-        "title": "Infrastrukturen des öffentlichen Verkehrs auf Kantonsstrassen: Lange Umsetzungsfristen gefährden die Attraktivität des öffentlichen Verkehrs",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 87327,
-        "title": "Ausserordentliche Lage – Wölfe bedrohen unsere Dörfer",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 338679,
-        "title": "Bilaterale III und Artikel 84 BV: Schutz des Alpengebiets vor zunehmendem individuellem Transitverkehr",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "environment_policy_other",
-            "environmental_law",
-            "sustainable_mobility"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 75927,
-        "title": "Nachjagd/Herbstjagd",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 157227,
-        "title": "Wie wird das Konzept der planetaren Belastbarkeitsgrenzen in der Strategie Nachhaltige Entwicklung 2030 berücksichtigt?",
-        "proposed": [
-          "climate_energy_other",
-          "resources_raw_materials"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [],
-        "extra": [
-          "resources_raw_materials"
-        ]
-      },
-      {
-        "id": 237397,
-        "title": "Ökologisierung der Verkehrssteuern",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 318154,
-        "title": "Galleria Mappo-Morettina; impatto ambientale ad un anno dalla sua apertura",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "environment_policy_other",
-            "environmental_law",
-            "sustainable_mobility"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 8447,
-        "title": "Kommunale Volksinitiative «für ein gesundes Stadtklima (Gute-Luft-Initiative)»",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
+            "environment_policy_other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "building_efficiency"
+          ],
+          "missing_any": [],
+          "extra": [
             "climate_energy_other",
             "environment_policy_other"
           ]
+        },
+        {
+          "id": 126608,
+          "title": "Förderung der Biodiversität bei Verkehrsprojekten, Gebäudesanierungen und Areal-Entwicklungen",
+          "proposed": [
+            "biodiversity_landscape_other",
+            "building_efficiency"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [],
+          "extra": [
+            "building_efficiency"
+          ]
+        },
+        {
+          "id": 161502,
+          "title": "Bekämpfung der Verkehrsüberlastung. Die für den (abgelehnten) Autobahnausbau vorgesehen Milliarden für Projekte des Agglomerationsverkehrs verwenden",
+          "proposed": [
+            "circular_economy"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "circular_economy"
+          ]
+        },
+        {
+          "id": 298366,
+          "title": "Zu Fuss zur Schule statt “Elterntaxi“",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 14862,
+          "title": "Die Bekämpfung des Japankäfers und die Folgen für Riehen und die Region",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "agriculture_biodiversity",
+              "biodiversity_landscape_other",
+              "species_habitats"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 210825,
+          "title": "Entwicklungszusammenarbeit und MSC-Zertifizierung. Unterstützung lokaler Fischer",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "companies_supply_chains",
+              "food_consumption",
+              "international_environment",
+              "sustainable_economy_consumption_other",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 267553,
+          "title": "Einzelinitiative Dr. Marianne Klug Arter, Zürich, betreffend Änderung des Gesetzes über die Finanzierung von Massnahmen für den Natur - und Heimatschutz und für Erholungsgebiete",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "environmental_funding",
+              "environmental_law",
+              "protected_areas"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 52318,
+          "title": "Ersatzbeiträge für die Befreiung vom Bau von Schutzräumen",
+          "proposed": [
+            "climate_energy_other"
+          ],
+          "ambiguous": false,
+          "relevant": false,
+          "correct": false,
+          "missing": [
+            "other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "climate_energy_other"
+          ]
+        },
+        {
+          "id": 334039,
+          "title": "Energie aus Fluss- und Trinkwasser",
+          "proposed": [
+            "waters"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "climate_energy_other",
+              "renewable_electricity",
+              "renewable_heat"
+            ]
+          ],
+          "extra": [
+            "waters"
+          ]
+        },
+        {
+          "id": 188205,
+          "title": "Un Eco-quartier à la Concorde: favorisons une expérience innovatrice de logements à haute qualité environnementale intégrant un processus participatif de quartier",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "building_efficiency",
+              "climate_energy_other"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 59926,
+          "title": "Minimaler Schutz der Wässermatten",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "agriculture_biodiversity",
+              "biodiversity_landscape_other",
+              "species_habitats",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 247092,
+          "title": "Papier- und Kartonsammlung durch Horwer Vereine",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "circular_economy"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 338679,
+          "title": "Bilaterale III und Artikel 84 BV: Schutz des Alpengebiets vor zunehmendem individuellem Transitverkehr",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "environment_policy_other",
+              "environmental_law",
+              "sustainable_mobility"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 75927,
+          "title": "Nachjagd/Herbstjagd",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 157217,
+          "title": "Gezielte Kontrollen im öffentlichen Verkehr von Sans-Papiers durch die Zollverwaltung",
+          "proposed": [
+            "sustainable_mobility"
+          ],
+          "ambiguous": false,
+          "relevant": false,
+          "correct": false,
+          "missing": [
+            "other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "sustainable_mobility"
+          ]
+        },
+        {
+          "id": 237397,
+          "title": "Ökologisierung der Verkehrssteuern",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 8447,
+          "title": "Kommunale Volksinitiative «für ein gesundes Stadtklima (Gute-Luft-Initiative)»",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "climate_energy_other",
+              "environment_policy_other"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 41551,
+          "title": "Voruntersuchungen belasteter Standorte",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "environment_policy_other",
+              "environmental_law",
+              "soil_spatial_planning"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        }
+      ]
+    },
+    "production_v7": {
+      "records": 300,
+      "strict_correct": 268,
+      "ambiguous_records": 33,
+      "ambiguous_classified_as_topic": 0,
+      "relevance": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 27,
+        "tn": 227,
+        "precision": 1.0,
+        "recall": 0.325,
+        "f1": 0.491,
+        "precision_ci95": [
+          0.772,
+          1.0
         ],
-        "extra": [
-          "other"
-        ]
+        "recall_ci95": [
+          0.201,
+          0.48
+        ],
+        "accuracy": 0.899,
+        "records": 267
       },
-      {
-        "id": 41551,
-        "title": "Voruntersuchungen belasteter Standorte",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "environment_policy_other",
-            "environmental_law",
+      "main_topics": {
+        "micro_precision": 0.786,
+        "micro_recall": 0.268,
+        "counts": {
+          "fn": 30,
+          "fp": 3,
+          "tp": 11
+        },
+        "topics": {
+          "biodiversity_landscape": {
+            "tp": 2,
+            "fp": 1,
+            "fn": 8,
+            "precision": 0.667,
+            "recall": 0.2
+          },
+          "climate_energy": {
+            "tp": 7,
+            "fp": 2,
+            "fn": 10,
+            "precision": 0.778,
+            "recall": 0.412
+          },
+          "environment_policy": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 3,
+            "precision": 1.0,
+            "recall": 0.25
+          },
+          "sustainable_economy_consumption": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 2,
+            "precision": 1.0,
+            "recall": 0.333
+          }
+        }
+      },
+      "errors": [
+        {
+          "id": 153693,
+          "title": "Einheimische Pflanzen",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 49840,
+          "title": "Strategische Rohölreserven im Ausland",
+          "proposed": [
+            "soil_spatial_planning"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "fossil_energy"
+          ],
+          "missing_any": [],
+          "extra": [
             "soil_spatial_planning"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 117740,
-        "title": "\"Lugano, eventi a basso impatto ambientale?\"",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "circular_economy",
-            "environment_policy_other",
-            "sustainable_economy_consumption_other"
+        },
+        {
+          "id": 282827,
+          "title": "Abschaffung Eigenmietwert - Abzüge für energiesparende und umweltschonende Massnahmen erhalten",
+          "proposed": [
+            "environment_policy_other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "building_efficiency"
+          ],
+          "missing_any": [],
+          "extra": [
+            "environment_policy_other"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      }
-    ]
+        },
+        {
+          "id": 27598,
+          "title": "\"In periferia?!? ...c'è ENERGIA! Parco GeoTermico del nucleo di Sonvico.\"",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "renewable_heat"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 126608,
+          "title": "Förderung der Biodiversität bei Verkehrsprojekten, Gebäudesanierungen und Areal-Entwicklungen",
+          "proposed": [
+            "biodiversity_landscape_other",
+            "building_efficiency"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [],
+          "extra": [
+            "building_efficiency"
+          ]
+        },
+        {
+          "id": 161502,
+          "title": "Bekämpfung der Verkehrsüberlastung. Die für den (abgelehnten) Autobahnausbau vorgesehen Milliarden für Projekte des Agglomerationsverkehrs verwenden",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 156704,
+          "title": "Ausführungsverordnung zum Jagdgesetz",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 298366,
+          "title": "Zu Fuss zur Schule statt “Elterntaxi“",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 14862,
+          "title": "Die Bekämpfung des Japankäfers und die Folgen für Riehen und die Region",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "agriculture_biodiversity",
+              "biodiversity_landscape_other",
+              "species_habitats"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 210825,
+          "title": "Entwicklungszusammenarbeit und MSC-Zertifizierung. Unterstützung lokaler Fischer",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "companies_supply_chains",
+              "food_consumption",
+              "international_environment",
+              "sustainable_economy_consumption_other",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 267553,
+          "title": "Einzelinitiative Dr. Marianne Klug Arter, Zürich, betreffend Änderung des Gesetzes über die Finanzierung von Massnahmen für den Natur - und Heimatschutz und für Erholungsgebiete",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "environmental_funding",
+              "environmental_law",
+              "protected_areas"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 142964,
+          "title": "Waldweiden",
+          "proposed": [
+            "public_sector"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "forest"
+          ],
+          "missing_any": [],
+          "extra": [
+            "public_sector"
+          ]
+        },
+        {
+          "id": 244702,
+          "title": "Compostage de déchets ménagers",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "circular_economy"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 310094,
+          "title": "Waldentwicklungsplan WEP für das Waldareal der Gemeinden Basel, Bettingen und Riehen 2021-2035",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "forest"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 334039,
+          "title": "Energie aus Fluss- und Trinkwasser",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "climate_energy_other",
+              "renewable_electricity",
+              "renewable_heat"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 215590,
+          "title": "Was genau sind besonders besorgniserregende Stoffe und wie viele davon sind in der Schweiz zugelassen?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "environment_policy_other",
+              "environmental_law"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 188205,
+          "title": "Un Eco-quartier à la Concorde: favorisons une expérience innovatrice de logements à haute qualité environnementale intégrant un processus participatif de quartier",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "building_efficiency",
+              "climate_energy_other"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 247922,
+          "title": "Changement de système d'imposition de la propriété du logement : quelles conséquences pour la politique climatique et énergétique cantonale ?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "climate_energy_other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 139104,
+          "title": "Persistente organische Schadstoffe (POPs-Konvention)",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "international_environment"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 59926,
+          "title": "Minimaler Schutz der Wässermatten",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "agriculture_biodiversity",
+              "biodiversity_landscape_other",
+              "species_habitats",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 10592,
+          "title": "Umsetzung des Unterrichtsfachs «Mensch und Umwelt» an den Volksschulen",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "environmental_research_education"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 247092,
+          "title": "Papier- und Kartonsammlung durch Horwer Vereine",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "circular_economy"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 146725,
+          "title": "Infrastrukturen des öffentlichen Verkehrs auf Kantonsstrassen: Lange Umsetzungsfristen gefährden die Attraktivität des öffentlichen Verkehrs",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 87327,
+          "title": "Ausserordentliche Lage – Wölfe bedrohen unsere Dörfer",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 338679,
+          "title": "Bilaterale III und Artikel 84 BV: Schutz des Alpengebiets vor zunehmendem individuellem Transitverkehr",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "environment_policy_other",
+              "environmental_law",
+              "sustainable_mobility"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 75927,
+          "title": "Nachjagd/Herbstjagd",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 157227,
+          "title": "Wie wird das Konzept der planetaren Belastbarkeitsgrenzen in der Strategie Nachhaltige Entwicklung 2030 berücksichtigt?",
+          "proposed": [
+            "climate_energy_other",
+            "resources_raw_materials"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [],
+          "extra": [
+            "resources_raw_materials"
+          ]
+        },
+        {
+          "id": 237397,
+          "title": "Ökologisierung der Verkehrssteuern",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 318154,
+          "title": "Galleria Mappo-Morettina; impatto ambientale ad un anno dalla sua apertura",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "environment_policy_other",
+              "environmental_law",
+              "sustainable_mobility"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 8447,
+          "title": "Kommunale Volksinitiative «für ein gesundes Stadtklima (Gute-Luft-Initiative)»",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "climate_energy_other",
+              "environment_policy_other"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 41551,
+          "title": "Voruntersuchungen belasteter Standorte",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "environment_policy_other",
+              "environmental_law",
+              "soil_spatial_planning"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 117740,
+          "title": "\"Lugano, eventi a basso impatto ambientale?\"",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "circular_economy",
+              "environment_policy_other",
+              "sustainable_economy_consumption_other"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        }
+      ]
+    }
   },
-  "production_v7": {
-    "records": 300,
-    "strict_correct": 268,
-    "ambiguous_records": 33,
-    "ambiguous_classified_as_topic": 0,
-    "relevance": {
-      "tp": 13,
-      "fp": 0,
-      "fn": 27,
-      "tn": 227,
-      "precision": 1.0,
-      "recall": 0.325,
-      "f1": 0.491,
-      "precision_ci95": [
-        0.772,
-        1.0
-      ],
-      "recall_ci95": [
-        0.201,
-        0.48
-      ],
-      "accuracy": 0.899,
-      "records": 267
-    },
-    "main_topics": {
-      "micro_precision": 0.786,
-      "micro_recall": 0.268,
-      "counts": {
-        "fn": 30,
-        "fp": 3,
-        "tp": 11
+  "B": {
+    "current_rules": {
+      "records": 300,
+      "strict_correct": 282,
+      "ambiguous_records": 41,
+      "ambiguous_classified_as_topic": 5,
+      "relevance": {
+        "tp": 23,
+        "fp": 0,
+        "fn": 13,
+        "tn": 223,
+        "precision": 1.0,
+        "recall": 0.639,
+        "f1": 0.78,
+        "precision_ci95": [
+          0.857,
+          1.0
+        ],
+        "recall_ci95": [
+          0.476,
+          0.775
+        ],
+        "accuracy": 0.95,
+        "records": 259
       },
-      "topics": {
-        "biodiversity_landscape": {
-          "tp": 2,
-          "fp": 1,
-          "fn": 8,
-          "precision": 0.667,
-          "recall": 0.2
+      "main_topics": {
+        "micro_precision": 0.885,
+        "micro_recall": 0.605,
+        "counts": {
+          "fn": 15,
+          "tp": 23,
+          "fp": 3
         },
-        "climate_energy": {
-          "tp": 7,
-          "fp": 1,
-          "fn": 10,
-          "precision": 0.875,
-          "recall": 0.412
-        },
-        "environment_policy": {
-          "tp": 1,
-          "fp": 1,
-          "fn": 3,
-          "precision": 0.5,
-          "recall": 0.25
-        },
-        "sustainable_economy_consumption": {
-          "tp": 1,
-          "fp": 0,
-          "fn": 2,
-          "precision": 1.0,
-          "recall": 0.333
+        "topics": {
+          "biodiversity_landscape": {
+            "tp": 6,
+            "fp": 1,
+            "fn": 2,
+            "precision": 0.857,
+            "recall": 0.75
+          },
+          "climate_energy": {
+            "tp": 14,
+            "fp": 1,
+            "fn": 4,
+            "precision": 0.933,
+            "recall": 0.778
+          },
+          "environment_policy": {
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.5,
+            "recall": 1.0
+          },
+          "sustainable_economy_consumption": {
+            "tp": 2,
+            "fp": 0,
+            "fn": 3,
+            "precision": 1.0,
+            "recall": 0.4
+          }
         }
-      }
-    },
-    "errors": [
-      {
-        "id": 153693,
-        "title": "Einheimische Pflanzen",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
       },
-      {
-        "id": 49840,
-        "title": "Strategische Rohölreserven im Ausland",
-        "proposed": [
-          "soil_spatial_planning"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "fossil_energy"
-        ],
-        "missing_any": [],
-        "extra": [
-          "soil_spatial_planning"
-        ]
-      },
-      {
-        "id": 282827,
-        "title": "Abschaffung Eigenmietwert - Abzüge für energiesparende und umweltschonende Massnahmen erhalten",
-        "proposed": [
-          "environment_policy_other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "building_efficiency"
-        ],
-        "missing_any": [],
-        "extra": [
-          "environment_policy_other"
-        ]
-      },
-      {
-        "id": 27598,
-        "title": "\"In periferia?!? ...c'è ENERGIA! Parco GeoTermico del nucleo di Sonvico.\"",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "renewable_heat"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 126608,
-        "title": "Förderung der Biodiversität bei Verkehrsprojekten, Gebäudesanierungen und Areal-Entwicklungen",
-        "proposed": [
-          "biodiversity_landscape_other",
-          "building_efficiency"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [],
-        "extra": [
-          "building_efficiency"
-        ]
-      },
-      {
-        "id": 161502,
-        "title": "Bekämpfung der Verkehrsüberlastung. Die für den (abgelehnten) Autobahnausbau vorgesehen Milliarden für Projekte des Agglomerationsverkehrs verwenden",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 156704,
-        "title": "Ausführungsverordnung zum Jagdgesetz",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 298366,
-        "title": "Zu Fuss zur Schule statt “Elterntaxi“",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 14862,
-        "title": "Die Bekämpfung des Japankäfers und die Folgen für Riehen und die Region",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "agriculture_biodiversity",
-            "biodiversity_landscape_other",
+      "errors": [
+        {
+          "id": 326757,
+          "title": "Produits locaux dans la restauration collective : un vœu pieux ?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "food_consumption"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 66906,
+          "title": "Tierschutz im Indonesien-Abkommen",
+          "proposed": [
+            "species_habitats"
+          ],
+          "ambiguous": true,
+          "relevant": false,
+          "correct": false,
+          "missing": [],
+          "missing_any": [],
+          "extra": [
             "species_habitats"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 210825,
-        "title": "Entwicklungszusammenarbeit und MSC-Zertifizierung. Unterstützung lokaler Fischer",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "companies_supply_chains",
-            "food_consumption",
-            "international_environment",
-            "sustainable_economy_consumption_other",
-            "waters"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 267553,
-        "title": "Einzelinitiative Dr. Marianne Klug Arter, Zürich, betreffend Änderung des Gesetzes über die Finanzierung von Massnahmen für den Natur - und Heimatschutz und für Erholungsgebiete",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "biodiversity_landscape_other",
-            "environmental_funding",
-            "environmental_law",
+        },
+        {
+          "id": 301751,
+          "title": "Protégeons nos réserves naturelles",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
             "protected_areas"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 142964,
-        "title": "Waldweiden",
-        "proposed": [
-          "public_sector"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "forest"
-        ],
-        "missing_any": [],
-        "extra": [
-          "public_sector"
-        ]
-      },
-      {
-        "id": 244702,
-        "title": "Compostage de déchets ménagers",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "circular_economy"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 310094,
-        "title": "Waldentwicklungsplan WEP für das Waldareal der Gemeinden Basel, Bettingen und Riehen 2021-2035",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "forest"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 334039,
-        "title": "Energie aus Fluss- und Trinkwasser",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "climate_energy_other",
-            "renewable_electricity",
+        },
+        {
+          "id": 189493,
+          "title": "Non à un doublement des charges de chauffage : pour une tarification en matière de raccordement et de fourniture de l'énergie thermique par les réseaux thermiques structurants intelligible, proportionnée et supportable !",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
             "renewable_heat"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 215590,
-        "title": "Was genau sind besonders besorgniserregende Stoffe und wie viele davon sind in der Schweiz zugelassen?",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "environment_policy_other",
-            "environmental_law"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 188205,
-        "title": "Un Eco-quartier à la Concorde: favorisons une expérience innovatrice de logements à haute qualité environnementale intégrant un processus participatif de quartier",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "building_efficiency",
-            "climate_energy_other"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 247922,
-        "title": "Changement de système d'imposition de la propriété du logement : quelles conséquences pour la politique climatique et énergétique cantonale ?",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "climate_energy_other"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 139104,
-        "title": "Persistente organische Schadstoffe (POPs-Konvention)",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "international_environment"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 59926,
-        "title": "Minimaler Schutz der Wässermatten",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "agriculture_biodiversity",
+        },
+        {
+          "id": 201757,
+          "title": "Reduktion des Energieverbrauchs und der Lichtverschmutzung im Bereich der Strassenbeleuchtungen",
+          "proposed": [
             "biodiversity_landscape_other",
-            "species_habitats",
-            "waters"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 10592,
-        "title": "Umsetzung des Unterrichtsfachs «Mensch und Umwelt» an den Volksschulen",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "environmental_research_education"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 247092,
-        "title": "Papier- und Kartonsammlung durch Horwer Vereine",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "circular_economy"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 146725,
-        "title": "Infrastrukturen des öffentlichen Verkehrs auf Kantonsstrassen: Lange Umsetzungsfristen gefährden die Attraktivität des öffentlichen Verkehrs",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 87327,
-        "title": "Ausserordentliche Lage – Wölfe bedrohen unsere Dörfer",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 338679,
-        "title": "Bilaterale III und Artikel 84 BV: Schutz des Alpengebiets vor zunehmendem individuellem Transitverkehr",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
             "environment_policy_other",
-            "environmental_law",
-            "sustainable_mobility"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 75927,
-        "title": "Nachjagd/Herbstjagd",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "species_habitats"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 157227,
-        "title": "Wie wird das Konzept der planetaren Belastbarkeitsgrenzen in der Strategie Nachhaltige Entwicklung 2030 berücksichtigt?",
-        "proposed": [
-          "climate_energy_other",
-          "resources_raw_materials"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [],
-        "extra": [
-          "resources_raw_materials"
-        ]
-      },
-      {
-        "id": 237397,
-        "title": "Ökologisierung der Verkehrssteuern",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [
-          "sustainable_mobility"
-        ],
-        "missing_any": [],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 318154,
-        "title": "Galleria Mappo-Morettina; impatto ambientale ad un anno dalla sua apertura",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "environment_policy_other",
-            "environmental_law",
-            "sustainable_mobility"
-          ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 8447,
-        "title": "Kommunale Volksinitiative «für ein gesundes Stadtklima (Gute-Luft-Initiative)»",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "climate_energy_other",
+            "public_sector"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [],
+          "extra": [
             "environment_policy_other"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 41551,
-        "title": "Voruntersuchungen belasteter Standorte",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "environment_policy_other",
-            "environmental_law",
-            "soil_spatial_planning"
+        },
+        {
+          "id": 20623,
+          "title": "Tarifpolitik bei ewb: Wo bleibt der ökologische Anreiz zum Wassersparen?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "resources_raw_materials",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "other"
           ]
-        ],
-        "extra": [
-          "other"
-        ]
-      },
-      {
-        "id": 117740,
-        "title": "\"Lugano, eventi a basso impatto ambientale?\"",
-        "proposed": [
-          "other"
-        ],
-        "ambiguous": false,
-        "relevant": true,
-        "correct": false,
-        "missing": [],
-        "missing_any": [
-          [
-            "circular_economy",
-            "environment_policy_other",
-            "sustainable_economy_consumption_other"
+        },
+        {
+          "id": 312282,
+          "title": "Aktion zur Förderung von Elektrotaxis in Basel-Stadt",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
           ]
+        },
+        {
+          "id": 57415,
+          "title": "Auswirkungen des Freihandelsabkommens zwischen der Schweiz und China auf das Ökosystem des Hochplateaus von Tibet",
+          "proposed": [
+            "climate_energy_other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "international_environment",
+              "species_habitats"
+            ]
+          ],
+          "extra": [
+            "climate_energy_other"
+          ]
+        },
+        {
+          "id": 129872,
+          "title": "Nachtabschaltung der Strassenbeleuchtung",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "building_efficiency",
+              "climate_energy_other",
+              "public_sector"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 172564,
+          "title": "Gesetz betreffend die Änderung des Gesetzes über die Energienutzung",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "climate_energy_other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 46873,
+          "title": "Ein Schattendach mit Begrünung",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "climate_energy_other"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 87096,
+          "title": "Fischtreppe in Evionnaz: Wie ist der Stand der Dinge?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "waters"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 100263,
+          "title": "Energierichtplan",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "climate_energy_other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 106419,
+          "title": "Vom 7. April 2025, Verordnung zum ökologischen Ausgleich bei Bauvorhaben",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "environmental_law",
+              "soil_spatial_planning",
+              "species_habitats"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 160133,
+          "title": "Regenwasser. Eine nachhaltige Ressource",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "resources_raw_materials",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 32063,
+          "title": "Favorisons le développement circulaire du tissu associatif et économique en Ville de Genève",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "circular_economy"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 256381,
+          "title": "Bau des Munitionsdepots Brugg im kantonalen Naturschutzgebiet und Schutz der letzten Laubfrosch-Population an der Aare",
+          "proposed": [
+            "protected_areas"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": []
+        },
+        {
+          "id": 258460,
+          "title": "Rückzug aus Investitionen in fossile Energien",
+          "proposed": [
+            "fossil_energy"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_finance"
+          ],
+          "missing_any": [],
+          "extra": []
+        }
+      ]
+    },
+    "production_v7": {
+      "records": 300,
+      "strict_correct": 271,
+      "ambiguous_records": 41,
+      "ambiguous_classified_as_topic": 1,
+      "relevance": {
+        "tp": 13,
+        "fp": 0,
+        "fn": 23,
+        "tn": 223,
+        "precision": 1.0,
+        "recall": 0.361,
+        "f1": 0.53,
+        "precision_ci95": [
+          0.772,
+          1.0
         ],
-        "extra": [
-          "other"
-        ]
-      }
-    ]
+        "recall_ci95": [
+          0.225,
+          0.524
+        ],
+        "accuracy": 0.911,
+        "records": 259
+      },
+      "main_topics": {
+        "micro_precision": 0.75,
+        "micro_recall": 0.316,
+        "counts": {
+          "fn": 26,
+          "tp": 12,
+          "fp": 4
+        },
+        "topics": {
+          "biodiversity_landscape": {
+            "tp": 4,
+            "fp": 1,
+            "fn": 4,
+            "precision": 0.8,
+            "recall": 0.5
+          },
+          "climate_energy": {
+            "tp": 7,
+            "fp": 3,
+            "fn": 10,
+            "precision": 0.7,
+            "recall": 0.412
+          },
+          "environment_policy": {
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "precision": 1.0,
+            "recall": 1.0
+          },
+          "sustainable_economy_consumption": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": null,
+            "recall": 0.0
+          }
+        }
+      },
+      "errors": [
+        {
+          "id": 326757,
+          "title": "Produits locaux dans la restauration collective : un vœu pieux ?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "food_consumption"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 66906,
+          "title": "Tierschutz im Indonesien-Abkommen",
+          "proposed": [
+            "public_sector",
+            "species_habitats"
+          ],
+          "ambiguous": true,
+          "relevant": false,
+          "correct": false,
+          "missing": [],
+          "missing_any": [],
+          "extra": [
+            "public_sector",
+            "species_habitats"
+          ]
+        },
+        {
+          "id": 301751,
+          "title": "Protégeons nos réserves naturelles",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "protected_areas"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 11595,
+          "title": "Umfrage von Pro Velo zum Thema Velofahren im urbanen Kontext, Wertung der Ergebnisse sowie möglicher Handlungsbedarf",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 189493,
+          "title": "Non à un doublement des charges de chauffage : pour une tarification en matière de raccordement et de fourniture de l'énergie thermique par les réseaux thermiques structurants intelligible, proportionnée et supportable !",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "renewable_heat"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 201757,
+          "title": "Reduktion des Energieverbrauchs und der Lichtverschmutzung im Bereich der Strassenbeleuchtungen",
+          "proposed": [
+            "public_sector",
+            "species_habitats"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [],
+          "extra": [
+            "species_habitats"
+          ]
+        },
+        {
+          "id": 230556,
+          "title": "Nachhaltige Investitionen für die Pensionskasse des Staatspersonals",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_finance"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 231597,
+          "title": "Das Gebäudeprogramm Einreichen und Antwort des SR 22.11.2011",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "building_efficiency"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 106210,
+          "title": "Sicherstellung Wasserqualität des Bachgadenweiher-Zufluss Aabach",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "waters"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 20623,
+          "title": "Tarifpolitik bei ewb: Wo bleibt der ökologische Anreiz zum Wassersparen?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "resources_raw_materials",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 312282,
+          "title": "Aktion zur Förderung von Elektrotaxis in Basel-Stadt",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 57415,
+          "title": "Auswirkungen des Freihandelsabkommens zwischen der Schweiz und China auf das Ökosystem des Hochplateaus von Tibet",
+          "proposed": [
+            "climate_energy_other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "international_environment",
+              "species_habitats"
+            ]
+          ],
+          "extra": [
+            "climate_energy_other"
+          ]
+        },
+        {
+          "id": 129872,
+          "title": "Nachtabschaltung der Strassenbeleuchtung",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "building_efficiency",
+              "climate_energy_other",
+              "public_sector"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 172564,
+          "title": "Gesetz betreffend die Änderung des Gesetzes über die Energienutzung",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "climate_energy_other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 13387,
+          "title": "Massnahmen zur Klimaneutralität und Hitzeminderung, Berücksichtigung der Kosten beim Kauf von Liegenschaften, Massnahmen bei gemieteten Liegenschaften, Prognose für den Ausstoss an CO2 unter Berücksichtigung des Bevölkerungswachstums und Resultate des Betriebsoptimierungsprogramms für städtische Verwaltungsgebäude",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "climate_energy_other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 271694,
+          "title": "Keine Benachteiligung von gelben E-Bikes auf Velorouten",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 46873,
+          "title": "Ein Schattendach mit Begrünung",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "climate_energy_other"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 85859,
+          "title": "Anno di promozione del trasporto pubblico da parte di Banca Stato",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 87096,
+          "title": "Fischtreppe in Evionnaz: Wie ist der Stand der Dinge?",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "waters"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 100263,
+          "title": "Energierichtplan",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "climate_energy_other"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 202335,
+          "title": "Wolfspolitik des Bundes",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 141117,
+          "title": "Verstärktes Engagement in der Energieforschung",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "climate_energy_other",
+              "environmental_research_education"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 106419,
+          "title": "Vom 7. April 2025, Verordnung zum ökologischen Ausgleich bei Bauvorhaben",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "biodiversity_landscape_other",
+              "environmental_law",
+              "soil_spatial_planning",
+              "species_habitats"
+            ]
+          ],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 124221,
+          "title": "Crédit destiné à encourager l’utilisation du vélo et adoption du règlement municipal y relatif",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_mobility"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 160133,
+          "title": "Regenwasser. Eine nachhaltige Ressource",
+          "proposed": [
+            "public_sector"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [],
+          "missing_any": [
+            [
+              "resources_raw_materials",
+              "waters"
+            ]
+          ],
+          "extra": [
+            "public_sector"
+          ]
+        },
+        {
+          "id": 32063,
+          "title": "Favorisons le développement circulaire du tissu associatif et économique en Ville de Genève",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "circular_economy"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 256381,
+          "title": "Bau des Munitionsdepots Brugg im kantonalen Naturschutzgebiet und Schutz der letzten Laubfrosch-Population an der Aare",
+          "proposed": [
+            "protected_areas"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "species_habitats"
+          ],
+          "missing_any": [],
+          "extra": []
+        },
+        {
+          "id": 334386,
+          "title": "Abfall-Trenn-Behälter am und rund um den Bahnhof Burgdorf",
+          "proposed": [
+            "other"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "circular_economy"
+          ],
+          "missing_any": [],
+          "extra": [
+            "other"
+          ]
+        },
+        {
+          "id": 258460,
+          "title": "Rückzug aus Investitionen in fossile Energien",
+          "proposed": [
+            "fossil_energy"
+          ],
+          "ambiguous": false,
+          "relevant": true,
+          "correct": false,
+          "missing": [
+            "sustainable_finance"
+          ],
+          "missing_any": [],
+          "extra": []
+        }
+      ]
+    }
   }
 }

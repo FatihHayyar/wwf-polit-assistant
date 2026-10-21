@@ -245,6 +245,7 @@ def add_category_rules(
             "strong",
             "context",
             "qualifier",
+            "exclusion",
         }:
             raise ValueError(
                 f"Invalid rule_type "
@@ -275,8 +276,8 @@ def add_category_rules(
                     term
                 )
 
-                # Örn. Grossverbraucher / Großverbraucher:
-                # Terms become identical after casefold(). Within the
+                # E.g. Grossverbraucher / Großverbraucher:
+                # terms become identical after casefold(). Within the
                 # same concept no second DB rule is needed because
                 # the matcher casefolds as well.
                 if normalized in seen_terms:
@@ -315,7 +316,10 @@ def add_category_rules(
                     category_term_key
                 ] = concept_code
 
-                if rule_type == "context":
+                if rule_type == "exclusion":
+                    # Exclusions suppress their category and add no score.
+                    title_weight = content_weight = 0.0
+                elif rule_type == "context":
                     title_weight = (
                         TITLE_CONTEXT_WEIGHT
                     )
@@ -333,39 +337,25 @@ def add_category_rules(
                         CONTENT_STRONG_WEIGHT
                     )
 
-                upsert_rule(
-                    db,
-                    existing_rules=existing_rules,
-                    configured_rule_ids=(
-                        configured_rule_ids
-                    ),
-                    category_id=category.id,
-                    concept_code=concept_code,
-                    language=language,
-                    term=term,
-                    scope="title",
-                    rule_type=rule_type,
-                    match_type=concept.get("match_type", "phrase"),
-                    weight=title_weight,
-                )
-
-                upsert_rule(
-                    db,
-                    existing_rules=existing_rules,
-                    configured_rule_ids=(
-                        configured_rule_ids
-                    ),
-                    category_id=category.id,
-                    concept_code=concept_code,
-                    language=language,
-                    term=term,
-                    scope="content",
-                    rule_type=rule_type,
-                    match_type=concept.get("match_type", "phrase"),
-                    weight=content_weight,
-                )
-
-                count += 2
+                # Very common words (e.g. "Kanton") carry signal in a title
+                # but not in long texts; such concepts are limited to titles.
+                for scope in concept.get("scopes", ["title", "content"]):
+                    upsert_rule(
+                        db,
+                        existing_rules=existing_rules,
+                        configured_rule_ids=(
+                            configured_rule_ids
+                        ),
+                        category_id=category.id,
+                        concept_code=concept_code,
+                        language=language,
+                        term=term,
+                        scope=scope,
+                        rule_type=rule_type,
+                        match_type=concept.get("match_type", "phrase"),
+                        weight=title_weight if scope == "title" else content_weight,
+                    )
+                    count += 1
 
     return count
 
@@ -497,9 +487,40 @@ def seed_taxonomy(db: Session, taxonomy=None):
 
             rule.active = False
 
-    return {"categories": category_count, "rules": configured_rule_count,
-            "deactivated_rules": deactivated_rule_count}
+    moved_subscriptions = transfer_replaced_subscriptions(db, taxonomy)
 
+    return {"categories": category_count, "rules": configured_rule_count,
+            "deactivated_rules": deactivated_rule_count,
+            "transferred_subscriptions": moved_subscriptions}
+
+
+def transfer_replaced_subscriptions(db: Session, taxonomy) -> int:
+    """Give subscribers of a split or renamed category its successors.
+
+    A category may declare ``"replaces": ["old_code"]``. Profiles subscribed
+    to the old category keep receiving the same topics after the change.
+    """
+    from app.models.subscription_profile import SubscriptionProfile
+
+    by_code = {category.code: category for category in db.scalars(select(ClassificationCategory))}
+    successors = {}
+    for main in taxonomy:
+        for category in [main, *main.get("children", [])]:
+            for old_code in category.get("replaces", []):
+                old = by_code.get(old_code)
+                if old is not None and old.code != category["code"]:
+                    successors.setdefault(old.id, set()).add(by_code[category["code"]].id)
+    transferred = 0
+    if not successors:
+        return transferred
+    for profile in db.scalars(select(SubscriptionProfile)):
+        selected = set(profile.category_ids or [])
+        added = set().union(*(successors[old] for old in selected if old in successors)) - selected
+        if added:
+            profile.category_ids = sorted(selected | added)
+            transferred += 1
+    db.flush()
+    return transferred
 
 def seed():
     with SessionLocal() as db:
