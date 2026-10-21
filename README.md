@@ -1,5 +1,7 @@
 # WWF Polit-Assistant
 
+[![CI](https://github.com/FatihHayyar/wwf-polit-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/FatihHayyar/wwf-polit-assistant/actions/workflows/ci.yml)
+
 **Parlamentarische Entwicklungen finden, einordnen und verfolgen.**
 
 Der WWF Polit-Assistant bündelt Schweizer Parlamentsdaten aus OpenParlData und macht sie nach WWF-Themen, Kantonen, Datum und Suchbegriffen zugänglich. Zusammengehörige Geschäfte, Sitzungen, Traktanden und Dokumente lassen sich im politischen Kontext betrachten. Abonnements informieren per E-Mail über relevante neue Inhalte und Änderungen.
@@ -61,51 +63,19 @@ Die Anwendung speichert Quelldatenänderungen getrennt von ihrer Benachrichtigun
 
 Benachrichtigungen besitzen eine HTML-Ansicht mit Inhaltskarten und eine separate Klartextfassung. Der Betreff benennt beispielsweise ein neues Dokument; Dokumentlinks, Geschäftsverlauf und Abonnementverwaltung sind eindeutig beschriftet. Bereits zugestellte E-Mails werden nicht verändert oder automatisch erneut versandt. Eine Aktualisierung ohne passende neue Entwicklung erzeugt keine neue Nachricht.
 
-## Aktueller Projektstand – 13. Oktober 2026
+## Projektstand – 21. Oktober 2026
 
-**Stand: 13. Oktober 2026.** Datenimport, neun Synchronisationsmodule, konfigurierbare regelbasierte Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung und Abonnementverwaltung sind implementiert. Die Benachrichtigungspipeline berücksichtigt auch Änderungen an verbundenen Datensätzen. Ollama ist nicht eingebunden; LLM und Chatbot bleiben mögliche spätere Erweiterungen.
+Datenimport, neun Synchronisationsmodule, konfigurierbare regelbasierte Klassifikation, Recherche, verknüpfte Detailansichten, passwortlose Anmeldung, Abonnementverwaltung und E-Mail-Benachrichtigungen sind umgesetzt. Präsentation, fachliche Bewertung durch WWF und formale Abnahme stehen aus. Azure-Bereitstellung sowie KI- und Dialogfunktionen gehören nicht zum Lieferumfang dieses MVP.
 
-91 isolierte Backend-Regressionstests sowie JavaScript-Prüfungen wurden erfolgreich ausgeführt. Die Browser-, Docker-Demo-, Mailpit- und Neustartprüfungen stammen vom 12. Oktober und wurden für die jüngsten Änderungen nicht vollständig wiederholt. Das ersetzt keine vollständige fachliche Abnahme oder Prüfung unter Produktionsbedingungen.
-
-Am 13. Oktober wurden **2.951.254 vorhandene Datensätze in allen neun Bereichen** mit `rule-based-v7` neu klassifiziert. Eine unabhängige schreibgeschützte Abfrage bestätigte **0 fehlende und 0 veraltete Zuordnungen**. Der Backfill änderte keine Quelldaten und erzeugte keine Benachrichtigungen. Dies ist ein technischer Abdeckungsnachweis, keine Aussage über die Richtigkeit aller Kategorien.
-
-Ein gemischtes Entwicklungsset mit 50 realen Beispielen erreichte **40/50 mit den vorherigen Regeln und 50/50 mit den neuen Regeln**: 20 eindeutige WWF-Themen, 20 fachfremde und 10 unklare oder mehrthematische Beispiele. Die Erwartungen wurden anhand der Quellen unabhängig festgelegt; eine WWF-Expertenabnahme und ein unabhängiges, ungesehenes Prüfset stehen aus. Nachweise: [Prüfung vom 13. Oktober](docs/05-testing/review-2026-10-13.md), [Qualitätsbericht](rule_quality_report_tr.md) und [Backfill-Abdeckung](rule_backfill_status.json).
-
-Am 12. Oktober verarbeitete ein vollständiger Synchronisationslauf **1.682.302 Einträge** und schloss **9/9 Datasets ohne Fehler** ab. Anschliessend wurde auch der damals zuletzt vom Nutzer gestartete Lauf mit 9/9 erfolgreich beendet. Die Quellstichproben vom 12. Oktober umfassten 500 Inhalte je Dataset und zeigten keine fehlenden oder abweichenden Einträge. Diese Befunde gelten für die geprüften Läufe und die Stichprobe; sie sind kein vollständiger historischer Abdeckungsnachweis. Der Klassifikations-Backfill vom 13. Oktober war kein erneuter Quellenabgleich.
-
-Die technische MVP-Umsetzung ist für eine gemeinsame Demonstration vorbereitet. Präsentation, fachliche Bewertung und formale Projektabnahme stehen noch aus. Azure-Bereitstellung und KI/Dialogfunktionen sind keine offenen Implementierungsaufgaben dieses MVP.
-
-### Abgeschlossene Arbeiten und Korrekturen
-
-| Bereich | Umgesetzter und geprüfter Stand |
+| Bereich | Stand und Nachweis |
 |---|---|
-| Recherche und Oberfläche | Neun Bereiche mit eigenen Filtern; breitere Ergebnisfläche; ausgewogene Kontoschaltflächen; überflüssige Anmelde-Erfolgsmeldung und schwebende Konto-Leiste entfernt |
-| Themen und Ergebnisgruppen | Konfigurierbarer Themenbaum mit vier lokalen Fallbacks; Haupt-/Unterthema sichtbar; gleichnamige Geschäftsquellen desselben Tages und derselben Körperschaft in einer Karte mit getrennten Detailzugängen |
-| Regelqualität und Backfill | Titelzusammensetzungen, Umwelt-Kontextprüfung und robuste Textnormalisierung; 50-Beispiele-Entwicklungstest; resumierbarer Backfill über alle neun Bereiche mit Qualitätsschranke und Sync-Sperre |
-| Detailansichten | Schliessen bleibt beim Scrollen sichtbar; Verfolgen wird ausschliesslich in der Abonnementverwaltung angeboten; Änderungen zeigen benannte, anklickbare Inhalte statt gleichlautender Zeilen |
-| Konten und Abonnements | Getrennte Registrierung/Anmeldung mit passenden Hinweisen, optionale Google-Anmeldung, bis zu zehn bestätigte Empfänger; erreichbare Verwaltungsaktionen, Speicherbestätigung und Kontolöschung |
-| Datenabgleich | Einheitliches Event-Mapping, Nachholung fehlender Dokumente und Behandlung mehrfacher Dokumentzuordnungen; Batch-Fortschritt, Wiederaufnahme und Schutz vor parallelen Jobs |
-| Windows-Checkpoints | Atomisches Schreiben mit eigenen temporären Dateien und begrenzten Wiederholungen bei vorübergehenden Dateisperren |
-| Benachrichtigungen | Relevanzprüfung statt Nachricht bei jeder technischen Änderung; Gruppierung pro Nutzer/Geschäft; HTML und Klartext, korrekte Sonderzeichen und eindeutig beschriftete Links |
-| Fehlerbehandlung | E-Mail-Fehler ergeben einen erfolglosen CLI-Abschluss; Dataset-Fortschritt bleibt erhalten, ausstehende Nachrichten können erneut verarbeitet werden |
-| Scheduler und Schema | Scheduler-Konfiguration mit persistenten Logs und STARTTLS; Datenbank auf `20261012_recipients (head)`. Beim letzten Prozesscheck am 13. Oktober lief nur PostgreSQL; API/Scheduler müssen separat gestartet werden |
-| Dokumentation und Tracking | Sieben Dokumentationsbereiche, Installations-/Betriebs-/Benutzerhandbuch, Anforderungen, Tests und Übergabeunterlagen; GitHub-Issues und Milestones angelegt |
+| Datenbestand | 2'951'254 Inhaltsdatensätze in neun Bereichen. Vollständiger Lauf am 12. Oktober: 9/9 Bereiche ohne Fehler; Quellstichprobe mit 4'500 Datensätzen ohne Abweichung ([Prüfung](docs/05-testing/review-2026-10-12.md)) |
+| Klassifikation | `rule-based-v7` auf allen Datensätzen. Entwicklungsset 50/50 (Regeln daran verbessert). **Blindes Prüfset mit 300 Zufallsgeschäften: Precision 1.0, Recall 0.325** – sehr präzise, aber die Mehrheit relevanter Geschäfte wird übersehen ([Auswertung](docs/05-testing/evidence/holdout-evaluation.md)) |
+| Sicherheit | Gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für E-Mail- und Token-Endpunkte, Bestätigungsseite statt Token-Verbrauch beim Öffnen eines Links, Widerruf aller Tokens beim Abmelden, strikte Sicherheits-Header ([Details](docs/monitoring.md#anmeldung-und-schutz-vor-missbrauch)) |
+| Tests | 124 isolierte Backend-, API- und Klassifikationstests, Frontend-Prüfungen und CI (Lint, Migrationen auf PostgreSQL 17, Docker-Build). Edge-Durchlauf der Demo inkl. Registrierung, Testbenachrichtigung und Abmeldung am 21. Oktober |
+| Demo | Ein-Kommando-Start mit Beispieldaten und Mailpit; Benachrichtigungen lassen sich mit einem Testgeschäft direkt ausprobieren |
 
-### Nachweise und Grenzen
-
-| Kontrolle vom 12. Oktober | Ergebnis |
-|---|---|
-| Backend unter Windows | 81 Tests erfolgreich |
-| Backend im aktuellen Linux-Image | 81 Tests ausgeführt: 80 erfolgreich, eine Windows-spezifische Prüfung übersprungen |
-| Frontend und Browser | JavaScript-Prüfungen sowie Desktop-/Mobile-Szenarien erfolgreich; verlinkter Geschäftsverlauf geprüft |
-| Docker-Demo / Mailpit | Registrierung, Bestätigung, Anmeldung, Empfängerverifikation, Abonnements, Logout und Kontolöschung geprüft |
-| Neuer vollständiger Sync | 9/9 Datasets, 1.682.302 unveränderte verarbeitete Einträge, keine Dataset- oder Versandfehler |
-| Letzter manueller Nutzerlauf | Ebenfalls 9/9 ohne Fehler; keine weiteren neuen oder geänderten Inhalte |
-| Erneuter direkter Quellenvergleich | 500 Datensätze je Bereich, insgesamt 4.500: keine fehlenden Einträge, Inhaltsabweichungen oder Mappingfehler |
-
-Bei der vorherigen Reparatur wurden **1.158 Dokumente nachgetragen und 32 geändert**. Die späteren Läufe mit `NEW=0` und `CHANGED=0` bedeuten deshalb nicht, dass heute überhaupt nichts aktualisiert wurde. Nachgetragene historische Quelldaten sind ausserdem keine automatisch am heutigen Tag neu publizierten politischen Inhalte.
-
-Weitere Nachweise: [Gesamtprüfung](docs/05-testing/review-2026-10-12.md), [Testergebnisse](docs/05-testing/test-results.md) und [aktueller Aufgabenstand](docs/01-project-management/current-status.md). Automatisierte Tests und Quellenstichproben ersetzen keine WWF-Abnahme und keinen vollständigen historischen Inhaltsvergleich.
+Automatisierte Tests und Stichproben ersetzen keine WWF-Abnahme. Frühere Nachweise: [Prüfung vom 13. Oktober](docs/05-testing/review-2026-10-13.md), [Testergebnisse](docs/05-testing/test-results.md), [Aufgabenstand](docs/01-project-management/current-status.md).
 
 ## Quick Start mit Docker
 
@@ -142,12 +112,18 @@ Die Demo verwendet eine eigene Datenbank, erhält vorhandene Daten beim Neustart
 
 ### Einen ersten Ablauf ausprobieren
 
-1. Einen Bereich auswählen und nach einem Begriff oder WWF-Thema suchen.
-2. Einen Treffer öffnen und seine verknüpften Inhalte ansehen.
-3. **Registrieren** wählen und eine E-Mail-Adresse eingeben.
-4. Den Bestätigungslink in **Mailpit** öffnen und anschliessend Abonnements verwalten.
+1. Einen Bereich auswählen und nach einem Begriff oder WWF-Thema suchen; einen Treffer öffnen und seine verknüpften Inhalte ansehen.
+2. **Registrieren** wählen und eine E-Mail-Adresse eingeben (beliebig, z. B. `test@example.org`).
+3. In **Mailpit** ([localhost:8025](http://localhost:8025)) die Bestätigungs-E-Mail öffnen, dem Link folgen und **Registrierung bestätigen** klicken. Die Abonnementverwaltung öffnet sich.
+4. Ein Thema wählen, z. B. **Klima & Energie**, optional auch Kantone oder Stichwörter.
+5. Unter **Benachrichtigung testen (Demo)** ein Thema wählen und **Testgeschäft erstellen und benachrichtigen** klicken. Die Anwendung speichert die Auswahl, legt ein fiktives neues Geschäft an und schickt es durch die echte Klassifikation, die Relevanzprüfung und den Versand.
+6. In Mailpit erscheint die Benachrichtigung zum neuen Geschäft. Passt das Testgeschäft nicht zu den gespeicherten Filtern, erklärt die Oberfläche den Grund, statt eine E-Mail zu senden.
 
-Auch spätere Anmeldelinks erscheinen in Mailpit. Alle Demo-E-Mails bleiben lokal; externe SMTP-Zugangsdaten werden nicht benötigt. Parlamentarische Update-Benachrichtigungen entstehen erst bei einer Synchronisierung mit relevanten Änderungen, die Demo löst diese nicht automatisch aus.
+Alle Demo-E-Mails bleiben lokal; externe SMTP-Zugangsdaten werden nicht benötigt. Die Testfunktion existiert nur mit `DEMO_MODE=true` und ist auch per Kommandozeile verfügbar:
+
+```sh
+docker compose -f docker-compose.demo.yml exec app python -m scripts.demo.send_test_notification --email test@example.org --topic renewable_electricity
+```
 
 ### Logs und Beenden
 
@@ -190,10 +166,11 @@ flowchart TD
 | Datenzugriff | SQLAlchemy, Psycopg |
 | Datenbank | PostgreSQL 17 |
 | Migrationen | Alembic |
-| Frontend | HTML, CSS und JavaScript, von FastAPI ausgeliefert |
+| Frontend | HTML, CSS und JavaScript-Module ohne Build-Schritt, von FastAPI ausgeliefert |
 | API-Dokumentation | OpenAPI / Swagger |
 | Ausführung | Docker und Docker Compose |
 | Regelmässige Jobs | Python-Scheduler, 03:00 Europe/Zurich |
+| Qualitätssicherung | unittest, FastAPI-TestClient, Node-Prüfungen, ruff, GitHub Actions |
 | E-Mail | SMTP; Mailpit im Docker-Demo-Setup |
 
 ### Datenmodell und Klassifikation
@@ -307,13 +284,14 @@ Die interaktive Dokumentation wird aus der Anwendung erzeugt: **`/docs`**; die O
 | Details und Beziehungen | `GET /api/v1/entities/{dataset}/{record_id}` |
 | Geschäftssuche und Details | `GET /api/v1/affairs`, `GET /api/v1/affairs/{affair_id}` |
 | Filterwerte | `GET /api/v1/categories`, `GET /api/v1/cantons`, `GET /api/v1/affair-types` |
-| Registrierung und Verifikation | `POST /api/v1/auth/register`, `GET /api/v1/auth/verify-email` |
-| Anmeldung per E-Mail | `POST /api/v1/auth/login`, `GET /api/v1/auth/verify-login` |
+| Registrierung und Verifikation | `POST /api/v1/auth/register`; Link: `GET /api/v1/auth/verify-email` (Bestätigungsseite), `POST` auf demselben Pfad (Bestätigung) |
+| Anmeldung per E-Mail | `POST /api/v1/auth/login`; Link: `GET`/`POST /api/v1/auth/verify-login` |
 | Optionale Google-Anmeldung | `GET /api/v1/auth/providers`, `GET /api/v1/auth/google`, `GET /api/v1/auth/google/callback` |
 | Konto, Logout und Löschung | `GET /api/v1/auth/me`, `POST /api/v1/auth/logout`, `DELETE /api/v1/auth/me` |
 | Abonnements lesen und ersetzen | `GET /api/v1/subscriptions`, `PUT /api/v1/subscriptions` |
 | Einzelne Inhalte verfolgen | `PUT /api/v1/subscriptions/watches/{dataset}/{record_id}`, `DELETE` auf demselben Pfad |
-| Benachrichtigungsadressen | `GET /api/v1/subscriptions/recipients`, `PUT` auf demselben Pfad; Bestätigung über `/recipients/verify` |
+| Benachrichtigungsadressen | `GET /api/v1/subscriptions/recipients`, `PUT` auf demselben Pfad; Bestätigung über `GET`/`POST /recipients/verify` |
+| Demo-Testbenachrichtigung (nur `DEMO_MODE`) | `GET /api/v1/demo/status`, `GET /api/v1/demo/topics`, `POST /api/v1/demo/notifications` |
 | Sync starten | `POST /api/v1/sync/run` |
 | Checkpoints und letzter Lauf | `GET /api/v1/sync/status`, `GET /api/v1/sync/latest` |
 | Laufstatus und Logs | `GET /api/v1/sync/runs/{run_id}`, `GET /api/v1/sync/runs/{run_id}/log` |
@@ -346,7 +324,7 @@ Kategorie-IDs werden über die Kategorien-API ermittelt. Ein Hauptthema umfasst 
 | Klima & Energie | Alle | Passende Entwicklungen in allen Kantonen |
 | Alle | ZH | Entwicklungen aller Themen im Kanton Zürich |
 
-Die Anmeldung verwendet JWT und eine HttpOnly-Session-Cookie für die Oberfläche; API-Clients können Bearer-Tokens verwenden. Verwaltungsfunktionen erfordern Anmeldung, Sync-Operationen den separat konfigurierten Schlüssel im Header `X-Sync-API-Key`. Kontolöschung ist unterstützt.
+Die Anmeldung verwendet JWT und ein HttpOnly-Sitzungscookie für die Oberfläche; API-Clients können Bearer-Tokens verwenden. Abmelden widerruft alle bisher ausgestellten Tokens des Kontos. Registrierung und Anmeldung antworten für bekannte und unbekannte Adressen identisch; E-Mail- und Token-Endpunkte sind ratenbegrenzt (HTTP 429 mit `Retry-After`). Verwaltungsfunktionen erfordern Anmeldung, Sync-Operationen den separat konfigurierten Schlüssel im Header `X-Sync-API-Key`. Kontolöschung ist unterstützt.
 
 ## Lokale Entwicklung
 
@@ -361,7 +339,7 @@ pip install -e .
 Copy-Item .env.example .env
 ```
 
-In `.env` Datenbank, JWT, SMTP und `SYNC_API_KEY` konfigurieren. Zugangsdaten bleiben lokal. Das bestehende `docker-compose.yml` stellt die Entwicklungsdatenbank auf Port **5433** und einen separat startbaren Scheduler bereit.
+In `.env` Datenbank, JWT, SMTP und `SYNC_API_KEY` konfigurieren. Zugangsdaten bleiben lokal. `docker-compose.yml` stellt PostgreSQL auf Port **5433** (nur von diesem Rechner erreichbar), einen Migrationsdienst, die API auf Port **8000** und den Scheduler bereit; `docker compose up -d --build` startet alles.
 
 Für die optionale Google-Anmeldung zusätzlich `GOOGLE_CLIENT_ID` und `GOOGLE_CLIENT_SECRET` setzen. Der OAuth-Webclient benötigt `${VERIFICATION_BASE_URL}/api/v1/auth/google/callback` als erlaubte Weiterleitungs-URI, lokal `http://localhost:8000/api/v1/auth/google/callback`. Nach Neustart erscheint die Google-Schaltfläche; ohne Konfiguration bleibt die E-Mail-Anmeldung verfügbar. Weitere Einstellungen: [Konfiguration](docs/configuration.md).
 
@@ -397,16 +375,15 @@ Die Backend-Suite verwendet isolierte Fixtures/Mocks. In einem eigenen Testtermi
 
 ```powershell
 $env:DATABASE_URL = 'sqlite://'
-$env:JWT_SECRET_KEY = 'isolated-test-key-only'
-python -B -m unittest discover -s tests -q
+$env:JWT_SECRET_KEY = 'isolated-test-key-only-not-for-production'
+python -B -m unittest discover -s tests -p 'test_*.py'
 node tests/test_frontend.cjs
-node --check app/web/app.js
-node --check app/web/i18n.js
+python -m scripts.evaluate_holdout
 ```
 
 Das Testterminal danach schliessen oder die beiden Variablen entfernen, bevor die echte Anwendung darin gestartet wird. Voraussetzungen und Browserabläufe: [Testplan](docs/05-testing/test-plan.md).
 
-Die Backend-Tests decken unter anderem Sync-Fortschritt, Beziehungen, Normalisierung, Klassifikation, Kontoeinstellungen und Benachrichtigungsregeln ab. Live-Sync, SMTP und Docker-/Browserabläufe wurden separat geprüft; die gemeinsame fachliche WWF-Abnahme steht aus.
+Die Tests decken unter anderem Sync-Fortschritt, Beziehungen, Normalisierung, Klassifikation, Benachrichtigungsregeln, Anmeldung, Ratenbegrenzung, Sicherheits-Header und den Demo-Ablauf über den echten HTTP-Stack ab. `scripts.evaluate_holdout` misst die Klassifikation auf dem blinden Prüfset, ohne PostgreSQL zu benötigen. GitHub Actions führt bei jedem Push zusätzlich ruff, die Migrationen auf PostgreSQL 17 und den Docker-Build aus. Live-Sync und Organisations-SMTP wurden separat geprüft; die fachliche WWF-Abnahme steht aus.
 
 ## Grenzen und nächste Schritte
 
@@ -416,7 +393,7 @@ Die behobenen Sync-, Windows-Checkpoint-, SMTP- und Oberflächenprobleme werden 
 
 | Aufgabe | Noch ausstehender Schritt |
 |---|---|
-| Fachliche Qualität | WWF-Taxonomie und Fokus Energie & Klima bestätigen; Expertenbeispiele bewerten, statt ungemessene Präzision/Recall zu behaupten |
+| Fachliche Qualität | WWF-Taxonomie und Fokus Energie & Klima bestätigen; das Prüfset von WWF-Fachpersonen nachannotieren lassen. Der gemessene Recall von 0.325 zeigt, dass die Regeln Synonyme, Fachbegriffe (z. B. Jagd, Wolf, Kompost, Waldentwicklung) und französische/italienische Titel ergänzen müssen; danach mit einem neuen Prüfset messen |
 | Demonstration | Präsentation und nachvollziehbare Beispiele für Suche, Beziehungen, Abonnements und relevante Änderungen vorbereiten |
 | WWF-Feedback und Abnahme | Gemeinsamen Anwendungsfalldurchlauf durchführen; Rückmeldungen und tatsächliche Akzeptanz dokumentieren |
 | Projektabschluss | Vorbereitete Ergebnis-/Übergabeunterlagen prüfen, formalen Kursbericht abschliessen und tatsächliche Übergabe durchführen |
@@ -430,7 +407,7 @@ Der MVP liefert mit Python, PostgreSQL, Docker, OpenAPI und Umgebungsvariablen e
 
 ### Optionale Weiterentwicklung
 
-KI-gestützte Klassifikation, semantische Suche, Zusammenfassungen und dialogorientierte Abfragen bleiben Erweiterungen. Das aktuelle MVP bietet strukturierte Suche und Filter, keinen KI-Chat. Ebenso optional sind ein täglicher Sammeldigest, weitergehende SMTP-Optimierungen und Organisations-SSO.
+KI-gestützte Klassifikation, semantische Suche, Zusammenfassungen und dialogorientierte Abfragen bleiben Erweiterungen. Eine KI-Klassifikation lässt sich mit demselben Prüfset direkt gegen die Regeln vergleichen. Das aktuelle MVP bietet strukturierte Suche und Filter, keinen KI-Chat. Ebenso optional sind ein täglicher Sammeldigest, weitergehende SMTP-Optimierungen und Organisations-SSO.
 
 Die beiden grossen Indizes für die experimentelle bereichsübergreifende Suche können mit `python -m scripts.build_search_indexes` in einem Wartungsfenster aufgebaut werden. Die öffentliche Bereichsrecherche benötigt sie nicht. Ein GitHub-Projects-Board ist noch nicht erstellt; dafür fehlt die erforderliche Projects-Berechtigung. Bestehende Issues und Milestones können bereits genutzt werden.
 
@@ -448,6 +425,7 @@ Die Dokumentation ist nach Projektmanagement, Anforderungen, Architektur, techni
 | [Architektur](docs/03-architecture/system-architecture.md) | Komponenten, Datenmodell und Ausführungsgrenzen |
 | [API](docs/api.md) | Öffentliche Recherche und geschützte Verwaltungsrouten |
 | [Tests](docs/05-testing/test-plan.md) | Automatisierte Prüfungen und manuelle Abnahme |
+| [Klassifikation auf dem Prüfset](docs/05-testing/evidence/holdout-evaluation.md) | Blind annotierte Stichprobe mit Precision, Recall und Fehlerliste |
 | [Betrieb](docs/06-handover/deployment-guide.md) | Prozessrollen, Migrationen und Sicherung |
 | [Fehlerbehebung](docs/troubleshooting.md) | Sync-, Anmelde- und Installationsprobleme |
 | [Mitwirken](CONTRIBUTING.md) | Beiträge und Pull Requests |

@@ -8,6 +8,17 @@ Keine öffentlich ausnutzbaren Details, Zugangsdaten oder personenbezogenen Date
 
 Betroffenen Commit, Komponente, mögliche Auswirkungen und eine bereinigte Reproduktion angeben. Tests auf eigene beziehungsweise ausdrücklich freigegebene Testumgebungen beschränken. Eine öffentliche Fehlerbeschreibung erst nach Abstimmung zur Offenlegung erstellen.
 
+## Umgesetzte Schutzmassnahmen
+
+- Passwortlose Anmeldung mit einmaligen, gehashten und befristeten Tokens; das Öffnen eines Links verbraucht kein Token, die Bestätigung erfolgt per POST derselben Herkunft.
+- Gleiche Antworten für bekannte und unbekannte Adressen bei Registrierung und Anmeldung.
+- Ratenbegrenzung für E-Mail- und Token-Endpunkte (pro API-Prozess; mehrere Instanzen benötigen einen gemeinsamen Speicher).
+- HttpOnly-Sitzungscookie mit `SameSite=Lax`, bei HTTPS mit `Secure`; Abmelden widerruft alle ausgestellten Tokens.
+- Content-Security-Policy ohne Inline-Skripte, `X-Frame-Options`, `nosniff` und `Referrer-Policy: same-origin`.
+- Sync-Verwaltung nur mit separatem Schlüssel, Vergleich in konstanter Zeit.
+
+Nicht umgesetzt sind unter anderem Organisations-SSO, ein zentrales Audit-Log und eine externe Sicherheitsprüfung.
+
 ## Betriebshinweise
 
 Demo-Schlüssel und Datenbankpasswörter sind nur für lokale Nutzung vorgesehen. Echte Secrets über die Umgebung verwalten, HTTPS für öffentliche Kontofunktionen einsetzen und Sync-Schlüssel nur berechtigten Betreibern geben. Bestätigungslinks, JWTs, SMTP-Zugangsdaten und Benutzeradressen aus Screenshots und Logs entfernen.

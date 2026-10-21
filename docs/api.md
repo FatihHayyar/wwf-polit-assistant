@@ -23,16 +23,20 @@ Bereichslisten unterstützen unter anderem `q`, `category`, `subcategory`, `cant
 | Methode und Pfad | Funktion |
 |---|---|
 | `POST /auth/register` | Registrierung mit E-Mail-Bestätigung |
-| `GET /auth/verify-email` | Registrierungslink einlösen |
+| `GET /auth/verify-email` | Bestätigungsseite des Registrierungslinks (verbraucht das Token nicht) |
+| `POST /auth/verify-email` | Registrierung bestätigen und anmelden (Formularfeld `token`) |
 | `POST /auth/login` | Anmeldelink an bestehendes Konto senden |
-| `GET /auth/verify-login` | Anmeldelink einlösen |
+| `GET /auth/verify-login` | Bestätigungsseite des Anmeldelinks |
+| `POST /auth/verify-login` | Anmeldung bestätigen (Formularfeld `token`) |
 | `GET /auth/providers` | Aktivierte externe Anbieter |
 | `GET /auth/google`, `GET /auth/google/callback` | Optionaler Google-Anmeldefluss |
 | `GET /auth/me` | Angemeldetes Konto |
-| `POST /auth/logout` | Sitzungscookie entfernen |
+| `POST /auth/logout` | Sitzungscookie entfernen und alle ausgestellten Tokens widerrufen |
 | `DELETE /auth/me` | Eigenes Konto und zugehörige Daten löschen |
 
-Register und Login erhalten einen JSON-Body mit `email`. Bestätigungslinks setzen ein HttpOnly-Cookie `access_token` und leiten zur Oberfläche weiter. API-Clients können alternativ `Authorization: Bearer <JWT>` verwenden. Ein vorhandener Bearer-Header hat Vorrang vor dem Cookie. Logout entfernt das Cookie; bereits ausgegebene Bearer-Tokens werden dadurch nicht automatisch widerrufen.
+Register und Login erhalten einen JSON-Body mit `email` und antworten immer mit derselben Meldung, unabhängig davon, ob ein Konto existiert; E-Mails werden im Hintergrund versendet. Ein Link öffnet eine Bestätigungsseite; erst deren POST verbraucht das Token, setzt ein HttpOnly-Cookie `access_token` und leitet zur Oberfläche weiter. POSTs mit fremdem `Origin` werden mit 403 abgewiesen. API-Clients können alternativ `Authorization: Bearer <JWT>` verwenden; ein vorhandener Bearer-Header hat Vorrang vor dem Cookie. Logout erhöht die Sitzungsversion des Kontos und macht damit alle zuvor ausgestellten Tokens ungültig.
+
+E-Mail- und Token-Endpunkte sind ratenbegrenzt und antworten bei Überschreitung mit `429` und `Retry-After`. Die Grenzen stehen in der [Monitoring-Dokumentation](monitoring.md#anmeldung-und-schutz-vor-missbrauch).
 
 ## Abonnements und Empfänger
 
@@ -52,7 +56,17 @@ Bis zu 20 Suchbegriffe mit je 1–200 Zeichen sind erlaubt. Innerhalb einer Grup
 
 `PUT /subscriptions/watches/{dataset}/{record_id}` beobachtet einen Inhalt, `DELETE` entfernt die Beobachtung. `record_id` ist die positive lokale ID; bei Dokumenten ist dies `pk`, nicht `source_id`.
 
-`GET /subscriptions/recipients` liest Adressen und Bestätigungsstatus. `PUT` ersetzt die Liste mit `{"emails": ["name@example.org"]}`; insgesamt 1–10 Adressen. Fremde Adressen erhalten einen Bestätigungslink zu `/subscriptions/recipients/verify?token=...`. Nur bestätigte Adressen erhalten Monitoring-Nachrichten. Diese Verwaltungsrouten benötigen eine gültige Benutzersitzung; der Bestätigungslink verwendet seinen eigenen Token.
+`GET /subscriptions/recipients` liest Adressen und Bestätigungsstatus. `PUT` ersetzt die Liste mit `{"emails": ["name@example.org"]}`; insgesamt 1–10 Adressen. Fremde Adressen erhalten einen Bestätigungslink zu `/subscriptions/recipients/verify?token=...`; auch dieser öffnet eine Bestätigungsseite, die Bestätigung erfolgt per POST. Änderungen der Adressliste sind auf zehn pro Stunde begrenzt. Nur bestätigte Adressen erhalten Monitoring-Nachrichten. Diese Verwaltungsrouten benötigen eine gültige Benutzersitzung; der Bestätigungslink verwendet seinen eigenen Token.
+
+## Demo-Testbenachrichtigung
+
+Nur mit `DEMO_MODE=true`; sonst antworten die Routen mit `404` bzw. `GET /demo/status` mit `enabled: false`.
+
+| Methode und Pfad | Funktion |
+|---|---|
+| `GET /demo/status` | Ob der Demo-Modus aktiv ist und welche Mailbox-URL angezeigt wird |
+| `GET /demo/topics` | Auswählbare Themen und Vorauswahl aus den eigenen Abonnements (Anmeldung erforderlich) |
+| `POST /demo/notifications` | Testgeschäft zu `category_code` erstellen, klassifizieren und Benachrichtigung an das eigene Konto senden; fünf pro zehn Minuten |
 
 ## Geschützte Sync-Verwaltung
 

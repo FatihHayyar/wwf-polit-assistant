@@ -4,6 +4,27 @@ Dieses Protokoll beginnt mit dem aktuellen Entwicklungsstand. Es rekonstruiert k
 
 ## Unveröffentlicht
 
+### Sicherheit (21. Oktober 2026)
+
+- Registrierung und Anmeldung antworten unabhängig vom Kontostatus identisch; E-Mails werden im Hintergrund versendet.
+- Ratenbegrenzung pro Client, Zieladresse und Konto für alle Endpunkte, die E-Mails senden oder Tokens annehmen.
+- E-Mail-Links öffnen eine Bestätigungsseite; Tokens werden erst per POST derselben Herkunft verbraucht.
+- Abmelden widerruft alle ausgestellten Tokens (Migration `20261021_session_version`).
+- Sicherheits-Header inklusive Content-Security-Policy; PostgreSQL in `docker-compose.yml` nur an `127.0.0.1` gebunden; Compose startet Migration, API und Scheduler.
+
+### Demo und Oberfläche (21. Oktober 2026)
+
+- Testbenachrichtigung in der Demo: fiktives Geschäft durchläuft Klassifikation, Relevanzprüfung, Abonnementabgleich und Versand; Anleitung auf der Startseite und CLI-Skript.
+- Frontend in Module aufgeteilt (`core`, `search`, `detail`, `account`, `subscriptions`, `app`), Stylesheet formatiert.
+
+### Qualitätssicherung (21. Oktober 2026)
+
+- Blind annotiertes Prüfset mit 300 Geschäften und Auswertungsskript `scripts.evaluate_holdout`.
+- 33 neue Tests (API-Sicherheit, Demo-Ablauf, Prüfset-Integrität); GitHub-Actions-CI mit ruff, Migrationen auf PostgreSQL 17 und Docker-Build.
+- Repository bereinigt (Backup-Kopien, PowerShell-Cache, Exportdateien); Nachweise unter `docs/05-testing/evidence/`.
+- Dokumentation vollständig deutsch.
+
+
 ### Dokumentation
 
 - Deutscher Dokumentationsindex mit Installation, Bedienung, Konfiguration, Architektur, API, Tests, Betrieb, Fehlerbehebung und Lizenzstatus.

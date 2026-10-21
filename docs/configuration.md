@@ -17,6 +17,10 @@ Die Einstellungen liegen in [app/core/config.py](../app/core/config.py). Lokal w
 | `SMTP_FROM_NAME` | `WWF Polit-Assistant` | Absendername |
 | `VERIFICATION_BASE_URL` | `http://localhost:8000` | Öffentlich erreichbare Basis für Bestätigungslinks und Google-Callback; HTTPS aktiviert sichere Cookies |
 | `EMAIL_VERIFICATION_MINUTES` | `30` | Gültigkeit von Bestätigungslinks |
+| `RATE_LIMIT_ENABLED` | `true` | Ratenbegrenzung für E-Mail- und Token-Endpunkte; nur in kontrollierten Testumgebungen abschalten |
+| `DEMO_MODE` | `false` | Aktiviert die Demo-Testbenachrichtigung; nie mit einer Produktionsdatenbank verwenden |
+| `DEMO_MAILBOX_URL` | nicht gesetzt | Im Demo-Modus angezeigter Link zum Postfach, z. B. Mailpit |
+| `POSTGRES_PASSWORD` | `polit_assistant_dev` | Nur `docker-compose.yml`: Passwort der Entwicklungsdatenbank; muss zu `DATABASE_URL` passen |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | nicht gesetzt | Optionale Google-OAuth-Anmeldung; beide erforderlich |
 | `FRONTEND_URL` | `http://localhost:3000` | Vorhandene Einstellung; aktuelle Auth-Rückleitungen verwenden relative Pfade zur Anwendung |
 | `APP_NAME`, `APP_VERSION` | `WWF Polit-Assistant API`, `0.1.0` | Vorhandene Einstellungen; Metadaten in `app/main.py` sind derzeit separat festgelegt |
@@ -27,7 +31,7 @@ Eine Vorlage befindet sich in [.env.example](../.env.example). Keine echten Zuga
 
 Eine `.env` für Docker Compose ersetzt nicht automatisch die `environment`-Liste des Containers. Die Demo hat eigene, feste lokale Werte in [docker-compose.demo.yml](../docker-compose.demo.yml). Google-Zugangsdaten werden dort derzeit nicht durchgereicht; dafür eine passende Compose-Override-Konfiguration ergänzen.
 
-[docker-compose.yml](../docker-compose.yml) enthält PostgreSQL und den Scheduler, aber keinen API-Dienst. Die API läuft in der Entwicklungsanleitung auf dem Host. Das Dockerfile startet standardmässig den Scheduler; ein API-Container benötigt einen abweichenden Startbefehl.
+[docker-compose.yml](../docker-compose.yml) enthält PostgreSQL (Port 5433, nur an `127.0.0.1` gebunden), den einmaligen Dienst `migrate` (`alembic upgrade head`), die API (Port 8000, nur lokal, mit `--proxy-headers`) und den Scheduler. API und Scheduler starten erst nach erfolgreicher Migration und teilen das Verzeichnis `logs/`. Alle drei verwenden dasselbe Image; das Dockerfile startet standardmässig den Scheduler.
 
 ## Google-Anmeldung
 
@@ -53,10 +57,16 @@ Nach Änderungen Kategorien und Regeln synchronisieren und API/Scheduler neu sta
 
 Entfernte Kategorien und Regeln werden deaktiviert. Bestehende Zuordnungen werden erst durch eine explizite Neuberechnung ersetzt. Ollama ist nicht Teil dieses Ablaufs.
 
-Der gemischte Qualitätstest verwendet 50 unabhängig annotierte reale Datensätze in einer isolierten SQLite-Datenbank:
+Der gemischte Qualitätstest verwendet 50 annotierte reale Datensätze in einer isolierten SQLite-Datenbank. Die Regeln wurden an diesen Beispielen verbessert; das Ergebnis ist eine Regressionsprüfung:
 
 ```powershell
 .venv/Scripts/python.exe -m scripts.rule_quality
+```
+
+Die Qualität auf ungesehenen Daten misst das blind annotierte Prüfset mit 300 zufälligen Geschäften. Es benötigt kein PostgreSQL und darf nicht zum Anpassen der Regeln verwendet werden; nach Regeländerungen erneut messen und für weitere Optimierungen ein neues Prüfset ziehen:
+
+```powershell
+.venv/Scripts/python.exe -m scripts.evaluate_holdout
 ```
 
 Die stapelweise Neuberechnung umfasst alle neun Datensatztypen. Ohne `--apply` bleibt PostgreSQL schreibgeschützt. `--apply` prüft zunächst das Testset und stoppt bei Fehlern. Die Verarbeitung verwendet die Synchronisationssperre, ersetzt nur Klassifikationen und erzeugt keine Benachrichtigungen:

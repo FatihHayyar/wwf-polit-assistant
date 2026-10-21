@@ -24,12 +24,14 @@ flowchart LR
 | `app/core/config.py` | Einstellungen aus Umgebung und `.env` |
 | `app/db/`, `app/models/` | Datenbankzugriff und persistierte Modelle |
 | `app/services/` | Recherche, Klassifikation, Abonnementabgleich und E-Mail-Dienste |
-| `app/web/` | Oberfläche und Übersetzungen |
+| `app/web/` | Oberfläche ohne Build-Schritt: `core.js` (Zustand, API-Aufrufe, Hilfsfunktionen), `search.js` (Bereiche, Filter, Ergebnisse), `detail.js` (Detailansicht), `account.js` (Anmeldung), `subscriptions.js` (Abonnements, Demo-Test), `app.js` (Start), `i18n.js` (Übersetzungen) |
+| `app/core/rate_limit.py`, `app/api/email_links.py` | Ratenbegrenzung sowie Bestätigungsseiten und Sitzungscookie für E-Mail-Links |
 | `migrations/` | Alembic-Schemaänderungen |
 | `scripts/bootstrap/` | Erstdownload und normalisierter Import |
 | `scripts/sync/` | Neun Dataset-Jobs, Runner, Scheduler und Diagnosen |
 | `scripts/demo/`, `data/demo/` | Isolierter Demostart und Stichprobe |
-| `tests/` | Backend-, JavaScript- und Browserprüfungen |
+| `tests/` | Backend-, API-, JavaScript- und Browserprüfungen sowie Prüfset der Klassifikation |
+| `.github/workflows/ci.yml` | CI: Lint, Tests, Migrationen auf PostgreSQL 17, Docker-Build |
 
 ## Daten und Beziehungen
 

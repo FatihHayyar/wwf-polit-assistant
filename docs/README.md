@@ -1,6 +1,6 @@
 # Projektdokumentation
 
-**Stand: 13. Oktober 2026.** Entwicklungs-MVP; technische Umsetzung, WWF-Abnahme und Betriebsfreigabe werden getrennt geführt. Der lokale Stand steht im [Aufgabenstand](01-project-management/current-status.md), aktuelle Nachweise in der [Prüfung vom 13. Oktober](05-testing/review-2026-10-13.md). [GitHub-Tracking](01-project-management/github-tracking.md) dokumentiert den bisherigen externen Tracking-Stand.
+**Stand: 21. Oktober 2026.** Entwicklungs-MVP; technische Umsetzung, WWF-Abnahme und Betriebsfreigabe werden getrennt geführt. Der lokale Stand steht im [Aufgabenstand](01-project-management/current-status.md), die aktuelle Messung der Klassifikation in der [Prüfset-Auswertung](05-testing/evidence/holdout-evaluation.md). [GitHub-Tracking](01-project-management/github-tracking.md) dokumentiert den bisherigen externen Tracking-Stand.
 
 ## 01 – Projektmanagement
 
@@ -37,6 +37,9 @@
 - [Testplan und Befehle](05-testing/test-plan.md)
 - [Testergebnisse und Grenzen](05-testing/test-results.md)
 - [Gesamtprüfung vom 12. Oktober](05-testing/review-2026-10-12.md)
+- [Prüfung vom 13. Oktober](05-testing/review-2026-10-13.md)
+- [Klassifikation auf dem blinden Prüfset](05-testing/evidence/holdout-evaluation.md)
+- [Regelqualität auf dem Entwicklungsset](05-testing/evidence/rule-quality-development-set.md) und [Backfill `rule-based-v7`](05-testing/evidence/backfill-rule-based-v7.md)
 
 ## 06 – Übergabe
 
@@ -56,4 +59,4 @@ Der formale Kursbericht mit persönlichen Angaben, signiertem Auftrag und Origin
 
 [Projektübersicht](../README.md), [Installation](getting-started.md), [Konfiguration](configuration.md), [API](api.md), [Fehlerbehebung](troubleshooting.md), [Lizenzstatus](licensing.md), [Demo-Stichprobe](../data/demo/README.md), [Mitwirken](../CONTRIBUTING.md), [Sicherheit](../SECURITY.md) und [Support](../SUPPORT.md).
 
-Der detaillierte [Monitoring-Leitfaden](monitoring.md) bleibt derzeit Englisch. [WWF-Anforderungsreview](wwf-requirements.md) und [Review vom 11. Oktober](daily-review-2026-10-11.md) dokumentieren ihren jeweiligen historischen Stand. Alte Einstiegsdateien wie `architecture.md`, `testing.md`, `deployment.md` und `user-guide.md` verweisen auf die neuen Hauptdokumente.
+Der detaillierte [Monitoring-Leitfaden](monitoring.md) beschreibt Anmeldung, Missbrauchsschutz, Abonnements, Demo-Benachrichtigung, Synchronisation und Benachrichtigungsregeln. Die [WWF-Anforderungsprüfung](wwf-requirements.md) ist aktualisiert; das [Review vom 11. Oktober](daily-review-2026-10-11.md) dokumentiert einen historischen Stand. Die gesamte Dokumentation ist deutsch. Alte Einstiegsdateien wie `architecture.md`, `testing.md`, `deployment.md` und `user-guide.md` verweisen auf die neuen Hauptdokumente.

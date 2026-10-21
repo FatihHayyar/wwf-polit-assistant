@@ -13,11 +13,11 @@ Die vorhandenen Compose-Dateien sind lokale Entwicklungs- und Demo-Konfiguration
 | Datenbank | PostgreSQL 17 mit persistentem Speicher |
 | E-Mail-Dienst | Konfigurierter SMTP-Server; lokal Mailpit |
 
-Das Dockerfile startet standardmässig den Scheduler. Für den API-Dienst den Startbefehl überschreiben. Nur eine verantwortliche Scheduler-Instanz betreiben. Der globale Sync-Lock verhindert konkurrierende Runner; er ersetzt keine Deployment-Koordination. API-gestartete Jobs hängen am auslösenden Prozess und sind kein externer dauerhafter Jobdienst.
+Das Dockerfile startet standardmässig den Scheduler. `docker-compose.yml` zeigt die Zusammenstellung: ein einmaliger Dienst `migrate`, danach API (mit `--proxy-headers`) und Scheduler aus demselben Image. Nur eine verantwortliche Scheduler-Instanz betreiben. Der globale Sync-Lock verhindert konkurrierende Runner; er ersetzt keine Deployment-Koordination. API-gestartete Jobs hängen am auslösenden Prozess und sind kein externer dauerhafter Jobdienst.
 
 ## Vor einer Bereitstellung
 
-Echte Secrets über den Secret Store der Zielumgebung setzen und feste Demo-Zugangsdaten ersetzen. Die öffentliche `VERIFICATION_BASE_URL` muss stimmen; HTTPS und eine geeignete Reverse-Proxy-Konfiguration sind für öffentlich erreichbare Kontofunktionen nötig. SMTP-Zugang, Absender und Versandlimits mit Testempfängern prüfen.
+Echte Secrets über den Secret Store der Zielumgebung setzen und feste Demo-Zugangsdaten ersetzen. Die öffentliche `VERIFICATION_BASE_URL` muss stimmen; HTTPS und eine geeignete Reverse-Proxy-Konfiguration sind für öffentlich erreichbare Kontofunktionen nötig. Hinter einem Proxy uvicorn mit `--proxy-headers` starten, damit die Ratenbegrenzung die echte Client-Adresse sieht. Die Ratenbegrenzung arbeitet im Speicher eines API-Prozesses; bei mehreren Instanzen einen gemeinsamen Speicher (z. B. Redis) ergänzen. `DEMO_MODE` darf nicht gesetzt sein. SMTP-Zugang, Absender und Versandlimits mit Testempfängern prüfen.
 
 Datenbank, `logs/` und Jobdateien unter `logs/sync_jobs/` persistent halten. Eine Wiederaufnahme benötigt sowohl den DB-Checkpoint als auch die zugehörigen Dateien. Container-Neustarts ohne persistentes Jobverzeichnis können diese verlieren. Zentrale Logs, Fehleralarmierung und Datenschutzanforderungen sind noch für die Zielumgebung umzusetzen.
 

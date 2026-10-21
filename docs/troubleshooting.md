@@ -18,7 +18,15 @@ Prüfen, ob der laufende Server aus dem bearbeiteten Projektordner gestartet wur
 
 ## Keine Anmelde- oder Monitoring-E-Mail
 
-In der Demo zuerst Mailpit unter `http://localhost:8025` öffnen. Lokal SMTP-Konfiguration und API-Protokoll prüfen. `VERIFICATION_BASE_URL` muss auf die verwendete Anwendung zeigen. Abgelaufene Links durch einen neuen Anmeldeversuch ersetzen.
+In der Demo zuerst Mailpit unter `http://localhost:8025` öffnen. Lokal SMTP-Konfiguration und API-Protokoll prüfen: Anmelde-E-Mails werden im Hintergrund versendet, Fehler erscheinen deshalb nur im Log. `VERIFICATION_BASE_URL` muss auf die verwendete Anwendung zeigen. Abgelaufene Links durch einen neuen Anmeldeversuch ersetzen. Die Oberfläche meldet bewusst immer «Falls die Adresse verwendet werden kann …»; für unbekannte Adressen wird keine E-Mail versendet.
+
+## «Zu viele Anfragen» (HTTP 429)
+
+E-Mail- und Token-Endpunkte sind begrenzt, etwa eine E-Mail pro Minute an dieselbe Adresse. Die Antwort nennt in `Retry-After` die Wartezeit in Sekunden. In kontrollierten Testumgebungen lässt sich die Begrenzung mit `RATE_LIMIT_ENABLED=false` abschalten.
+
+## Link zeigt nur eine Bestätigungsseite
+
+Das ist beabsichtigt: Erst der Klick auf die Schaltfläche meldet an. So können Linkscanner von E-Mail-Systemen das einmalige Token nicht verbrauchen. «Ungültig oder bereits verwendet» bedeutet, dass ein neuer Link angefordert werden muss.
 
 Für Monitoring zusätzlich prüfen: verifiziertes Konto, aktive Filter oder Watches, bestätigte Empfänger, passende relevante Änderung und erfolgreicher vollständiger Sync. Eine Änderung technischer Metadaten muss keine Nachricht erzeugen. Bei SMTP-Fehlern bleiben ausstehende Nachrichten erhalten; Provider-Limits können den Versand unterbrechen.
 

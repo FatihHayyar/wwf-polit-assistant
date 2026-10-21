@@ -12,7 +12,7 @@ docker compose -f docker-compose.demo.yml up --build -d
 
 Öffnen: Anwendung unter `http://localhost:8081`, API-Dokumentation unter `http://localhost:8081/docs`, lokale E-Mails unter `http://localhost:8025`.
 
-Beim Start werden Migrationen ausgeführt und eine leere Demo-Datenbank mit der mitgelieferten Stichprobe befüllt. Bereits vorhandene Daten bleiben erhalten. Es läuft kein täglicher Sync. Mailpit fängt E-Mails lokal ab.
+Beim Start werden Migrationen ausgeführt und eine leere Demo-Datenbank mit der mitgelieferten Stichprobe befüllt. Bereits vorhandene Daten bleiben erhalten. Es läuft kein täglicher Sync. Mailpit fängt E-Mails lokal ab. Die Startseite zeigt im Demo-Modus, wie sich eine Benachrichtigung mit einem Testgeschäft ausprobieren lässt (Registrieren → Thema abonnieren → «Benachrichtigung testen» → E-Mail in Mailpit).
 
 ```sh
 docker compose -f docker-compose.demo.yml logs -f app
@@ -32,6 +32,8 @@ python -m pip install -e .
 Copy-Item .env.example .env
 docker compose up -d postgres
 ```
+
+`docker compose up -d --build` startet stattdessen PostgreSQL, Migrationen, API und Scheduler gemeinsam in Containern.
 
 Die Kopie nur bei einer neuen Umgebung erstellen, damit eine vorhandene `.env` erhalten bleibt. Datenbankverbindung, einen eigenen JWT-Schlüssel und bei Bedarf SMTP sowie den Sync-Schlüssel nach dem [Konfigurationsleitfaden](configuration.md) setzen. Die Entwicklungsdatenbank ist vom Host auf Port **5433** erreichbar; im Container-Netzwerk gilt Port **5432**.
 

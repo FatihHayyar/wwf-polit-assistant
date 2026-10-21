@@ -14,7 +14,7 @@ Die Sprache lässt sich oben zwischen Deutsch, Französisch, Italienisch und Eng
 
 ## Konto und Anmeldung
 
-Für E-Mail-Benachrichtigungen zuerst registrieren und den Bestätigungslink öffnen. Bereits registrierte Nutzer wählen **Anmelden**. In der lokalen Docker-Demo befinden sich diese Nachrichten in Mailpit unter `http://localhost:8025`.
+Für E-Mail-Benachrichtigungen zuerst registrieren, den Link in der E-Mail öffnen und auf der folgenden Seite **Registrierung bestätigen** klicken. Bereits registrierte Nutzer wählen **Anmelden** und bestätigen den Anmeldelink ebenso mit einem Klick. Aus Datenschutzgründen zeigt die Anwendung immer dieselbe Meldung, unabhängig davon, ob ein Konto existiert. Wer mehrmals kurz hintereinander einen Link anfordert, muss etwas warten. In der lokalen Docker-Demo befinden sich diese Nachrichten in Mailpit unter `http://localhost:8025`.
 
 Wenn Google vom Betreiber eingerichtet wurde, steht die direkte Google-Anmeldung zur Verfügung. Bei bestimmten bestehenden Konten ist zur sicheren Zuordnung weiterhin die Anmeldung per E-Mail erforderlich. Andere externe Anmeldeanbieter sind derzeit nicht implementiert.
 
@@ -26,10 +26,14 @@ Leere Themen-, Kantons- und Suchbegriffgruppen pausieren die Filterabonnements. 
 
 Als Benachrichtigungsziel kann das Anmeldekonto oder eine Auswahl von insgesamt bis zu zehn E-Mail-Adressen dienen. Andere Adressen müssen über einen Bestätigungslink verifiziert werden. Bis zur ersten eigenen Auswahl verwenden bestehende Konten ihre Anmeldeadresse.
 
-**Änderungen speichern**, **Abmelden** und **Alle Abonnements beenden** bleiben im Verwaltungsdialog auch beim Scrollen erreichbar. Nach erfolgreichem Speichern erscheint eine Bestätigung. **Konto löschen** befindet sich am Ende der Verwaltung und entfernt die kontobezogenen Einstellungen. Abmelden beendet die aktuelle Sitzung, beendet aber keine Abonnements.
+**Änderungen speichern**, **Abmelden** und **Alle Abonnements beenden** bleiben im Verwaltungsdialog auch beim Scrollen erreichbar. Nach erfolgreichem Speichern erscheint eine Bestätigung. **Konto löschen** befindet sich am Ende der Verwaltung und entfernt die kontobezogenen Einstellungen. Abmelden beendet alle Sitzungen des Kontos, auch auf anderen Geräten, beendet aber keine Abonnements.
 
 ## Benachrichtigungen
 
 Relevante neue Inhalte und Änderungen werden nach einem erfolgreichen Sync geprüft und per E-Mail zusammengefasst. Technische Metadaten und bestimmte geringfügige Änderungen lösen keine Nachricht aus. Die Zusammenfassung erfolgt pro Nutzer und Geschäft beziehungsweise eigenständigem Inhalt; es gibt keine Garantie auf genau eine tägliche Nachricht.
 
 Ein erfolgreich gespeichertes Abonnement allein erzeugt noch keine parlamentarische Update-Nachricht. Dazu muss eine passende relevante Änderung auftreten. Bei fehlenden Nachrichten hilft die [Fehlerbehebung](../troubleshooting.md).
+
+## Benachrichtigung in der Demo ausprobieren
+
+In der Docker-Demo zeigt die Startseite die Schritte an. In der Abonnementverwaltung steht unter **Benachrichtigung testen (Demo)** ein Thema zur Auswahl. **Testgeschäft erstellen und benachrichtigen** speichert die aktuelle Auswahl, legt ein fiktives neues Geschäft an und schickt die Benachrichtigung über den regulären Ablauf an das eigene Konto. Die Nachricht erscheint in Mailpit; **Testgeschäft ansehen** öffnet das erzeugte Geschäft. Passt es nicht zu den gespeicherten Themen, Kantonen, Stichwörtern oder Bereichen, erklärt die Oberfläche dies. In einer produktiven Installation gibt es diese Funktion nicht.

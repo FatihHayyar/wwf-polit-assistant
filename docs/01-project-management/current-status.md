@@ -1,6 +1,14 @@
-# Aktueller Aufgabenstand – 13. Oktober 2026
+# Aktueller Aufgabenstand – 21. Oktober 2026
 
 Dieser Stand ersetzt die offenen technischen Prüfpunkte aus dem [Review vom 11. Oktober](../daily-review-2026-10-11.md). Historische Ergebnisse bleiben dort erhalten. Der Entwicklungs-MVP ist technisch demonstrierbar; eine gemeinsame WWF-Abnahme wurde noch nicht durchgeführt.
+
+## Ergänzungen vom 21. Oktober
+
+- **Klassifikation unabhängig gemessen:** 300 zufällige Geschäfte (fester Seed, ohne Entwicklungsbeispiele) blind annotiert. `rule-based-v7`: Precision 1.0, Recall 0.325 bei der WWF-Relevanz; 268/300 Datensätze streng korrekt. Das Entwicklungsset (50/50) wird nur noch als Regressionsprüfung geführt. [Auswertung](../05-testing/evidence/holdout-evaluation.md)
+- **Sicherheit:** gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für alle E-Mail- und Token-Endpunkte, Bestätigungsseite mit POST statt Token-Verbrauch beim Öffnen, Ursprungsprüfung, Token-Widerruf beim Abmelden (Migration `20261021_session_version`), Sicherheits-Header mit CSP, PostgreSQL nur lokal erreichbar.
+- **Demo:** Testbenachrichtigung über ein fiktives Geschäft, das die echte Klassifikation und den echten Versand durchläuft; Anleitung auf der Startseite.
+- **Wartbarkeit:** Frontend in Module aufgeteilt, Stylesheet formatiert, Repository bereinigt, Dokumentation vollständig deutsch, ruff und GitHub-Actions-CI.
+- **Tests:** 124 isolierte Tests erfolgreich; Edge-Durchlauf der Demo in einer isolierten Instanz erfolgreich. Die Änderungen liegen auf dem Branch `improvements/wipro-review` und sind nicht gepusht.
 
 ## Ergänzungen vom 13. Oktober
 
@@ -44,7 +52,7 @@ Die späteren vollständigen Läufe meldeten **1.682.302 unveränderte verarbeit
 ## Nächste Schritte vor Abschluss
 
 1. Demonstration und Präsentation mit konkreten Such-, Kontext- und Monitoringbeispielen vorbereiten.
-2. WWF-Taxonomie/Fokus bestätigen und fachlich bewertete Beispiele gemeinsam prüfen.
+2. WWF-Taxonomie/Fokus bestätigen und das Prüfset gemeinsam mit WWF-Fachpersonen nachannotieren. Regeln anschliessend gezielt für den Recall erweitern und mit einem neuen Prüfset messen.
 3. WWF-Anwendungsfälle durchgehen; Feedback, Abnahme und verbleibende Anpassungen dokumentieren.
 4. Formale Kursunterlagen fertigstellen und die tatsächliche Übergabe durchführen. Private personenbezogene Kursunterlagen bleiben ausserhalb des öffentlichen Repositorys.
 5. Softwarelizenz festlegen.
