@@ -7,8 +7,6 @@ from sqlalchemy import case, func, select
 
 from app.db.database import SessionLocal
 from app.models.change_event import ChangeEvent
-from app.models.change_event_affair import ChangeEventAffair
-from app.models.dataset_subscription import UserDatasetSubscription
 from app.core.config import settings
 from app.models.entities import Affair, Body
 from app.models.notification import Notification
@@ -166,7 +164,6 @@ def send_pending_individual_notifications(
                 db.commit()
                 continue
             from app.services.entity_registry import ENTITIES
-            from app.services.entity_relations import entity_key
             spec = ENTITIES[event.dataset]
             source_entity = db.get(spec.model, event.source_id)
             title = next((getattr(source_entity, field) for field in spec.title_fields

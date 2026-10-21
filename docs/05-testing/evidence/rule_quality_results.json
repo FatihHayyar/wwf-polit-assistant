@@ -6,13 +6,13 @@
     "database_writes": 0,
     "version": "rule-based-v7",
     "groups": {
-      "unrelated": {
-        "total": 20,
-        "correct": 20
-      },
       "edge": {
         "total": 10,
         "correct": 10
+      },
+      "unrelated": {
+        "total": 20,
+        "correct": 20
       },
       "wwf": {
         "total": 20,

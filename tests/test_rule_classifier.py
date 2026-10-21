@@ -11,7 +11,7 @@ from app.classification.classifier import AffairClassifier, build_phrase_pattern
 from app.classification.taxonomy import load_taxonomy
 from app.db.database import Base
 from app.services.category_service import get_categories
-from scripts.rule_quality import evaluate, score
+from scripts.rule_quality import evaluate
 from scripts.seed_classification import seed_taxonomy
 
 

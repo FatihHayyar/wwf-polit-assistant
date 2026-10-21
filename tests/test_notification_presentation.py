@@ -5,7 +5,7 @@ from sqlalchemy import BigInteger, create_engine
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import Session
 
-import app.models
+import app.models  # noqa: F401  (registers all tables on Base.metadata)
 from app.db.database import Base
 from app.models.entities import Document
 from app.models.change_event import ChangeEvent

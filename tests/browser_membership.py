@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 # Registers SQLite-compatible BigInteger compilation for test tables.
-import test_monitoring
+import test_monitoring  # noqa: F401
 from app.db.database import Base, get_db
 from app.main import app
 from app.models import User

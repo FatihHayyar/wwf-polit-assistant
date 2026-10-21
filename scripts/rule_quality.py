@@ -74,7 +74,7 @@ def run():
                "records": len(new), "database_writes": 0, "version": CLASSIFIER_VERSION,
                "groups": {group: {"total": sum(r["group"] == group for r in new),
                                    "correct": sum(r["correct"] for r in new if r["group"] == group)}
-                          for group in {r["group"] for r in new}}}
+                          for group in sorted({r["group"] for r in new})}}
     EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
     (EVIDENCE_DIR / "rule_quality_results.json").write_text(json.dumps({"summary": summary, "baseline": old, "results": new},
                                                                       ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -6,7 +6,7 @@ from pathlib import Path
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, text
 
-import app.models  # register metadata
+import app.models  # noqa: F401  (registers all tables on Base.metadata)
 from app.db.database import Base, engine
 
 DATASETS = ('affairs', 'agendas', 'meetings', 'votings', 'events',

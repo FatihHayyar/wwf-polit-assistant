@@ -13,12 +13,12 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-import app.models
+import app.models  # noqa: F401  (registers all tables on Base.metadata)
 from app.core.config import settings
 from app.core.rate_limit import Limit, limiter
 from app.db.database import Base, get_db
 from app.main import app as fastapi_app
-from app.models.classification import AffairClassification, ClassificationCategory
+from app.models.classification import ClassificationCategory
 from app.models.entities import Affair, Body
 from app.models.notification import Notification
 from app.models.subscription import UserCantonSubscription, UserCategorySubscription

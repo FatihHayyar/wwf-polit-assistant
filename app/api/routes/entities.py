@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.services.entity_registry import ENTITIES, PRIMARY_DATASETS
 from app.services.entity_relations import related_affair_ids
-from app.services.entity_service import affair_changes, affair_related_data, list_entities, serialize_entity, agenda_presentation, record_presentation
+from app.services.entity_service import list_entities, serialize_entity, agenda_presentation, record_presentation
 
 Dataset = Literal["affairs", "agendas", "meetings", "votings", "events", "documents", "texts", "groups", "interests"]
 router = APIRouter(prefix="/api/v1/entities", tags=["Entities"])

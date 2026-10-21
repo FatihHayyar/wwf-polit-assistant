@@ -2,7 +2,7 @@
 from sqlalchemy import select, union, or_, and_, false
 from sqlalchemy.orm import Session
 
-from app.models.entities import Agenda, Affair, Document, Event, Meeting, ParliamentaryText, Voting
+from app.models.entities import Agenda, Affair, Document, Event, Meeting, Voting
 
 
 def related_affair_selects(dataset: str, entity):

@@ -8,7 +8,7 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 
-import app.models
+import app.models  # noqa: F401  (registers all tables on Base.metadata)
 from app.core.rate_limit import limiter
 from app.api.routes.google_auth import google_callback
 from app.api.routes.recipient_routes import RecipientsUpdate, update_recipients, verify_recipient

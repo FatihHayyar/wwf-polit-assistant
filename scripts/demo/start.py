@@ -9,7 +9,7 @@ from pathlib import Path
 from sqlalchemy import DateTime, select, text
 import uvicorn
 
-import app.models
+import app.models  # noqa: F401  (registers all tables on Base.metadata)
 from app.db.database import Base, engine
 from scripts.demo.export import DATASETS
 

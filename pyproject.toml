@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = []
+dev = ["ruff>=0.15"]
 
 [build-system]
 requires = ["setuptools>=80"]
@@ -30,3 +30,16 @@ include = ["app*", "scripts*"]
 
 [tool.setuptools.package-data]
 app = ["classification/*.json", "web/*.html", "web/*.css", "web/*.js"]
+
+[tool.ruff]
+target-version = "py313"
+extend-exclude = ["data", "logs", "wipro-submission"]
+
+[tool.ruff.lint]
+# Syntax errors, undefined names and unused code (pyflakes).
+select = ["E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# Model registry and Alembic revisions import modules for their side effects.
+"app/models/__init__.py" = ["F401"]
+"migrations/**" = ["F401"]

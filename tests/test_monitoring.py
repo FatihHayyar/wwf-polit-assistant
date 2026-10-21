@@ -8,9 +8,9 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import Session
 
 from app.db.database import Base
-import app.models
-from app.models import Affair, Agenda, Body, Meeting, Document, ParliamentaryText, User, Notification, PoliticalGroup, Interest, Person
-from app.models.classification import AffairClassification, ClassificationCategory, ClassificationRule, ClassificationEvidence
+import app.models  # noqa: F401  (registers all tables on Base.metadata)
+from app.models import Affair, Agenda, Body, Meeting, Document, ParliamentaryText, User, Notification, PoliticalGroup, Person
+from app.models.classification import AffairClassification, ClassificationCategory, ClassificationRule
 from app.models.change_event import ChangeEvent
 from app.models.change_event_affair import ChangeEventAffair
 from app.models.dataset_subscription import UserDatasetSubscription
@@ -20,7 +20,6 @@ from app.services.affair_service import get_affairs, get_affair_detail
 from app.services.entity_service import list_entities
 from scripts.sync.entity_sync import choose_document, sync_record
 from app.services.entity_relations import related_affair_ids
-from app.models.entity_classification import EntityClassification
 from app.models.monitoring_subscription import UserKeywordSubscription, UserRecordWatch
 
 

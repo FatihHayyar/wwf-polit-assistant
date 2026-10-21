@@ -1,8 +1,8 @@
-from datetime import date, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 from math import ceil
 
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import exists, extract, func, or_, select, case, cast, String, tuple_
+from sqlalchemy import extract, func, or_, select, case, cast, String, tuple_
 
 from app.models.change_event import ChangeEvent
 from app.models.change_event_affair import ChangeEventAffair

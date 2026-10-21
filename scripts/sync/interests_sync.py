@@ -1,5 +1,6 @@
 import argparse
-from scripts.sync.organization_mapping import map_record, parse_datetime
+# parse_datetime is part of the adapter interface used by entity_sync.run_dataset.
+from scripts.sync.organization_mapping import map_record, parse_datetime  # noqa: F401
 
 API_URL = "https://api.openparldata.ch/v1/interests/"
 
