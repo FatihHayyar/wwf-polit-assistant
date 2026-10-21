@@ -1,20 +1,33 @@
-
 from __future__ import annotations
 
-from html import escape
+import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
-from app.api.dependencies import get_current_admin, get_current_user
+from app.api.dependencies import get_current_admin, get_current_user, request_token, user_for_token
+from app.api.email_links import (
+    confirmation_page,
+    form_token,
+    require_same_origin,
+    result_page,
+    set_session_cookie,
+)
 from app.core.config import settings
+from app.core.rate_limit import (
+    AUTH_EMAIL_COOLDOWN,
+    AUTH_EMAIL_PER_ADDRESS,
+    AUTH_EMAIL_PER_IP,
+    TOKEN_CONFIRM_PER_IP,
+    client_address,
+    enforce,
+)
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.auth import RegisterRequest, RegisterResponse
-from app.services.auth_service import create_access_token
-from app.services.email_service import send_email
+from app.services.email_service import EmailServiceError, send_email
 from app.services.email_verification_service import (
     create_login_token,
     create_verification_token,
@@ -23,9 +36,17 @@ from app.services.email_verification_service import (
 )
 
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(
     prefix="/api/v1/auth",
     tags=["Auth"],
+)
+
+# Register and login deliberately return the same answer whether or not an
+# account exists, so the endpoints cannot be used to test email addresses.
+LINK_SENT_MESSAGE = (
+    "If this address can be used, a link has been sent to it."
 )
 
 
@@ -37,35 +58,67 @@ class LoginResponse(BaseModel):
     message: str
 
 
-def authentication_result_page(
-    *,
-    title: str,
-    message: str,
-    access_token: str | None = None,
-    status_code: int = 200,
-) -> HTMLResponse:
-    token_section = ""
+def link_url(path: str, token: str) -> str:
+    return f"{settings.verification_base_url.rstrip('/')}{path}?token={token}"
 
-    if access_token is not None:
-        token_section = '<p><a href="/">Zur Anwendung</a></p>'
 
-    return HTMLResponse(
-        content=f"""
-        <!DOCTYPE html>
-        <html lang="de">
-            <head>
-                <meta charset="UTF-8">
-                <title>WWF Polit-Assistant</title>
-            </head>
-            <body>
-                <h1>{escape(title)}</h1>
-                <p>{escape(message)}</p>
-                {token_section}
-            </body>
-        </html>
-        """,
-        status_code=status_code,
+def deliver_email(recipient: str, subject: str, body: str) -> None:
+    try:
+        send_email(recipient=recipient, subject=subject, body=body)
+    except EmailServiceError:
+        logger.exception("Authentication email could not be sent.")
+
+
+def queue_verification_email(background: BackgroundTasks, db: Session, user: User) -> None:
+    token = create_verification_token(db, user_id=user.id)
+    background.add_task(
+        deliver_email,
+        user.email,
+        "WWF Polit-Assistant – E-Mail bestätigen",
+        "Hallo,\n\n"
+        "bitte bestätige deine E-Mail-Adresse "
+        "über folgenden Link:\n\n"
+        f"{link_url('/api/v1/auth/verify-email', token)}\n\n"
+        "Der Link ist nur für begrenzte Zeit gültig "
+        "und kann nur einmal verwendet werden.\n\n"
+        "Falls du dich nicht registriert hast, "
+        "kannst du diese E-Mail ignorieren.\n\n"
+        "Beste Grüsse\n"
+        "WWF Polit-Assistant",
     )
+
+
+def queue_login_email(background: BackgroundTasks, db: Session, user: User) -> None:
+    token = create_login_token(db, user_id=user.id)
+    background.add_task(
+        deliver_email,
+        user.email,
+        "WWF Polit-Assistant – Anmelden",
+        "Hallo,\n\n"
+        "du hast einen Anmeldelink für "
+        "WWF Polit-Assistant angefordert.\n\n"
+        "Klicke auf den folgenden Link, "
+        "um dich anzumelden:\n\n"
+        f"{link_url('/api/v1/auth/verify-login', token)}\n\n"
+        "Der Link ist nur für begrenzte Zeit gültig "
+        "und kann nur einmal verwendet werden.\n\n"
+        "Falls du diese Anmeldung nicht angefordert hast, "
+        "kannst du diese E-Mail ignorieren.\n\n"
+        "Beste Grüsse\n"
+        "WWF Polit-Assistant",
+    )
+
+
+def limit_email_request(request: Request, email: str) -> None:
+    enforce(
+        (f"auth-ip:{client_address(request)}", AUTH_EMAIL_PER_IP),
+        (f"auth-cooldown:{email}", AUTH_EMAIL_COOLDOWN),
+        (f"auth-address:{email}", AUTH_EMAIL_PER_ADDRESS),
+    )
+
+
+def find_user(db: Session, email: str) -> User | None:
+    return db.query(User).filter(User.email == email).first()
 
 
 @router.post(
@@ -74,21 +127,14 @@ def authentication_result_page(
 )
 def register(
     payload: RegisterRequest,
+    request: Request,
+    background: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> RegisterResponse:
     email = str(payload.email).strip().lower()
+    limit_email_request(request, email)
 
-    user = (
-        db.query(User)
-        .filter(User.email == email)
-        .first()
-    )
-
-    if user is not None and user.email_verified:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="This email address is already registered.",
-        )
+    user = find_user(db, email)
 
     if user is None:
         user = User(
@@ -102,76 +148,13 @@ def register(
         db.add(user)
         db.flush()
 
-    raw_token = create_verification_token(
-        db,
-        user_id=user.id,
-    )
+    if user.is_active and user.email_verified:
+        # The owner of an existing account receives a sign-in link instead.
+        queue_login_email(background, db, user)
+    elif user.is_active:
+        queue_verification_email(background, db, user)
 
-    verification_url = (
-        f"{settings.verification_base_url}"
-        f"/api/v1/auth/verify-email"
-        f"?token={raw_token}"
-    )
-
-    send_email(
-        recipient=user.email,
-        subject="WWF Polit-Assistant – E-Mail bestätigen",
-        body=(
-            "Hallo,\n\n"
-            "bitte bestätige deine E-Mail-Adresse "
-            "über folgenden Link:\n\n"
-            f"{verification_url}\n\n"
-            "Der Link ist nur für begrenzte Zeit gültig "
-            "und kann nur einmal verwendet werden.\n\n"
-            "Beste Grüsse\n"
-            "WWF Polit-Assistant"
-        ),
-    )
-
-    return RegisterResponse(
-        message="A verification email has been sent.",
-    )
-
-
-@router.get(
-    "/verify-email",
-    response_class=HTMLResponse,
-)
-def verify_email(
-    token: str,
-    db: Session = Depends(get_db),
-):
-    user_id = verify_email_token(
-        db,
-        raw_token=token,
-    )
-
-    if user_id is None:
-        return authentication_result_page(
-            title="Verification failed",
-            message="The verification link is invalid or expired.",
-            status_code=400,
-        )
-
-    user = db.get(User, user_id)
-
-    if user is None or not user.is_active:
-        return authentication_result_page(
-            title="Verification failed",
-            message="User not found or inactive.",
-            status_code=400,
-        )
-
-    user.email_verified = True
-    db.commit()
-
-    access_token = create_access_token(user.id)
-
-    result = RedirectResponse("/?signed_in=1", status_code=303)
-    result.set_cookie("access_token", access_token, httponly=True, samesite="lax",
-                      secure=settings.verification_base_url.startswith("https://"),
-                      max_age=settings.jwt_expire_minutes * 60)
-    return result
+    return RegisterResponse(message=LINK_SENT_MESSAGE)
 
 
 @router.post(
@@ -180,108 +163,118 @@ def verify_email(
 )
 def login(
     payload: LoginRequest,
+    request: Request,
+    background: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> LoginResponse:
     email = str(payload.email).strip().lower()
+    limit_email_request(request, email)
 
-    user = (
-        db.query(User)
-        .filter(User.email == email)
-        .first()
+    user = find_user(db, email)
+
+    if user is not None and user.is_active:
+        if user.email_verified:
+            queue_login_email(background, db, user)
+        else:
+            queue_verification_email(background, db, user)
+
+    return LoginResponse(message=LINK_SENT_MESSAGE)
+
+
+@router.get(
+    "/verify-email",
+    response_class=HTMLResponse,
+)
+def verify_email_page(token: str) -> HTMLResponse:
+    return confirmation_page(
+        title="E-Mail-Adresse bestätigen",
+        message="Bitte bestätige deine Registrierung. Danach bist du angemeldet.",
+        button="Registrierung bestätigen",
+        action="/api/v1/auth/verify-email",
+        token=token,
     )
 
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="This email address is not registered.",
-        )
 
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="This account is inactive.",
-        )
+@router.post(
+    "/verify-email",
+    response_class=HTMLResponse,
+)
+async def verify_email(
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    require_same_origin(request)
+    enforce((f"token-ip:{client_address(request)}", TOKEN_CONFIRM_PER_IP))
+    token = await form_token(request)
 
-    if not user.email_verified:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email verification required. Please complete registration.",
-        )
-
-    raw_token = create_login_token(
+    user_id = verify_email_token(
         db,
-        user_id=user.id,
+        raw_token=token,
     )
 
-    login_url = (
-        f"{settings.verification_base_url}"
-        f"/api/v1/auth/verify-login"
-        f"?token={raw_token}"
-    )
+    user = db.get(User, user_id) if user_id is not None else None
 
-    send_email(
-        recipient=user.email,
-        subject="WWF Polit-Assistant – Anmelden",
-        body=(
-            "Hallo,\n\n"
-            "du hast einen Anmeldelink für "
-            "WWF Polit-Assistant angefordert.\n\n"
-            "Klicke auf den folgenden Link, "
-            "um dich anzumelden:\n\n"
-            f"{login_url}\n\n"
-            "Der Link ist nur für begrenzte Zeit gültig "
-            "und kann nur einmal verwendet werden.\n\n"
-            "Falls du diese Anmeldung nicht angefordert hast, "
-            "kannst du diese E-Mail ignorieren.\n\n"
-            "Beste Grüsse\n"
-            "WWF Polit-Assistant"
-        ),
-    )
+    if user is None or not user.is_active:
+        return result_page(
+            title="Bestätigung fehlgeschlagen",
+            message="Der Bestätigungslink ist ungültig oder abgelaufen. Bitte fordere einen neuen Link an.",
+            status_code=400,
+        )
 
-    return LoginResponse(
-        message="A login email has been sent.",
-    )
+    user.email_verified = True
+    db.commit()
+
+    result = RedirectResponse("/?signed_in=1", status_code=303)
+    set_session_cookie(result, user)
+    return result
 
 
 @router.get(
     "/verify-login",
     response_class=HTMLResponse,
 )
-def verify_login(
-    token: str,
+def verify_login_page(token: str) -> HTMLResponse:
+    return confirmation_page(
+        title="Anmelden",
+        message="Bitte bestätige die Anmeldung bei WWF Polit-Assistant.",
+        button="Jetzt anmelden",
+        action="/api/v1/auth/verify-login",
+        token=token,
+    )
+
+
+@router.post(
+    "/verify-login",
+    response_class=HTMLResponse,
+)
+async def verify_login(
+    request: Request,
     db: Session = Depends(get_db),
 ):
+    require_same_origin(request)
+    enforce((f"token-ip:{client_address(request)}", TOKEN_CONFIRM_PER_IP))
+    token = await form_token(request)
+
     user_id = verify_login_token(
         db,
         raw_token=token,
     )
 
-    if user_id is None:
-        return authentication_result_page(
-            title="Login failed",
-            message="The login link is invalid, expired or already used.",
-            status_code=400,
-        )
-
-    user = db.get(User, user_id)
+    user = db.get(User, user_id) if user_id is not None else None
 
     if (
         user is None
         or not user.is_active
         or not user.email_verified
     ):
-        return authentication_result_page(
-            title="Login failed",
-            message="This account cannot be used for login.",
-            status_code=403,
+        return result_page(
+            title="Anmeldung fehlgeschlagen",
+            message="Der Anmeldelink ist ungültig, abgelaufen oder wurde bereits verwendet.",
+            status_code=400,
         )
 
-    access_token = create_access_token(user.id)
-
     result = RedirectResponse("/?signed_in=1", status_code=303)
-    result.set_cookie("access_token", access_token, httponly=True, samesite="lax",
-                      secure=settings.verification_base_url.startswith("https://"),
-                      max_age=settings.jwt_expire_minutes * 60)
+    set_session_cookie(result, user)
     return result
 
 
@@ -291,7 +284,16 @@ def my_account(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/logout", status_code=204)
-def logout(response: Response):
+def logout(
+    response: Response,
+    token: str | None = Depends(request_token),
+    db: Session = Depends(get_db),
+):
+    # Revoke every access token issued so far, not just this browser's cookie.
+    user = user_for_token(db, token)
+    if user is not None:
+        user.session_version += 1
+        db.commit()
     response.delete_cookie("access_token", path="/")
 
 

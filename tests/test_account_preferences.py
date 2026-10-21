@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from starlette.requests import Request
 
 import app.models
+from app.core.rate_limit import limiter
 from app.api.routes.google_auth import google_callback
 from app.api.routes.recipient_routes import RecipientsUpdate, update_recipients, verify_recipient
 from app.db.database import Base
@@ -16,6 +17,7 @@ from app.models.notification_recipient import NotificationRecipient
 from app.models.user import User
 from app.services.email_service import EmailServiceError
 from app.services.notification_recipient_service import send_notification_email
+from support import form_request, run
 
 
 @compiles(BigInteger, "sqlite")
@@ -37,6 +39,7 @@ class AccountPreferencesTests(unittest.TestCase):
         self.engine.dispose()
 
     def test_new_destination_requires_verification_and_token_is_single_use(self):
+        limiter.reset()
         with patch("app.api.routes.recipient_routes.send_email") as send:
             result = update_recipients(RecipientsUpdate(emails=["OWNER@example.com", "other@example.com"]), self.user, self.db)
         self.assertEqual({row["email"]: row["verified"] for row in result}, {"owner@example.com": True, "other@example.com": False})
@@ -44,9 +47,8 @@ class AccountPreferencesTests(unittest.TestCase):
         send_notification_email(self.db, self.user, send_func=deliver, subject="test", body="test")
         self.assertEqual(deliver.call_args.kwargs["recipient"], "owner@example.com")
         token = send.call_args.kwargs["body"].split("token=")[1]
-        verify_recipient(token, self.db)
-        with self.assertRaises(HTTPException):
-            verify_recipient(token, self.db)
+        self.assertEqual(run(verify_recipient(form_request(token), self.db)).status_code, 303)
+        self.assertEqual(run(verify_recipient(form_request(token), self.db)).status_code, 400)
         deliver.reset_mock()
         send_notification_email(self.db, self.user, send_func=deliver, subject="test", body="test")
         self.assertEqual(deliver.call_count, 2)

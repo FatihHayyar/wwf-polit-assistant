@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import logging
@@ -9,6 +8,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_current_user
+from app.core.config import settings
+from app.core.rate_limit import SUBSCRIPTION_CHANGE_PER_USER, limiter
 from app.db.database import get_db
 from app.models.classification import ClassificationCategory
 from app.models.subscription import (
@@ -89,6 +90,13 @@ def send_subscription_email(
     subject: str,
     body: str,
 ) -> None:
+    # Confirmations are informational: past the limit the change is still
+    # saved, but no further email is sent to avoid flooding the mailbox.
+    if settings.rate_limit_enabled and limiter.hit(
+        f"subscription-mail:{email}", SUBSCRIPTION_CHANGE_PER_USER
+    ) is not None:
+        logger.warning("Subscription confirmation skipped by rate limit.")
+        return
     try:
         send_email(
             recipient=email,

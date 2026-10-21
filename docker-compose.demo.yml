@@ -31,6 +31,8 @@ services:
       SMTP_FROM_EMAIL: demo@example.org
       VERIFICATION_BASE_URL: http://localhost:8081
       FRONTEND_URL: http://localhost:8081
+      DEMO_MODE: "true"
+      DEMO_MAILBOX_URL: http://localhost:8025
     depends_on:
       postgres:
         condition: service_healthy

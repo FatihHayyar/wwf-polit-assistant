@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.database import get_db
 from app.models.user import User
-from app.services.auth_service import create_access_token
+from app.api.email_links import set_session_cookie
+from app.core.rate_limit import OAUTH_START_PER_IP, client_address, enforce
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 
@@ -20,7 +21,8 @@ def providers():
 
 
 @router.get("/google")
-def google_start():
+def google_start(request: Request):
+    enforce((f"oauth-ip:{client_address(request)}", OAUTH_START_PER_IP))
     if not providers()["google"]:
         raise HTTPException(503, "Google sign-in is not configured.")
     state = secrets.token_urlsafe(32)
@@ -72,6 +74,5 @@ def google_callback(request: Request, state: str = "", code: str = "", db: Sessi
     db.commit()
     response = RedirectResponse("/?signed_in=1", status_code=303)
     response.delete_cookie("google_oauth_state")
-    response.set_cookie("access_token", create_access_token(user.id), httponly=True, samesite="lax",
-                        secure=settings.verification_base_url.startswith("https://"), max_age=settings.jwt_expire_minutes * 60)
+    set_session_cookie(response, user)
     return response

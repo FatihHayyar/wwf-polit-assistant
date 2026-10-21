@@ -1,3 +1,18 @@
+x-app-environment: &app-environment
+  DATABASE_URL: postgresql+psycopg://polit_assistant:${POSTGRES_PASSWORD:-polit_assistant_dev}@postgres:5432/polit_assistant
+  JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
+  SYNC_API_KEY: ${SYNC_API_KEY:-}
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+  SMTP_USERNAME: ${SMTP_USERNAME:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
+  SMTP_FROM_NAME: ${SMTP_FROM_NAME:-WWF Polit-Assistant}
+  VERIFICATION_BASE_URL: ${VERIFICATION_BASE_URL:-http://localhost:8000}
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  TZ: Europe/Zurich
 
 services:
   postgres:
@@ -7,9 +22,10 @@ services:
     environment:
       POSTGRES_DB: polit_assistant
       POSTGRES_USER: polit_assistant
-      POSTGRES_PASSWORD: polit_assistant_dev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-polit_assistant_dev}
+    # Only reachable from this computer; other hosts cannot connect.
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - polit_assistant_python_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,28 +34,43 @@ services:
       timeout: 5s
       retries: 10
 
+  # Applies Alembic migrations once before API and scheduler start.
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment: *app-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment: *app-environment
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers"]
+
   scheduler:
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql+psycopg://polit_assistant:polit_assistant_dev@postgres:5432/polit_assistant
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
-      SMTP_HOST: ${SMTP_HOST:-}
-      SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
-      SMTP_USERNAME: ${SMTP_USERNAME:-}
-      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
-      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-WWF Polit-Assistant}
-      VERIFICATION_BASE_URL: ${VERIFICATION_BASE_URL:-http://localhost:8000}
-      TZ: Europe/Zurich
+    environment: *app-environment
     volumes:
       - ./logs:/app/logs
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     command: ["python", "-u", "-m", "scripts.sync.scheduler"]
 
 volumes:

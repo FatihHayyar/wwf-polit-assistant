@@ -6,51 +6,65 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.user import User
-from app.services.auth_service import decode_access_token
+from app.services.auth_service import decode_access_claims
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
-def get_current_user(
+def request_token(
     credentials: HTTPAuthorizationCredentials | None = Depends(
         bearer_scheme
     ),
     access_token: str | None = Cookie(default=None),
-    db: Session = Depends(get_db),
-) -> User:
-    token = None
-
+) -> str | None:
     # Swagger / API:
     # Authorization: Bearer <token>
     if credentials is not None:
-        token = credentials.credentials
+        return credentials.credentials
 
     # Browser:
     # HttpOnly access_token cookie
-    elif access_token:
-        token = access_token
+    return access_token or None
 
+
+def user_for_token(db: Session, token: str | None) -> User | None:
+    if not token:
+        return None
+
+    claims = decode_access_claims(token)
+
+    if claims is None:
+        return None
+
+    user = db.get(User, claims.user_id)
+
+    if (
+        user is None
+        or not user.is_active
+        or user.session_version != claims.session_version
+    ):
+        return None
+
+    return user
+
+
+def get_current_user(
+    token: str | None = Depends(request_token),
+    db: Session = Depends(get_db),
+) -> User:
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required.",
         )
 
-    user_id = decode_access_token(token)
+    user = user_for_token(db, token)
 
-    if user_id is None:
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired authentication token.",
-        )
-
-    user = db.get(User, user_id)
-
-    if user is None or not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found.",
         )
 
     return user

@@ -656,12 +656,13 @@ class MonitoringTests(unittest.TestCase):
     def test_email_login_redirects_cookie_and_rejects_reuse(self):
         from app.services.email_verification_service import create_login_token
         from app.api.routes.auth import verify_login
+        from support import form_request, run
         token=create_login_token(self.db,user_id=1)
-        response=verify_login(token,self.db)
+        response=run(verify_login(form_request(token),self.db))
         self.assertEqual(response.status_code,303)
         self.assertEqual(response.headers["location"],"/?signed_in=1")
         self.assertIn("HttpOnly",response.headers["set-cookie"])
-        self.assertEqual(verify_login(token,self.db).status_code,400)
+        self.assertEqual(run(verify_login(form_request(token),self.db)).status_code,400)
 
 
 if __name__ == "__main__":

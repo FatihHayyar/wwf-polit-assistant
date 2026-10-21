@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter
 from app.api.routes.entities import router as entities_router
 
@@ -12,6 +11,7 @@ from app.api.routes.subscriptions import router as subscriptions_router
 from app.api.routes.sync import router as sync_router
 from app.api.routes.google_auth import router as google_router
 from app.api.routes.recipient_routes import router as recipients_router
+from app.api.routes.demo import router as demo_router
 
 api_router = APIRouter()
 api_router.include_router(entities_router)
@@ -27,3 +27,4 @@ api_router.include_router(subscriptions_router)
 
 api_router.include_router(google_router)
 api_router.include_router(recipients_router)
+api_router.include_router(demo_router)

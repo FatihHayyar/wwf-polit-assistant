@@ -38,6 +38,15 @@ class Settings(BaseSettings):
     # Lifetime of verification and login tokens.
     email_verification_minutes: int = 30
 
+    # Limits for email-sending and token endpoints (see app/core/rate_limit.py).
+    rate_limit_enabled: bool = True
+
+    # Enables the demo-only endpoint that creates a sample affair and sends
+    # notifications. Never enable this for a production database.
+    demo_mode: bool = False
+    # Web mailbox of the demo (Mailpit) shown after a test notification.
+    demo_mailbox_url: str | None = None
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

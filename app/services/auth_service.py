@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 import jwt
@@ -7,7 +8,13 @@ import jwt
 from app.core.config import settings
 
 
-def create_access_token(user_id: int) -> str:
+@dataclass(frozen=True)
+class AccessClaims:
+    user_id: int
+    session_version: int
+
+
+def create_access_token(user_id: int, session_version: int = 0) -> str:
     now = datetime.now(timezone.utc)
 
     expires_at = now + timedelta(
@@ -16,6 +23,7 @@ def create_access_token(user_id: int) -> str:
 
     payload = {
         "sub": str(user_id),
+        "sv": session_version,
         "iat": now,
         "exp": expires_at,
         "type": "access",
@@ -28,7 +36,7 @@ def create_access_token(user_id: int) -> str:
     )
 
 
-def decode_access_token(token: str) -> int | None:
+def decode_access_claims(token: str) -> AccessClaims | None:
     try:
         payload = jwt.decode(
             token,
@@ -44,7 +52,13 @@ def decode_access_token(token: str) -> int | None:
         if user_id is None:
             return None
 
-        return int(user_id)
+        # Tokens issued before session versions existed count as version 0.
+        return AccessClaims(int(user_id), int(payload.get("sv", 0)))
 
     except (jwt.InvalidTokenError, ValueError, TypeError):
         return None
+
+
+def decode_access_token(token: str) -> int | None:
+    claims = decode_access_claims(token)
+    return claims.user_id if claims else None

@@ -210,8 +210,11 @@ def send_pending_individual_notifications(
     return sent_count, failed_count
 
 
-def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, on_progress=None, digest=True):
-    """Send one summary per user/affair (or standalone record), without a total cap."""
+def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, on_progress=None, digest=True, user_id=None):
+    """Send one summary per user/affair (or standalone record), without a total cap.
+
+    ``user_id`` restricts delivery to one user; the demo notification uses it.
+    """
     if not digest:
         return send_pending_individual_notifications(limit=limit,batch_size=batch_size,before_each=before_each,on_progress=on_progress)
     if batch_size < 1 or (limit is not None and limit < 1):
@@ -223,7 +226,8 @@ def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, 
     standalone_dataset=case((ChangeEvent.affair_id.is_(None),ChangeEvent.dataset),else_=None)
     standalone_id=case((ChangeEvent.affair_id.is_(None),ChangeEvent.source_id),else_=None)
     with SessionLocal() as db:
-        upper=db.scalar(select(func.max(Notification.id)).where(Notification.status=="pending")) or 0
+        pending=[Notification.status=="pending"]+([Notification.user_id==user_id] if user_id is not None else [])
+        upper=db.scalar(select(func.max(Notification.id)).where(*pending)) or 0
     cursor=0;sent=failed=attempted=0
     consecutive_failures = 0
     while cursor < upper and (limit is None or attempted < limit):
@@ -231,7 +235,7 @@ def send_pending_notifications(*, limit=None, batch_size=100, before_each=None, 
             groups=db.execute(select(Notification.user_id,ChangeEvent.affair_id,standalone_dataset.label("dataset"),
                 standalone_id.label("record_id"),func.min(Notification.id).label("first_id"))
                 .join(ChangeEvent,ChangeEvent.id==Notification.change_event_id)
-                .where(Notification.status=="pending",Notification.id<=upper)
+                .where(*pending,Notification.id<=upper)
                 .group_by(Notification.user_id,ChangeEvent.affair_id,standalone_dataset,standalone_id)
                 .having(func.min(Notification.id)>cursor).order_by(func.min(Notification.id)).limit(batch_size)).all()
         if not groups:break
