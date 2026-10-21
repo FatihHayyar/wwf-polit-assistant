@@ -1,5 +1,13 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WWF Polit-Assistant</title><link rel="stylesheet" href="/assets/style.css"><script src="/assets/i18n.js" defer></script><script src="/assets/app.js" defer></script></head>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WWF Polit-Assistant</title><link rel="icon" href="data:,"><link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/i18n.js" defer></script>
+<script src="/assets/core.js" defer></script>
+<script src="/assets/search.js" defer></script>
+<script src="/assets/detail.js" defer></script>
+<script src="/assets/account.js" defer></script>
+<script src="/assets/subscriptions.js" defer></script>
+<script src="/assets/app.js" defer></script>
+</head>
 <body>
 <aside><a class="brand" href="/">WWF <span>Polit-Assistant</span></a><p class="eyebrow" data-i18n="monitoring"></p><nav id="datasets" data-i18n-aria="datasets"></nav><div class="side-bottom"><p><span data-i18n="sourceData"></span><br>OpenParlData · CC BY 4.0</p></div></aside>
 <main>
@@ -13,7 +21,7 @@
 <button class="primary" data-i18n="search"></button><button type="reset" data-i18n="reset"></button></form></section>
 <div id="context-navigation" hidden></div>
 <div class="result-bar"><p id="result-count" aria-live="polite"></p><span data-i18n="classificationBasis"></span></div><p id="message" role="status" hidden></p><section id="results" data-i18n-aria="search"></section><div class="pagination"><button id="previous" data-i18n="previous"></button><span id="page-label"></span><button id="next" data-i18n="next"></button></div>
-</div><section id="subscription-section" class="subscription-banner"><div><p class="eyebrow" data-i18n="stayInformed"></p><h2 data-i18n="subscriptionPitch"></h2><p data-i18n="subscriptionBenefit"></p><p id="membership-summary" aria-live="polite"></p></div><div class="subscription-actions"><button id="membership-register" class="primary" data-i18n="register"></button><button id="membership-login" data-i18n="login"></button><button id="membership-view" class="primary" data-i18n="viewSubscriptions"></button><button id="membership-logout" data-i18n="logout" hidden></button><p data-i18n="publicBrowsing"></p></div></section></div>
+</div><section id="subscription-section" class="subscription-banner"><div><p class="eyebrow" data-i18n="stayInformed"></p><h2 data-i18n="subscriptionPitch"></h2><p data-i18n="subscriptionBenefit"></p><p id="membership-summary" aria-live="polite"></p><div id="demo-guide" class="demo-guide" hidden><p class="eyebrow" data-i18n="demoGuideTitle"></p><ol><li data-i18n="demoStep1"></li><li data-i18n="demoStep2"></li><li data-i18n="demoStep3"></li><li data-i18n="demoStep4"></li></ol></div></div><div class="subscription-actions"><button id="membership-register" class="primary" data-i18n="register"></button><button id="membership-login" data-i18n="login"></button><button id="membership-view" class="primary" data-i18n="viewSubscriptions"></button><button id="membership-logout" data-i18n="logout" hidden></button><p data-i18n="publicBrowsing"></p></div></section></div>
 </main>
 <dialog id="detail-dialog"><div class="dialog-header"><h2 id="detail-title"></h2><button data-close="detail-dialog" data-i18n-aria="close">✕</button></div><div id="detail-content"></div></dialog>
 <div id="toast" role="status" popover="manual" hidden></div>
@@ -25,6 +33,7 @@
 <fieldset><legend data-i18n="datasets"></legend><p data-i18n="datasetSubscriptionHelp"></p><div id="subscription-datasets" class="choices"></div></fieldset>
 <fieldset><legend data-i18n="keywords"></legend><label><span data-i18n="onePerLine"></span><textarea id="subscription-keywords" rows="4" maxlength="4020"></textarea></label><p data-i18n="keywordHelp"></p></fieldset>
 <fieldset><legend data-i18n="watched"></legend><div id="subscription-watches"></div><label><span data-i18n="watchReference"></span><select id="watch-dataset"></select></label><label><span data-i18n="recordId"></span><input id="watch-record" type="number" min="1" step="1"></label><button type="button" id="watch-add" data-i18n="watch"></button><p data-i18n="watchHelp"></p></fieldset>
+<fieldset id="demo-test" class="demo-test" hidden><legend data-i18n="demoTestTitle"></legend><p data-i18n="demoTestHelp"></p><label><span data-i18n="demoTopic"></span><select id="demo-topic"></select></label><button type="button" id="demo-send" class="primary" data-i18n="demoSend"></button><div id="demo-result" role="status" aria-live="polite"></div></fieldset>
 <div class="delete-account"><p data-i18n="deleteHelp"></p><button type="button" id="delete-account" data-i18n="deleteAccount"></button></div></form></div>
 <div class="subscription-toolbar"><p id="subscription-message" role="status" hidden></p><div><button type="submit" form="subscription-form" class="primary" data-i18n="save"></button><button type="button" id="subscription-logout" data-i18n="logout"></button><button type="button" id="unsubscribe" data-i18n="stopAll"></button></div></div></dialog>
 </body></html>
