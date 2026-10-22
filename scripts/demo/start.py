@@ -10,8 +10,11 @@ from sqlalchemy import DateTime, select, text
 import uvicorn
 
 import app.models  # noqa: F401  (registers all tables on Base.metadata)
-from app.db.database import Base, engine
+from app.db.database import Base, SessionLocal, engine
+from app.services.entity_registry import ENTITIES
 from scripts.demo.export import DATASETS
+from scripts.reclassify_rules import run as reclassify
+from scripts.seed_classification import seed_taxonomy
 
 
 def seed():
@@ -43,7 +46,22 @@ def seed():
         print('Demo data loaded successfully.')
 
 
+def classify():
+    # The snapshot carries the classification of the day it was exported.
+    # Apply the current taxonomy.json and rebuild every record whose
+    # classification comes from another classifier version.
+    with SessionLocal() as db:
+        seed_taxonomy(db)
+        db.commit()
+    for dataset in ENTITIES:
+        result = reclassify(dataset, apply=True)
+        if result['remaining']:
+            raise RuntimeError(f'{dataset}: {result["remaining"]} records left unclassified')
+    print('Demo classification is current.')
+
+
 if __name__ == '__main__':
     subprocess.run([sys.executable, '-m', 'alembic', 'upgrade', 'head'], check=True)
     seed()
+    classify()
     uvicorn.run('app.main:app', host='0.0.0.0', port=8000)

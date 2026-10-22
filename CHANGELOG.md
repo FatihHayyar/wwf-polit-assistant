@@ -4,6 +4,11 @@ Dieses Protokoll beginnt mit dem aktuellen Entwicklungsstand. Es rekonstruiert k
 
 ## Unveröffentlicht
 
+### Demo (22. Oktober 2026)
+
+- Der Demo-Start übernimmt die aktuelle Taxonomie und klassifiziert Datensätze anderer Klassifikator-Versionen neu. Die Stichprobe enthielt bisher Klassifikationen von `rule-based-v6`; dadurch wurden z. B. Fragen zum Wolf nicht erkannt.
+- Quick Start weist auf den begrenzten Datenausschnitt hin und nennt Beispielfragen, die in der Demo Treffer liefern.
+
 ### Anforderungen von WWF (21. Oktober 2026)
 
 - Mehrere benannte Abonnements je Konto (bis zu zehn) mit Themen, Kantonen, Geschäftstypen, Stichwörtern und Bereichen; bestehende Abonnements werden migriert (`20261021_subscription_profiles`).

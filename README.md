@@ -86,6 +86,8 @@ Automatisierte Tests und Stichproben ersetzen keine WWF-Abnahme. Frühere Nachwe
 
 ## Quick Start mit Docker
 
+> **Demo-Installation:** Der Quick Start startet eine lokale Demo mit einem begrenzten Datenausschnitt, nicht mit dem vollständigen Datenbestand. Pro Bereich sind die jeweils 500 neuesten Datensätze aus einer festen Stichprobe enthalten, dazu die für die Detailansichten nötigen verknüpften Einträge. Suchen und Fragen liefern deshalb deutlich weniger Treffer als im Betrieb; spezifische Kombinationen aus Thema, Kanton, Geschäftstyp und Zeitraum bleiben oft leer.
+
 Für die lokale Demo werden **Docker Desktop** (gestartet) und **Git** benötigt. Alternativ kann das Repository als ZIP heruntergeladen werden. Eine separate Installation von Python oder PostgreSQL und eine eigene `.env` sind nicht erforderlich.
 
 ### 1. Repository herunterladen
@@ -105,7 +107,9 @@ docker compose -f docker-compose.demo.yml up --build -d
 
 Docker startet **FastAPI**, **PostgreSQL 17**, die **Alembic-Migrationen** und **Mailpit**. Der erste Start benötigt Internet für Images und Python-Pakete und kann einige Minuten dauern.
 
-Eine leere Demo-Datenbank erhält automatisch **500 Beispieldatensätze pro Bereich** mit vorhandenen WWF-Klassifikationen. Zusätzliche verknüpfte Referenzdaten erhalten den Kontext der Detailansichten; deshalb enthalten einige Bereiche mehr als 500 Einträge. Die Stichprobe liegt bereits im Repository, ein vollständiger OpenParlData-Import ist nicht erforderlich.
+Eine leere Demo-Datenbank erhält automatisch **500 Beispieldatensätze pro Bereich**. Zusätzliche verknüpfte Referenzdaten erhalten den Kontext der Detailansichten; deshalb enthalten einige Bereiche mehr als 500 Einträge. Die Stichprobe liegt bereits im Repository, ein vollständiger OpenParlData-Import ist nicht erforderlich.
+
+Bei jedem Start übernimmt die Demo die aktuelle [taxonomy.json](app/classification/taxonomy.json) und klassifiziert alle Datensätze neu, deren Klassifikation von einer anderen Klassifikator-Version stammt (derzeit `rule-based-v8`). Das dauert beim ersten Start rund zehn Sekunden.
 
 Die Demo verwendet eine eigene Datenbank, erhält vorhandene Daten beim Neustart und startet keine tägliche Synchronisierung.
 
@@ -119,7 +123,7 @@ Die Demo verwendet eine eigene Datenbank, erhält vorhandene Daten beim Neustart
 
 ### Einen ersten Ablauf ausprobieren
 
-1. Eine Frage stellen, z. B. «Motionen zur Photovoltaik im Kanton Bern», oder einen Bereich auswählen und nach Begriff, WWF-Thema oder Geschäftstyp filtern; einen Treffer öffnen und seine verknüpften Inhalte ansehen.
+1. Eine Frage stellen, z. B. «Motionen zur Photovoltaik», «Geschäfte zum Wolf seit 2024», «Motionen zum Klima im Kanton Zürich» oder «Séances au Grand Conseil de Genève en 2026», oder einen Bereich auswählen und nach Begriff, WWF-Thema oder Geschäftstyp filtern; einen Treffer öffnen und seine verknüpften Inhalte ansehen. Diese Beispiele liefern auch im begrenzten Demo-Datenausschnitt Treffer.
 2. **Registrieren** wählen und eine E-Mail-Adresse eingeben (beliebig, z. B. `test@example.org`).
 3. In **Mailpit** ([localhost:8025](http://localhost:8025)) die Bestätigungs-E-Mail öffnen, dem Link folgen und **Registrierung bestätigen** klicken. Die Abonnementverwaltung öffnet sich.
 4. **Neues Abonnement** wählen, einen Namen vergeben und ein Thema wählen, z. B. **Klima & Energie**, optional auch Kantone, Geschäftstypen oder Stichwörter. Weitere Abonnements lassen sich auf dieselbe Weise ergänzen.
