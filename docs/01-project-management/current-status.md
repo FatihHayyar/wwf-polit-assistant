@@ -15,7 +15,7 @@ Abgleich mit der Aufgabenstellung und den E-Mail-Konkretisierungen von WWF; jede
 - **Sicherheit:** gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für E-Mail-, Token- und Frage-Endpunkte, Bestätigungsseite mit POST statt Token-Verbrauch beim Öffnen, Ursprungsprüfung, Token-Widerruf beim Abmelden, Sicherheits-Header mit CSP, PostgreSQL nur lokal erreichbar.
 - **Demo:** Testbenachrichtigung über ein fiktives Geschäft, das die echte Klassifikation und den echten Versand durchläuft; Anleitung auf der Startseite.
 - **Wartbarkeit:** Frontend in Module aufgeteilt, Sync-Code vereinheitlicht (sieben veraltete Skripte entfernt), Dokumentation vollständig deutsch, ruff und GitHub-Actions-CI.
-- **Tests:** 151 isolierte Tests erfolgreich; Browser-Durchlauf der Demo mit Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung in einer isolierten Instanz erfolgreich; Migrationen auf PostgreSQL 17 vor- und zurückgespielt. Die Änderungen liegen auf dem Branch `improvements/wipro-review` und sind nicht gepusht.
+- **Tests:** 155 isolierte Tests erfolgreich; Browser-Durchlauf der Demo mit Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung in einer isolierten Instanz erfolgreich; Migrationen auf PostgreSQL 17 vor- und zurückgespielt. Die Änderungen liegen auf dem Branch `improvements/wipro-review` und sind nicht gepusht.
 
 ## Ergänzungen vom 13. Oktober
 

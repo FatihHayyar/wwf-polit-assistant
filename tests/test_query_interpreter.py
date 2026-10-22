@@ -74,6 +74,24 @@ class InterpreterTests(unittest.TestCase):
     def test_unknown_question_falls_back_to_keyword(self):
         self.assertEqual(self.interpret("Seilbahnprojekte"), ("affairs", {"q": "seilbahnprojekte"}))
 
+    def test_named_canton_is_a_place_not_the_public_sector_topic(self):
+        self.assertEqual(self.interpret("Biodiversität im Kanton Zürich"), ("affairs", {
+            "category": "biodiversity_landscape", "canton": "ZH"}))
+        self.assertEqual(self.interpret("Interpellationen zur Biodiversität im Kanton Bern")[1], {
+            "category": "biodiversity_landscape", "canton": "BE", "affair_type": "Interpellation"})
+
+    def test_italian_affair_types(self):
+        self.assertEqual(self.interpret("Mozioni sul clima"), ("affairs", {"category": "climate_energy", "affair_type": "Motion"}))
+        self.assertEqual(self.interpret("Interpellanze sul lupo nel Vallese")[1]["affair_type"], "Interpellation")
+
+    def test_named_month(self):
+        self.assertEqual(self.interpret("Sitzungen im Kanton Genf im September 2026"), ("meetings", {
+            "canton": "GE", "date_from": date(2026, 9, 1), "date_to": date(2026, 9, 30)}))
+        self.assertEqual(self.interpret("Geschäfte seit März 2025")[1], {"date_from": date(2025, 3, 1)})
+        self.assertEqual(self.interpret("Séances en février")[1], {"date_from": date(2026, 2, 1), "date_to": date(2026, 2, 28)})
+        # A month after today's means last year's.
+        self.assertEqual(self.interpret("Sitzungen im Dezember")[1], {"date_from": date(2025, 12, 1), "date_to": date(2025, 12, 31)})
+
 
 class AskEndpointTests(unittest.TestCase):
     def setUp(self):

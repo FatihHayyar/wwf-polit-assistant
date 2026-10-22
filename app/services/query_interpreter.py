@@ -53,6 +53,18 @@ CANTON_ALIASES = {
     "VS": ["wallis", "valais", "vallese"], "ZG": ["zug", "zoug", "zugo"], "ZH": ["zürich", "zurich", "zurigo"],
 }
 
+# Affair types are stored with their German name; these are the translations
+# that the German name plus an ending does not already cover.
+AFFAIR_TYPE_ALIASES = {
+    "Motion": ["mozione", "mozioni"],
+    "Postulat": ["postulato", "postulati"],
+    "Interpellation": ["interpellanza", "interpellanze"],
+    "Anfrage": ["interrogazione", "interrogazioni"],
+}
+
+# Where a canton is named, "Kanton" is the place and not the public sector as a topic.
+CANTON_WORD = re.compile(r"(?<!\w)(?:kanton(?:s|e|en)?|canton(?:s|e|i)?)(?!\w)", re.IGNORECASE)
+
 TOPIC_WORDS = {
     "climate_energy": ["klima", "energie", "climat", "énergie", "clima", "energia", "climate", "energy"],
     "biodiversity_landscape": ["biodiversität", "natur", "landschaft", "biodiversité", "nature", "paysage", "biodiversità",
@@ -72,6 +84,22 @@ RELATIVE_PERIODS = [
 THIS_YEAR = ["dieses jahr", "diesem jahr", "cette année", "quest'anno", "questo anno", "this year"]
 LAST_YEAR = ["letztes jahr", "letzten jahr", "vorjahr", "l'année dernière", "l'an dernier", "l'anno scorso", "last year"]
 LAST_MONTH = ["letzten monat", "letzter monat", "le mois dernier", "il mese scorso", "last month"]
+# Month names as matched in folded text (lower case, without accents).
+MONTH_NAMES = {
+    1: ["januar", "janner", "janvier", "gennaio", "january"], 2: ["februar", "fevrier", "febbraio", "february"],
+    3: ["marz", "maerz", "mars", "marzo", "march"], 4: ["april", "avril", "aprile"], 5: ["mai", "maggio", "may"],
+    6: ["juni", "juin", "giugno", "june"], 7: ["juli", "juillet", "luglio", "july"], 8: ["august", "aout", "agosto"],
+    9: ["september", "septembre", "settembre"], 10: ["oktober", "octobre", "ottobre", "october"],
+    11: ["november", "novembre"], 12: ["dezember", "decembre", "dicembre", "december"],
+}
+MONTHS = {name: number for number, names in MONTH_NAMES.items() for name in names}
+MONTH = "(" + "|".join(sorted(MONTHS, key=len, reverse=True)) + ")"
+# A month without a year only after a preposition, so "may" or "august" alone stay words.
+IN_MONTH = rf"(?<!\w)(?:im|in|en|a|nel|au mois de|nel mese di)\s+{MONTH}(?!\w)"
+
+
+def month_end(year: int, month: int) -> date:
+    return date(year + month // 12, month % 12 + 1, 1) - timedelta(days=1)
 
 
 @dataclass
@@ -147,6 +175,14 @@ class RuleBasedInterpreter:
                 result.dataset = "affairs"
                 result.recognised.append(Recognised("affair_type", affair_type, affair_type))
                 return
+        for affair_type, aliases in AFFAIR_TYPE_ALIASES.items():
+            match = affair_type in affair_types and next(
+                (match for alias in aliases if (match := re.search(rf"(?<!\w){alias}(?!\w)", folded))), None)
+            if match:
+                result.affair_type = affair_type
+                result.dataset = "affairs"
+                result.recognised.append(Recognised("affair_type", affair_type, match.group()))
+                return
 
     def _canton(self, result, question, folded):
         for code, aliases in CANTON_ALIASES.items():
@@ -165,15 +201,22 @@ class RuleBasedInterpreter:
 
     def _dates(self, result, folded, today):
         between = re.search(r"(?:zwischen|entre|tra|between)\s+((?:19|20)\d{2})\s+(?:und|et|e|and)\s+((?:19|20)\d{2})", folded)
-        since = re.search(rf"{SINCE}\s+((?:19|20)\d{{2}})", folded)
+        since = re.search(rf"{SINCE}\s+(?:{MONTH}\s+)?((?:19|20)\d{{2}})", folded)
+        in_month = re.search(rf"(?<!\w){MONTH}\s+((?:19|20)\d{{2}})(?!\d)", folded)
         if between:
             start, end = sorted((int(between.group(1)), int(between.group(2))))
             result.date_from, result.date_to = date(start, 1, 1), date(end, 12, 31)
             result.recognised.append(Recognised("period", f"{start}-{end}", between.group()))
             return
         if since:
-            result.date_from = date(int(since.group(1)), 1, 1)
-            result.recognised.append(Recognised("period", f"since {since.group(1)}", since.group()))
+            year, month = int(since.group(2)), MONTHS.get(since.group(1), 1)
+            result.date_from = date(year, month, 1)
+            result.recognised.append(Recognised("period", f"since {year}-{month:02d}", since.group()))
+            return
+        if in_month:
+            year, month = int(in_month.group(2)), MONTHS[in_month.group(1)]
+            result.date_from, result.date_to = date(year, month, 1), month_end(year, month)
+            result.recognised.append(Recognised("period", f"{year}-{month:02d}", in_month.group()))
             return
         for pattern, unit in RELATIVE_PERIODS:
             match = re.search(pattern, folded)
@@ -197,6 +240,14 @@ class RuleBasedInterpreter:
             result.date_from = today
             result.recognised.append(Recognised("period", "upcoming", "upcoming"))
             return
+        named = re.search(IN_MONTH, folded)
+        if named:
+            # The most recent such month, including the current one.
+            month = MONTHS[named.group(1)]
+            year = today.year if month <= today.month else today.year - 1
+            result.date_from, result.date_to = date(year, month, 1), month_end(year, month)
+            result.recognised.append(Recognised("period", f"{year}-{month:02d}", named.group()))
+            return
         year = re.search(r"(?<!\d)((?:19|20)\d{2})(?!\d)", folded)
         if year:
             value = int(year.group(1))
@@ -206,6 +257,8 @@ class RuleBasedInterpreter:
     def _topic(self, result, db, question, folded):
         categories = {category.id: category for category in db.scalars(
             select(ClassificationCategory).where(ClassificationCategory.active.is_(True)))}
+        if result.canton:
+            question = CANTON_WORD.sub(" ", question)
         probe = SimpleNamespace(id=0, title_de=question, title_fr=question, title_it=question, title_rm=None,
                                 title_long_de=None, title_long_fr=None, title_long_it=None, title_long_rm=None)
         matches = [match for match in AffairClassifier(db).accepted_title_matches(probe)

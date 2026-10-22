@@ -26,10 +26,10 @@ Die Recherche ist ohne Konto möglich. Ein Bereich «Auf dem Laufenden bleiben»
 | Erkannt | Beispiele | Regel |
 |---|---|---|
 | Bereich | «Sitzungen», «séances», «votazioni» | Wortstämme je Sprache; ohne Angabe Geschäfte |
-| WWF-Thema | «Wolf», «Photovoltaik», «Klima» | dieselben Regeln wie die Klassifikation; ein eindeutiges Unterthema wird direkt gesetzt |
+| WWF-Thema | «Wolf», «Photovoltaik», «Klima» | dieselben Regeln wie die Klassifikation; ein eindeutiges Unterthema wird direkt gesetzt. Ist ein Kanton genannt, zählt das Wort «Kanton» als Ort und nicht als Thema öffentliche Hand |
 | Kanton | «im Wallis», «Genève», «BE» | Kantonsnamen in vier Sprachen; Kürzel nur in Grossbuchstaben |
-| Geschäftstyp | «Motionen», «Interpellation» | die in der Datenbank vorhandenen harmonisierten Typen |
-| Zeitraum | «seit 2024», «letztes Jahr», «letzten 30 Tage», «zwischen 2020 und 2022» | feste Muster; «bevorstehend» setzt das heutige Datum als Beginn |
+| Geschäftstyp | «Motionen», «Interpellation», «mozioni» | die in der Datenbank vorhandenen harmonisierten Typen, ergänzt um italienische Bezeichnungen |
+| Zeitraum | «seit 2024», «seit März 2025», «im September 2026», «en février», «letztes Jahr», «letzten 30 Tage», «zwischen 2020 und 2022» | feste Muster; Monatsnamen in vier Sprachen, ohne Jahr nur nach einer Präposition und dann der jüngste solche Monat; «bevorstehend» setzt das heutige Datum als Beginn |
 | Suchbegriff | «"Fernwärme"» oder das längste übrige Wort | nur, wenn kein Thema erkannt wurde; bereits erkannte Wörter werden nicht wiederholt |
 
 Die Oberfläche zeigt die erkannten Teile als Etiketten, setzt die Filter im Suchformular und bietet an, die Frage als Abonnement zu speichern. Die Erkennung arbeitet deterministisch und erfindet keine Inhalte; sie ist auf 30 Fragen pro Minute und Client-Adresse begrenzt. `app/services/query_interpreter.py` definiert mit `QueryInterpreter` die Schnittstelle, über die später ein Sprachmodell dieselbe Aufgabe übernehmen kann.
