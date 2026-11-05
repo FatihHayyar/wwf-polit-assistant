@@ -8,34 +8,34 @@ Der Backlog wurde zu Beginn aus der [Anforderungsliste](requirements.md) abgelei
 
 ## Übersicht
 
-| ID | Titel | Rolle | Prio | Anforderung | Milestone | Status |
-|---|---|---|---|---|---|---|
-| AP-1.1 – AP-1.8 | Projektstart und Planung | Projektleitung | Must | R11 | M1 | Erledigt |
-| US-01 | Daten aktuell halten | WWF-Fachperson | Must | R01, R02 | M2 | Erledigt |
-| US-02 | Zusammenhänge eines Geschäfts sehen | WWF-Fachperson | Must | R02, R15 | M2 | Erledigt |
-| US-03 | Geschäfte WWF-Themen zuordnen | WWF-Fachperson | Must | R03 | M2 | Erledigt |
-| US-04 | Recherchieren mit Filtern | WWF-Fachperson | Must | R04, R10, R15 | M2 | Erledigt |
-| US-05 | Ohne Passwort registrieren und anmelden | Abonnent:in | Must | R19 | M2 | Erledigt |
-| US-06 | Themen abonnieren | Abonnent:in | Must | R05, R06, R08 | M2 | Erledigt |
-| US-07 | Einzelnes Geschäft verfolgen | Abonnent:in | Must | R07 | M2 | Erledigt |
-| US-08 | Nur relevante Änderungen erhalten | Abonnent:in | Must | R05, R08 | M2 | Erledigt |
-| US-09 | Weitere Empfängeradressen | Abonnent:in | Could | R17 | M2 | Erledigt |
-| US-10 | REST-API nutzen | WWF-IT | Must | R09 | M2 | Erledigt |
-| US-11 | Demo mit einem Befehl starten | WWF-IT | Should | R12 | M2 | Erledigt |
-| US-12 | Mehrere Abonnements | Abonnent:in | Must | R19 | M2 | Erledigt |
-| US-13 | Nach Geschäftstyp filtern | WWF-Fachperson, Abonnent:in | Must | R04, R06 | M2 | Erledigt |
-| US-14 | Frage in natürlicher Sprache stellen | WWF-Fachperson | Must | R20, R21 | M2 | Erledigt |
-| US-15 | Energie- und Klima-Unterthemen nach WWF | WWF-Fachperson | Must | R16, R22 | M2 | Erledigt; Freigabe offen |
-| US-16 | Klassifikationsgüte messen | Projektleitung, WWF | Should | R03, R12 | M2 | Erledigt; Expertenprüfung offen |
-| US-17 | Einfache Abonnementverwaltung | Abonnent:in | Should | R06, R10 | M2 | Erledigt |
-| US-18 | Inhalt mit einem Klick verfolgen | Abonnent:in | Should | R07, R10 | M2 | Erledigt |
-| US-19 | Klare Meldungen bei Registrieren und Anmelden | Abonnent:in | Should | R10, R19 | M2 | Erledigt |
-| US-20 | Konto löschen mit Bestätigung | Abonnent:in | Should | R10 | M2 | Erledigt |
-| AP-2.1 – AP-2.2 | Fragen sammeln, Zwischenpräsentation am 18.11.2026 | Projektleitung | Must | R11 | M2 | In Arbeit |
-| US-21 | Übergabe für Azure vorbereiten | WWF-IT | Must | R13, R14 | M3 | In Arbeit |
-| US-22 | Anwendung anhand der Dokumentation übernehmen | WWF-IT | Must | R11 | M3 | In Arbeit |
-| US-23 | MVP mit WWF abnehmen | WWF-Fachperson | Must | R12 | M3 | Offen |
-| AP-3.1 – AP-3.3 | WIPRO-Bericht, Abgabe, Abschlusspräsentation | Projektleitung | Must | R11 | M3 | In Arbeit |
+| ID | Titel | Rolle | Prio | Anforderung | Milestone | Status | Issue |
+|---|---|---|---|---|---|---|---|
+| AP-1.1 – AP-1.8 | Projektstart und Planung | Projektleitung | Must | R11 | M1 | Erledigt | [#29](https://github.com/FatihHayyar/wwf-polit-assistant/issues/29) – [#36](https://github.com/FatihHayyar/wwf-polit-assistant/issues/36) |
+| US-01 | Daten aktuell halten | WWF-Fachperson | Must | R01, R02 | M2 | Erledigt | [#37](https://github.com/FatihHayyar/wwf-polit-assistant/issues/37) |
+| US-02 | Zusammenhänge eines Geschäfts sehen | WWF-Fachperson | Must | R02, R15 | M2 | Erledigt | [#38](https://github.com/FatihHayyar/wwf-polit-assistant/issues/38) |
+| US-03 | Geschäfte WWF-Themen zuordnen | WWF-Fachperson | Must | R03 | M2 | Erledigt | [#39](https://github.com/FatihHayyar/wwf-polit-assistant/issues/39) |
+| US-04 | Recherchieren mit Filtern | WWF-Fachperson | Must | R04, R10, R15 | M2 | Erledigt | [#40](https://github.com/FatihHayyar/wwf-polit-assistant/issues/40) |
+| US-05 | Ohne Passwort registrieren und anmelden | Abonnent:in | Must | R19 | M2 | Erledigt | [#41](https://github.com/FatihHayyar/wwf-polit-assistant/issues/41) |
+| US-06 | Themen abonnieren | Abonnent:in | Must | R05, R06, R08 | M2 | Erledigt | [#42](https://github.com/FatihHayyar/wwf-polit-assistant/issues/42) |
+| US-07 | Einzelnes Geschäft verfolgen | Abonnent:in | Must | R07 | M2 | Erledigt | [#43](https://github.com/FatihHayyar/wwf-polit-assistant/issues/43) |
+| US-08 | Nur relevante Änderungen erhalten | Abonnent:in | Must | R05, R08 | M2 | Erledigt | [#44](https://github.com/FatihHayyar/wwf-polit-assistant/issues/44) |
+| US-09 | Weitere Empfängeradressen | Abonnent:in | Could | R17 | M2 | Erledigt | [#45](https://github.com/FatihHayyar/wwf-polit-assistant/issues/45) |
+| US-10 | REST-API nutzen | WWF-IT | Must | R09 | M2 | Erledigt | [#46](https://github.com/FatihHayyar/wwf-polit-assistant/issues/46) |
+| US-11 | Demo mit einem Befehl starten | WWF-IT | Should | R12 | M2 | Erledigt | [#47](https://github.com/FatihHayyar/wwf-polit-assistant/issues/47) |
+| US-12 | Mehrere Abonnements | Abonnent:in | Must | R19 | M2 | Erledigt | [#48](https://github.com/FatihHayyar/wwf-polit-assistant/issues/48) |
+| US-13 | Nach Geschäftstyp filtern | WWF-Fachperson, Abonnent:in | Must | R04, R06 | M2 | Erledigt | [#49](https://github.com/FatihHayyar/wwf-polit-assistant/issues/49) |
+| US-14 | Frage in natürlicher Sprache stellen | WWF-Fachperson | Must | R20, R21 | M2 | Erledigt | [#50](https://github.com/FatihHayyar/wwf-polit-assistant/issues/50) |
+| US-15 | Energie- und Klima-Unterthemen nach WWF | WWF-Fachperson | Must | R16, R22 | M2 | Erledigt; Freigabe offen | [#51](https://github.com/FatihHayyar/wwf-polit-assistant/issues/51) |
+| US-16 | Klassifikationsgüte messen | Projektleitung, WWF | Should | R03, R12 | M2 | Erledigt; Expertenprüfung offen | [#52](https://github.com/FatihHayyar/wwf-polit-assistant/issues/52) |
+| US-17 | Einfache Abonnementverwaltung | Abonnent:in | Should | R06, R10 | M2 | Erledigt | [#53](https://github.com/FatihHayyar/wwf-polit-assistant/issues/53) |
+| US-18 | Inhalt mit einem Klick verfolgen | Abonnent:in | Should | R07, R10 | M2 | Erledigt | [#54](https://github.com/FatihHayyar/wwf-polit-assistant/issues/54) |
+| US-19 | Klare Meldungen bei Registrieren und Anmelden | Abonnent:in | Should | R10, R19 | M2 | Erledigt | [#55](https://github.com/FatihHayyar/wwf-polit-assistant/issues/55) |
+| US-20 | Konto löschen mit Bestätigung | Abonnent:in | Should | R10 | M2 | Erledigt | [#56](https://github.com/FatihHayyar/wwf-polit-assistant/issues/56) |
+| AP-2.1 – AP-2.2 | Fragen sammeln, Zwischenpräsentation am 18.11.2026 | Projektleitung | Must | R11 | M2 | In Arbeit | [#57](https://github.com/FatihHayyar/wwf-polit-assistant/issues/57) – [#58](https://github.com/FatihHayyar/wwf-polit-assistant/issues/58) |
+| US-21 | Übergabe für Azure vorbereiten | WWF-IT | Must | R13, R14 | M3 | In Arbeit | [#59](https://github.com/FatihHayyar/wwf-polit-assistant/issues/59) |
+| US-22 | Anwendung anhand der Dokumentation übernehmen | WWF-IT | Must | R11 | M3 | In Arbeit | [#60](https://github.com/FatihHayyar/wwf-polit-assistant/issues/60) |
+| US-23 | MVP mit WWF abnehmen | WWF-Fachperson | Must | R12 | M3 | Offen | [#61](https://github.com/FatihHayyar/wwf-polit-assistant/issues/61) |
+| AP-3.1 – AP-3.3 | WIPRO-Bericht, Abgabe, Abschlusspräsentation | Projektleitung | Must | R11 | M3 | In Arbeit | [#62](https://github.com/FatihHayyar/wwf-polit-assistant/issues/62) – [#64](https://github.com/FatihHayyar/wwf-polit-assistant/issues/64) |
 
 ---
 
@@ -50,7 +50,7 @@ In M1 entsteht noch keine Software. Die Arbeit ist deshalb in Arbeitspakete mit 
 | AP-1.3 | Fragen und Notizen sammeln | [Fragenliste](../01-project-management/question-log.md) | Offene Punkte notiert und Ansprechperson zugeordnet | Erledigt, laufend gepflegt |
 | AP-1.4 | OpenParlData analysieren | [OpenParlData-Integration](../04-technical-concepts/openparldata-integration.md): Endpunkte, neun Bereiche, Beziehungen, Grenzen der Quelle | Datenbereiche und Beziehungen für den MVP festgelegt | Erledigt |
 | AP-1.5 | Aufgabenstellung erstellen und einreichen | Aufgabenstellung in Complesis | Eingereicht bis 28.09.2026 und signiert (SW 3) | Erledigt |
-| AP-1.6 | Projektmanagement auf GitHub einrichten | [Repository, Milestones und Issues](../01-project-management/github-tracking.md) | Milestones und Issues angelegt | Erledigt (Issues und Milestones am 12.10.2026 vollständig erfasst) |
+| AP-1.6 | Projektmanagement auf GitHub einrichten | [Repository, Milestones und Issues](../01-project-management/github-tracking.md) | Milestones und Issues angelegt | Erledigt (am 05.11.2026 auf Milestones, Story-Issues und Board umgestellt) |
 | AP-1.7 | Anforderungen und User Stories ableiten | [Anforderungsliste](requirements.md), dieser Backlog | Jede Anforderung hat mindestens eine Story oder ein Arbeitspaket | Erledigt |
 | AP-1.8 | Dokumentstruktur anlegen | [Dokumentation in sieben Bereichen](../README.md) | Ablage für Planung, Anforderungen, Architektur, Konzepte, Tests, Übergabe und Bericht steht | Erledigt |
 
@@ -61,7 +61,7 @@ In M1 entsteht noch keine Software. Die Arbeit ist deshalb in Arbeitspakete mit 
 ### US-01 Daten aktuell halten
 
 **Als** WWF-Fachperson **möchte ich**, dass die Parlamentsdaten aller Kantone täglich automatisch aktualisiert werden, **damit** ich mit aktuellen Daten arbeite.
-Must · R01, R02 · Erledigt
+Must · R01, R02 · Erledigt · GitHub [#37](https://github.com/FatihHayyar/wwf-polit-assistant/issues/37)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -74,7 +74,7 @@ Must · R01, R02 · Erledigt
 ### US-02 Zusammenhänge eines Geschäfts sehen
 
 **Als** WWF-Fachperson **möchte ich** zu einem Geschäft die zugehörigen Traktanden, Sitzungen, Abstimmungen und Dokumente sehen, **damit** ich den Verlauf verstehe.
-Must · R02, R15 · Erledigt
+Must · R02, R15 · Erledigt · GitHub [#38](https://github.com/FatihHayyar/wwf-polit-assistant/issues/38)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -86,7 +86,7 @@ Must · R02, R15 · Erledigt
 ### US-03 Geschäfte WWF-Themen zuordnen
 
 **Als** WWF-Fachperson **möchte ich**, dass Geschäfte automatisch WWF-Themen zugeordnet werden, **damit** ich nicht jedes Geschäft selbst lesen muss.
-Must · R03 · Erledigt (Güte siehe US-16)
+Must · R03 · Erledigt (Güte siehe US-16) · GitHub [#39](https://github.com/FatihHayyar/wwf-polit-assistant/issues/39)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -98,7 +98,7 @@ Must · R03 · Erledigt (Güte siehe US-16)
 ### US-04 Recherchieren mit Filtern
 
 **Als** WWF-Fachperson **möchte ich** in allen neun Bereichen nach Thema, Unterthema, Kanton, Stichwort und Zeitraum suchen, **damit** ich relevante Inhalte schnell finde.
-Must · R04, R10, R15 · Erledigt
+Must · R04, R10, R15 · Erledigt · GitHub [#40](https://github.com/FatihHayyar/wwf-polit-assistant/issues/40)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -110,7 +110,7 @@ Must · R04, R10, R15 · Erledigt
 ### US-05 Ohne Passwort registrieren und anmelden
 
 **Als** Abonnent:in **möchte ich** mich mit einem Link per E-Mail registrieren und anmelden, **damit** ich kein Passwort verwalten muss.
-Must · R19 · Erledigt (Meldungen verbessert in US-19)
+Must · R19 · Erledigt (Meldungen verbessert in US-19) · GitHub [#41](https://github.com/FatihHayyar/wwf-polit-assistant/issues/41)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -123,7 +123,7 @@ Must · R19 · Erledigt (Meldungen verbessert in US-19)
 ### US-06 Themen abonnieren
 
 **Als** Abonnent:in **möchte ich** Themen, Kantone und Bereiche abonnieren, **damit** ich per E-Mail über neue passende Inhalte informiert werde.
-Must · R05, R06, R08 · Erledigt (erweitert in US-12)
+Must · R05, R06, R08 · Erledigt (erweitert in US-12) · GitHub [#42](https://github.com/FatihHayyar/wwf-polit-assistant/issues/42)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -136,7 +136,7 @@ Must · R05, R06, R08 · Erledigt (erweitert in US-12)
 ### US-07 Einzelnes Geschäft verfolgen
 
 **Als** Abonnent:in **möchte ich** ein bestimmtes Geschäft verfolgen, **damit** ich über jede relevante Entwicklung informiert werde, auch wenn es zu keinem Abonnement passt.
-Must · R07 · Erledigt (Bedienung verbessert in US-18)
+Must · R07 · Erledigt (Bedienung verbessert in US-18) · GitHub [#43](https://github.com/FatihHayyar/wwf-polit-assistant/issues/43)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -148,7 +148,7 @@ Must · R07 · Erledigt (Bedienung verbessert in US-18)
 ### US-08 Nur relevante Änderungen erhalten
 
 **Als** Abonnent:in **möchte ich** nur bei inhaltlichen Änderungen eine E-Mail erhalten, **damit** mein Postfach nicht mit technischen Aktualisierungen gefüllt wird.
-Must · R05, R08 · Erledigt
+Must · R05, R08 · Erledigt · GitHub [#44](https://github.com/FatihHayyar/wwf-polit-assistant/issues/44)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -161,7 +161,7 @@ Must · R05, R08 · Erledigt
 ### US-09 Weitere Empfängeradressen
 
 **Als** Abonnent:in **möchte ich** Benachrichtigungen auch an weitere Adressen senden, **damit** mein Team informiert ist.
-Could · R17 · Erledigt
+Could · R17 · Erledigt · GitHub [#45](https://github.com/FatihHayyar/wwf-polit-assistant/issues/45)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -171,7 +171,7 @@ Could · R17 · Erledigt
 ### US-10 REST-API nutzen
 
 **Als** WWF-IT **möchte ich** eine dokumentierte REST-API, **damit** ich die Daten in andere Systeme einbinden kann.
-Must · R09 · Erledigt
+Must · R09 · Erledigt · GitHub [#46](https://github.com/FatihHayyar/wwf-polit-assistant/issues/46)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -182,7 +182,7 @@ Must · R09 · Erledigt
 ### US-11 Demo mit einem Befehl starten
 
 **Als** WWF-IT **möchte ich** die Anwendung mit Beispieldaten per Docker starten, **damit** ich sie ohne vollständigen Datenimport ausprobieren kann.
-Should · R12 · Erledigt
+Should · R12 · Erledigt · GitHub [#47](https://github.com/FatihHayyar/wwf-polit-assistant/issues/47)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -196,7 +196,7 @@ Should · R12 · Erledigt
 ### US-12 Mehrere Abonnements
 
 **Als** Abonnent:in **möchte ich** mehrere Abonnements führen, z. B. «Energie in Luzern» und «Bioenergie in allen Kantonen», **damit** ich unterschiedliche Kombinationen getrennt verfolgen kann.
-Must · R19 (WWF-Rückmeldung) · Erledigt
+Must · R19 (WWF-Rückmeldung) · Erledigt · GitHub [#48](https://github.com/FatihHayyar/wwf-polit-assistant/issues/48)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -209,7 +209,7 @@ Must · R19 (WWF-Rückmeldung) · Erledigt
 ### US-13 Nach Geschäftstyp filtern
 
 **Als** WWF-Fachperson **möchte ich** nach Geschäftstyp (Motion, Postulat, Interpellation …) filtern, **damit** ich z. B. nur Vorstösse mit Handlungsauftrag sehe.
-Must · R04, R06 (WWF-Rückmeldung) · Erledigt
+Must · R04, R06 (WWF-Rückmeldung) · Erledigt · GitHub [#49](https://github.com/FatihHayyar/wwf-polit-assistant/issues/49)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -220,7 +220,7 @@ Must · R04, R06 (WWF-Rückmeldung) · Erledigt
 ### US-14 Frage in natürlicher Sprache stellen
 
 **Als** WWF-Fachperson **möchte ich** eine Frage wie «Motionen zum Klima im Kanton Zürich seit 2024» stellen, **damit** ich ohne Filterformular suchen kann.
-Must · R20, R21 · Erledigt
+Must · R20, R21 · Erledigt · GitHub [#50](https://github.com/FatihHayyar/wwf-polit-assistant/issues/50)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -233,7 +233,7 @@ Must · R20, R21 · Erledigt
 ### US-15 Energie- und Klima-Unterthemen nach WWF
 
 **Als** WWF-Fachperson **möchte ich** die Unterthemen aus der WWF-Rückmeldung (u. a. Rechenzentren und Grossverbraucher getrennt), **damit** die Themen unserer Arbeitsweise entsprechen.
-Must · R16, R22 · Erledigt; fachliche Freigabe durch WWF offen
+Must · R16, R22 · Erledigt; fachliche Freigabe durch WWF offen · GitHub [#51](https://github.com/FatihHayyar/wwf-polit-assistant/issues/51)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -245,7 +245,7 @@ Must · R16, R22 · Erledigt; fachliche Freigabe durch WWF offen
 ### US-16 Klassifikationsgüte messen
 
 **Als** Projektleitung **möchte ich** die Klassifikation an einem unabhängigen Prüfset messen, **damit** ich ihre Qualität belegen kann statt sie zu behaupten.
-Should · R03, R12 · Erledigt; Prüfung durch WWF-Fachpersonen offen
+Should · R03, R12 · Erledigt; Prüfung durch WWF-Fachpersonen offen · GitHub [#52](https://github.com/FatihHayyar/wwf-polit-assistant/issues/52)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -258,7 +258,7 @@ Should · R03, R12 · Erledigt; Prüfung durch WWF-Fachpersonen offen
 ### US-17 Einfache Abonnementverwaltung
 
 **Als** Abonnent:in **möchte ich** ein Abonnement nur durch Ankreuzen anlegen und unten speichern, **damit** die Verwaltung schnell und verständlich ist.
-Should · R06, R10 (Rückmeldung aus dem Test der Oberfläche, D15) · Erledigt
+Should · R06, R10 (Rückmeldung aus dem Test der Oberfläche, D15) · Erledigt · GitHub [#53](https://github.com/FatihHayyar/wwf-polit-assistant/issues/53)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -269,7 +269,7 @@ Should · R06, R10 (Rückmeldung aus dem Test der Oberfläche, D15) · Erledigt
 ### US-18 Inhalt mit einem Klick verfolgen
 
 **Als** Abonnent:in **möchte ich** ein Geschäft direkt in seiner Detailansicht verfolgen, **damit** ich keine Nummer abtippen muss.
-Should · R07, R10 · Erledigt
+Should · R07, R10 · Erledigt · GitHub [#54](https://github.com/FatihHayyar/wwf-polit-assistant/issues/54)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -279,7 +279,7 @@ Should · R07, R10 · Erledigt
 ### US-19 Klare Meldungen bei Registrieren und Anmelden
 
 **Als** Abonnent:in **möchte ich** erfahren, ob ich mich anmelden oder zuerst registrieren muss, **damit** ich nicht rätseln muss, warum keine E-Mail kommt.
-Should · R10, R19 (Rückmeldung aus dem Test, D16) · Erledigt
+Should · R10, R19 (Rückmeldung aus dem Test, D16) · Erledigt · GitHub [#55](https://github.com/FatihHayyar/wwf-polit-assistant/issues/55)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -292,7 +292,7 @@ Should · R10, R19 (Rückmeldung aus dem Test, D16) · Erledigt
 ### US-20 Konto löschen mit Bestätigung
 
 **Als** Abonnent:in **möchte ich** beim Löschen meines Kontos eine Bestätigung erhalten, **damit** ich sicher bin, dass meine Daten entfernt sind.
-Should · R10 · Erledigt
+Should · R10 · Erledigt · GitHub [#56](https://github.com/FatihHayyar/wwf-polit-assistant/issues/56)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -316,7 +316,7 @@ M3 beginnt nach der Zwischenpräsentation am 18.11.2026 und endet mit der Abgabe
 ### US-21 Übergabe für Azure vorbereiten
 
 **Als** WWF-IT **möchte ich** einen Container und eine Zielarchitektur für Azure, **damit** wir die Anwendung in unserer Umgebung betreiben können.
-Must · R13, R14 · In Arbeit (Testdeployment durch WWF offen)
+Must · R13, R14 · In Arbeit (Testdeployment durch WWF offen) · GitHub [#59](https://github.com/FatihHayyar/wwf-polit-assistant/issues/59)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -327,7 +327,7 @@ Must · R13, R14 · In Arbeit (Testdeployment durch WWF offen)
 ### US-22 Anwendung anhand der Dokumentation übernehmen
 
 **Als** WWF-IT **möchte ich** die Anwendung allein anhand der Dokumentation starten und betreiben, **damit** die Übergabe nicht von einer Person abhängt.
-Must · R11 · In Arbeit
+Must · R11 · In Arbeit · GitHub [#60](https://github.com/FatihHayyar/wwf-polit-assistant/issues/60)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
@@ -337,7 +337,7 @@ Must · R11 · In Arbeit
 ### US-23 MVP mit WWF abnehmen
 
 **Als** WWF-Fachperson **möchte ich** typische Aufgaben mit der Anwendung durchspielen, **damit** wir entscheiden können, ob der MVP unseren Bedarf deckt.
-Must · R12 · Offen
+Must · R12 · Offen · GitHub [#61](https://github.com/FatihHayyar/wwf-polit-assistant/issues/61)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|

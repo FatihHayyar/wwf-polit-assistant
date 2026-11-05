@@ -63,7 +63,7 @@ Fett markiert sind die tatsächlichen Projekttermine. Der Entwicklungsverlauf is
 
 ## Werkzeuge
 
-- **GitHub:** [Repository](https://github.com/FatihHayyar/wwf-polit-assistant), [Issues](https://github.com/FatihHayyar/wwf-polit-assistant/issues) und [Milestones](https://github.com/FatihHayyar/wwf-polit-assistant/milestones). Die Zuordnung der Issues zu den Stories steht in [github-tracking.md](github-tracking.md).
+- **GitHub:** [Projekt-Board](https://github.com/users/FatihHayyar/projects/3), [Milestones](https://github.com/FatihHayyar/wwf-polit-assistant/milestones) und ein [Issue](https://github.com/FatihHayyar/wwf-polit-assistant/issues) pro User Story oder Arbeitspaket mit den Akzeptanzkriterien als Checkliste ([Aufbau](github-tracking.md)).
 - **Tests:** Python-Unittests (Backend, API, Sync, Klassifikation), Frontend-Prüfungen mit Node und Browser-Durchläufe mit Edge ([Testplan](../05-testing/test-plan.md)).
 - **Arbeitsjournal und Protokolle:** im privaten Abgabeordner; öffentlich nur bereinigte [Sitzungsnotizen](meeting-notes/README.md).
 - **Weiterentwicklung nach dem WIPRO** (Azure-Betrieb, KI-Klassifikation, Chat) ist nicht Teil dieser drei Milestones; Ideen stehen im [Scope](scope-and-priorities.md).
