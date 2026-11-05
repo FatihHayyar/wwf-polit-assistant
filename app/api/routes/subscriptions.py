@@ -1,3 +1,10 @@
+"""Subscriptions of an account and its individually followed records.
+
+An account keeps up to ten subscriptions, e.g. "Energie in Luzern" and
+"Bioenergie in allen Kantonen". A change notifies once even if several of
+them match. Names are generated from the filters. Records followed
+individually notify independently of the subscriptions.
+"""
 from __future__ import annotations
 
 import logging
@@ -29,11 +36,9 @@ router = APIRouter(
 
 
 class ProfileInput(BaseModel):
-    name: str = Field(min_length=1, max_length=100)
     active: bool = True
     category_ids: list[int] = Field(default_factory=list, max_length=100)
     canton_keys: list[str] = Field(default_factory=list, max_length=30)
-    keywords: list[str] = Field(default_factory=list, max_length=20)
     datasets: list[str] = Field(default_factory=list, max_length=len(ENTITIES))
     affair_types: list[str] = Field(default_factory=list, max_length=30)
 
@@ -44,7 +49,6 @@ class ProfileOutput(BaseModel):
     active: bool
     category_ids: list[int]
     canton_keys: list[str]
-    keywords: list[str]
     datasets: list[str]
     affair_types: list[str]
     category_names: list[str]
@@ -55,6 +59,7 @@ class ProfileOutput(BaseModel):
 class Watch(BaseModel):
     dataset: str
     record_id: int
+    title: str | None = None
 
 
 class SubscriptionOverview(BaseModel):
@@ -88,13 +93,7 @@ def require_verified(user: User) -> None:
 
 
 def clean_profile(db: Session, payload: ProfileInput) -> dict:
-    """Normalise and validate a profile; raise 422/404 for invalid values."""
-    name = " ".join(payload.name.split())
-    if not name:
-        raise HTTPException(422, "The profile name must not be empty.")
-    keywords = sorted({" ".join(keyword.split()).casefold() for keyword in payload.keywords})
-    if any(not keyword or len(keyword) > 200 for keyword in keywords):
-        raise HTTPException(422, "Keywords must contain 1 to 200 characters.")
+    """Normalise and validate the filters; raise 422/404 for invalid values."""
     datasets = sorted(set(payload.datasets))
     if set(datasets) - set(ENTITIES):
         raise HTTPException(422, "Invalid datasets.")
@@ -113,18 +112,40 @@ def clean_profile(db: Session, payload: ProfileInput) -> dict:
             ClassificationCategory.id.in_(category_ids), ClassificationCategory.active.is_(True))).all()
         if len(found) != len(category_ids):
             raise HTTPException(404, "One or more active categories were not found.")
-    return dict(name=name, active=payload.active, category_ids=category_ids, canton_keys=cantons,
-                keywords=keywords, datasets=datasets, affair_types=affair_types)
+    # Keywords are no longer offered; saving a former profile removes them.
+    return dict(active=payload.active, category_ids=category_ids, canton_keys=cantons,
+                keywords=[], datasets=datasets, affair_types=affair_types)
+
+
+def categories_by_id(db: Session, ids) -> dict[int, ClassificationCategory]:
+    ids = list(ids or [])
+    return {category.id: category for category in db.scalars(select(ClassificationCategory).where(
+        ClassificationCategory.id.in_(ids)))} if ids else {}
+
+
+def generated_name(db: Session, values: dict) -> str:
+    """A readable name from the filters, e.g. "Energie · Luzern · Motion"."""
+    def part(names, empty):
+        if not names:
+            return empty
+        return ", ".join(names[:2]) + (f" +{len(names) - 2}" if len(names) > 2 else "")
+
+    categories = categories_by_id(db, values["category_ids"])
+    topics = [category_name(categories[i]) for i in values["category_ids"] if i in categories]
+    cantons = [CANTON_NAMES.get(key, key) for key in values["canton_keys"]]
+    parts = [part(topics, "Alle Themen"), part(cantons, "alle Kantone")]
+    if values["affair_types"]:
+        parts.append(part(values["affair_types"], ""))
+    name = " · ".join(parts)
+    return name if len(name) <= 100 else name[:99] + "…"
 
 
 def profile_output(db: Session, profile: SubscriptionProfile) -> ProfileOutput:
-    categories = {category.id: category for category in db.scalars(select(ClassificationCategory).where(
-        ClassificationCategory.id.in_(profile.category_ids or [])))} if profile.category_ids else {}
+    categories = categories_by_id(db, profile.category_ids)
     return ProfileOutput(
         id=profile.id, name=profile.name, active=profile.active,
         category_ids=list(profile.category_ids or []), canton_keys=list(profile.canton_keys or []),
-        keywords=list(profile.keywords or []), datasets=list(profile.datasets or []),
-        affair_types=list(profile.affair_types or []),
+        datasets=list(profile.datasets or []), affair_types=list(profile.affair_types or []),
         category_names=[category_name(categories[i]) for i in profile.category_ids or [] if i in categories],
         canton_names=[CANTON_NAMES.get(key, key) for key in profile.canton_keys or []],
         paused=not profile.active or not profile.has_filters,
@@ -140,7 +161,6 @@ def profile_summary(profile: ProfileOutput) -> str:
         line("Themen", profile.category_names, "alle Themen"),
         line("Kantone", profile.canton_names, "alle Kantone"),
         line("Geschäftstypen", profile.affair_types, "alle Geschäftstypen"),
-        line("Suchbegriffe", profile.keywords, "keine Einschränkung"),
         line("Bereiche", profile.datasets, "alle Bereiche"),
     ])
 
@@ -155,8 +175,9 @@ def confirm(user: User, subject: str, intro: str, profile: ProfileOutput | None 
             f"{intro}\n\n"
             f"{details}"
             "Ein ausgewähltes Oberthema umfasst alle Unterthemen. Mehrere Werte eines Filters gelten "
-            "als Alternativen; verschiedene Filter müssen gemeinsam passen. Ein Abonnement ohne Themen, "
-            "Kantone, Geschäftstypen und Suchbegriffe ist pausiert.\n\n"
+            "als Alternativen; verschiedene Filter müssen gemeinsam passen. Passen mehrere Abonnements, "
+            "erhältst du trotzdem nur eine Nachricht. Ein Abonnement ohne Themen, Kantone und "
+            "Geschäftstypen ist pausiert.\n\n"
             "Du kannst deine Abonnements jederzeit in der Anwendung verwalten.\n\n"
             "Beste Grüsse\n"
             "WWF Polit-Assistant"
@@ -171,15 +192,30 @@ def own_profile(db: Session, user: User, profile_id: int) -> SubscriptionProfile
     return profile
 
 
+def watch_title(db: Session, dataset: str, record_id: int) -> str | None:
+    spec = ENTITIES.get(dataset)
+    record = db.get(spec.model, record_id) if spec else None
+    if record is None:
+        return None
+    for field in spec.title_fields:
+        value = getattr(record, field, None)
+        if value:
+            text = " ".join(str(value).split())
+            return text if len(text) <= 160 else text[:159] + "…"
+    return None
+
+
 @router.get("", response_model=SubscriptionOverview)
 def subscription_overview(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     profiles = db.scalars(select(SubscriptionProfile).where(SubscriptionProfile.user_id == current_user.id)
                           .order_by(SubscriptionProfile.id)).all()
-    watches = db.scalars(select(UserRecordWatch).where(UserRecordWatch.user_id == current_user.id)).all()
+    watches = db.scalars(select(UserRecordWatch).where(UserRecordWatch.user_id == current_user.id)
+                         .order_by(UserRecordWatch.dataset, UserRecordWatch.record_id)).all()
     outputs = [profile_output(db, profile) for profile in profiles]
     return SubscriptionOverview(
         profiles=outputs,
-        watches=[Watch(dataset=watch.dataset, record_id=watch.record_id) for watch in watches],
+        watches=[Watch(dataset=watch.dataset, record_id=watch.record_id,
+                       title=watch_title(db, watch.dataset, watch.record_id)) for watch in watches],
         active=bool(watches) or any(not profile.paused for profile in outputs),
     )
 
@@ -190,7 +226,8 @@ def create_profile(payload: ProfileInput, current_user: User = Depends(get_curre
     count = len(db.scalars(select(SubscriptionProfile.id).where(SubscriptionProfile.user_id == current_user.id)).all())
     if count >= MAX_PROFILES_PER_USER:
         raise HTTPException(status.HTTP_409_CONFLICT, f"At most {MAX_PROFILES_PER_USER} subscriptions are possible.")
-    profile = SubscriptionProfile(user_id=current_user.id, **clean_profile(db, payload))
+    values = clean_profile(db, payload)
+    profile = SubscriptionProfile(user_id=current_user.id, name=generated_name(db, values), **values)
     db.add(profile)
     db.commit()
     output = profile_output(db, profile)
@@ -203,7 +240,9 @@ def update_profile(profile_id: int, payload: ProfileInput, current_user: User = 
                    db: Session = Depends(get_db)):
     require_verified(current_user)
     profile = own_profile(db, current_user, profile_id)
-    for field, value in clean_profile(db, payload).items():
+    values = clean_profile(db, payload)
+    profile.name = generated_name(db, values)
+    for field, value in values.items():
         setattr(profile, field, value)
     db.commit()
     output = profile_output(db, profile)
@@ -222,7 +261,7 @@ def delete_profile(profile_id: int, current_user: User = Depends(get_current_use
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 def stop_all(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Delete every subscription profile and record watch of the account."""
+    """Delete every subscription and record watch of the account."""
     for model in (SubscriptionProfile, UserRecordWatch):
         db.query(model).filter(model.user_id == current_user.id).delete(synchronize_session=False)
     db.commit()

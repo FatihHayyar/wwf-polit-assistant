@@ -12,6 +12,9 @@ from app.core.config import settings
 from app.models.email_token import EmailToken
 
 
+MAX_OPEN_LINKS = 3
+
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -22,13 +25,27 @@ def _create_email_token(
     user_id: int,
     purpose: str,
 ) -> str:
-    db.execute(
-        delete(EmailToken).where(
+    # Requesting a link again must not break the link in an earlier email:
+    # users often click the first email that arrives. Keep the newest few open
+    # links (each single-use and short-lived) and remove expired or older ones.
+    open_tokens = (
+        db.query(EmailToken)
+        .filter(
             EmailToken.user_id == user_id,
             EmailToken.purpose == purpose,
             EmailToken.used_at.is_(None),
         )
+        .order_by(EmailToken.id.desc())
+        .all()
     )
+    now = utc_now()
+    stale = [
+        token.id for index, token in enumerate(open_tokens)
+        if index >= MAX_OPEN_LINKS - 1
+        or (token.expires_at if token.expires_at.tzinfo else token.expires_at.replace(tzinfo=timezone.utc)) <= now
+    ]
+    if stale:
+        db.execute(delete(EmailToken).where(EmailToken.id.in_(stale)))
 
     raw_token = secrets.token_urlsafe(48)
 

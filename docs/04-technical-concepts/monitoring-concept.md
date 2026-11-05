@@ -1,18 +1,18 @@
 # Monitoringkonzept
 
-Monitoring kombiniert **neue passende Inhalte** und **Entwicklungen bestehender Inhalte**. Aktive Recherche ist davon getrennt. Die fachliche Grundlage sind Kategorien, Kantone, Geschäftstypen, Keywords, Datenbereiche und die verfügbaren Beziehungen.
+Monitoring kombiniert **neue passende Inhalte** und **Entwicklungen bestehender Inhalte**. Aktive Recherche ist davon getrennt. Die fachliche Grundlage sind Kategorien, Kantone, Geschäftstypen, Datenbereiche und die verfügbaren Beziehungen.
 
 ## Abonnements
 
-Ein Konto führt bis zu zehn benannte Abonnements. Innerhalb eines Abonnements gelten in einer Filtergruppe Alternativen; verschiedene eingeschränkte Gruppen müssen gemeinsam passen. Zwischen den Abonnements gilt ODER: Ein passendes aktives Abonnement genügt, und mehrere passende Abonnements erzeugen trotzdem nur eine Benachrichtigung. Elternkategorien schliessen Unterkategorien ein. Der Geschäftstyp gilt auch für verknüpfte Datensätze über ihr Geschäft. Bis zu 20 normalisierte, literale Suchbegriffe mit je 1–200 Zeichen werden unterstützt. Leere Dataset-Auswahl umfasst alle Bereiche.
+Ein Konto führt bis zu zehn Abonnements; Namen werden aus den Filtern erzeugt. Innerhalb eines Abonnements gelten in einer Filtergruppe Alternativen; verschiedene eingeschränkte Gruppen müssen gemeinsam passen. Zwischen den Abonnements gilt ODER: Ein passendes aktives Abonnement genügt, und mehrere passende Abonnements erzeugen trotzdem nur eine Benachrichtigung. Elternkategorien schliessen Unterkategorien ein. Der Geschäftstyp gilt auch für verknüpfte Datensätze über ihr Geschäft. Leere Dataset-Auswahl umfasst alle Bereiche. Individuelle Suchbegriffe gehören zur Recherche, nicht zu Abonnements (Entscheid D15).
 
-Sind Kategorien, Kantone, Geschäftstypen und Keywords alle leer oder ist das Abonnement als inaktiv markiert, ist es pausiert. Nur Datasets auszuwählen aktiviert es nicht. Änderungen oder Löschungen von Abonnements entfernen keine Einzel-Watches.
+Sind Kategorien, Kantone und Geschäftstypen alle leer oder ist das Abonnement als inaktiv markiert, ist es pausiert. Nur Datasets auszuwählen aktiviert es nicht. Änderungen oder Löschungen von Abonnements entfernen keine Einzel-Watches.
 
 ## Einzel-Watches
 
 Ein Watch bindet sich an Bereich und positive lokale ID. Geschäfts-Watches umfassen relevante zugeordnete Änderungen; Sitzungs-Watches berücksichtigen verfügbare Sitzungsbeziehungen. Gruppen können über ihre Sitzungen zusätzlichen Kontext liefern. Für Interessenbindungen wird keine beliebige direkte Geschäftsbeziehung angenommen.
 
-Die Oberfläche verwaltet Watches im Abonnementdialog. Detailkarten dienen der Recherche. Dokument-Watches verwenden `pk`, weil `source_id` mehrere lokale Zuordnungen besitzen kann.
+Die Detailansicht bietet **☆ Verfolgen** zum An- und Abschalten; der Abonnementdialog listet Watches mit Titel und entfernt sie. Dokument-Watches verwenden `pk`, weil `source_id` mehrere lokale Zuordnungen besitzen kann.
 
 ## Relevanz und Zustellung
 

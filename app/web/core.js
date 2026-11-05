@@ -51,9 +51,10 @@ window.Polit = (() => {
   }
 
   class ApiError extends Error {
-    constructor(message, status) {
+    constructor(message, status, retryAfter = null) {
       super(message);
       this.status = status;
+      this.retryAfter = retryAfter;
     }
   }
 
@@ -67,14 +68,16 @@ window.Polit = (() => {
       } catch {
         detail = response.statusText;
       }
-      throw new ApiError(typeof detail === "string" ? detail : JSON.stringify(detail), response.status);
+      const retryAfter = Number(response.headers.get("Retry-After")) || null;
+      throw new ApiError(typeof detail === "string" ? detail : JSON.stringify(detail), response.status, retryAfter);
     }
     return response.status === 204 ? null : response.json();
   }
 
-  /** Message for an API error; rate limits get a translated hint. */
+  /** Message for an API error; rate limits say how long to wait. */
   function errorText(error) {
-    return error.status === 429 ? t("tooManyRequests") : error.message;
+    if (error.status !== 429) return error.message;
+    return error.retryAfter ? t("tooManyRequestsWait", { seconds: error.retryAfter }) : t("tooManyRequests");
   }
 
   function showStatus(id, text, error = false) {

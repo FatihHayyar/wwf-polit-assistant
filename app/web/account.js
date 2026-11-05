@@ -5,11 +5,14 @@
   const { state, t, $, api, errorText, showStatus } = Polit;
 
   async function refresh() {
+    const previous = state.account?.email;
     try {
       state.account = await api("/api/v1/auth/me");
     } catch {
       state.account = null;
     }
+    // Followed records belong to the account; reload them after a switch.
+    if (state.account?.email !== previous) state.subscriptions = null;
     $("logout").hidden = !state.account;
     renderMembership();
   }
@@ -29,7 +32,14 @@
     $("account-title").textContent = t(signedIn ? "account" : "login");
   }
 
+  /** Each opening starts empty: no address or message from an earlier request. */
+  function resetDialog() {
+    $("account-form").reset();
+    showStatus("account-message", "");
+  }
+
   function openDialog(action) {
+    resetDialog();
     $("account-form").elements.action.value = action;
     $("account-dialog").showModal();
   }
@@ -66,6 +76,7 @@
     try {
       await api("/api/v1/auth/logout", { method: "POST" });
       afterLogout?.();
+      resetDialog();
       await refresh();
     } catch (error) {
       showStatus(messageId, errorText(error), true);
@@ -75,15 +86,24 @@
   async function requestLink(event) {
     event.preventDefault();
     const data = new FormData(event.target);
+    const action = event.target.elements.action;
     try {
-      await api(`/api/v1/auth/${data.get("action")}`, {
+      const answer = await api(`/api/v1/auth/${data.get("action")}`, {
         method: "POST",
         body: JSON.stringify({ email: data.get("email") }),
       });
-      // Same message whether or not the address has an account.
-      showStatus("account-message", t("linkSent"));
+      showStatus("account-message", t(answer.result === "login_link" ? "loginLinkSent" : "verificationLinkSent"));
     } catch (error) {
-      showStatus("account-message", errorText(error), true);
+      // Wrong choice: say so and switch, so the next click does the right thing.
+      if (error.status === 409) {
+        action.value = "login";
+        showStatus("account-message", t("alreadyRegistered"), true);
+      } else if (error.status === 404) {
+        action.value = "register";
+        showStatus("account-message", t("notRegistered"), true);
+      } else {
+        showStatus("account-message", errorText(error), true);
+      }
     }
   }
 
@@ -100,6 +120,9 @@
     window.addEventListener("focus", refresh);
 
     $("account-form").addEventListener("submit", requestLink);
+    // The dialog is also opened directly (follow button, questions); clearing
+    // on close covers every way of opening it.
+    $("account-dialog").addEventListener("close", resetDialog);
     $("logout").addEventListener("click", () => logout("account-message", () => $("account-dialog").close()));
     $("membership-logout").addEventListener("click", () => logout("message"));
     $("membership-login").addEventListener("click", () => openDialog("login"));
@@ -110,5 +133,5 @@
     });
   }
 
-  Polit.account = { bindEvents, refresh, renderMembership, announceSignIn, logout };
+  Polit.account = { bindEvents, refresh, renderMembership, announceSignIn, logout, resetDialog };
 })();

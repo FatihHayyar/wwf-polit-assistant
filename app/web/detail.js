@@ -141,7 +141,8 @@
     const record = data.record;
     const container = $("detail-content");
     $("detail-title").textContent = state.names[dataset];
-    container.replaceChildren(el("h3", recordTitle(dataset, { ...data, title: data.title || sourceTitle(dataset, record) }), "record-title"));
+    const title = recordTitle(dataset, { ...data, title: data.title || sourceTitle(dataset, record) });
+    container.replaceChildren(el("h3", title, "record-title"), Polit.subscriptions.followButton(dataset, id, title));
 
     const fields = renderFields(container, dataset, data, record);
     if (dataset === "agendas") renderAgendaContext(container, fields, data, id);

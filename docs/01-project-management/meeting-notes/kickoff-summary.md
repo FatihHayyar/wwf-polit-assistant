@@ -1,6 +1,6 @@
 # Kick-off – rekonstruierter Ergebnisvermerk
 
-Datum: ____________________\
+Datum: 24.09.2026\
 Teilnehmende: ____________________\
 Bestätigung: ____________________
 

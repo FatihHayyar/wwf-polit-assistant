@@ -402,23 +402,36 @@ class MonitoringTests(unittest.TestCase):
         with self.assertRaises(HTTPException):
             watch_record("affairs",999,user,self.db)
         with patch("app.api.routes.subscriptions.send_email"):
-            created=create_profile(ProfileInput(name="  Solar   Bern ",keywords=["  Solar  ","solar"],canton_keys=["be"],
-                                                affair_types=["Motion"]),user,self.db)
-            self.assertEqual((created.name,created.keywords,created.canton_keys),("Solar Bern",["solar"],["BE"]))
+            created=create_profile(ProfileInput(category_ids=[1],canton_keys=["be","ZH","GE"],affair_types=[" Motion "]),
+                                   user,self.db)
+            self.assertEqual((created.canton_keys,created.affair_types),(["BE","GE","ZH"],["Motion"]))
+            # The name is generated from the filters; no name is entered.
+            self.assertEqual(created.name,"climate · Bern, Genève +1 · Motion")
             self.assertFalse(created.paused)
-            paused=update_profile(created.id,ProfileInput(name="Leer"),user,self.db)
+            paused=update_profile(created.id,ProfileInput(),user,self.db)
             self.assertTrue(paused.paused)
+            self.assertEqual(paused.name,"Alle Themen · alle Kantone")
             with self.assertRaises(HTTPException) as invalid:
-                create_profile(ProfileInput(name="x",canton_keys=["XX"]),user,self.db)
+                create_profile(ProfileInput(canton_keys=["XX"]),user,self.db)
             self.assertEqual(invalid.exception.status_code,422)
             overview=subscription_overview(user,self.db)
             self.assertEqual(len(overview.profiles),2)
             self.assertTrue(overview.active)
+            self.assertIsNotNone(overview.watches[0].title)
             delete_profile(created.id,user,self.db)
             self.assertEqual(len(subscription_overview(user,self.db).profiles),1)
             stop_all(user,self.db)
         overview=subscription_overview(user,self.db)
         self.assertEqual((overview.profiles,overview.watches,overview.active),([],[],False))
+
+    def test_saving_a_former_profile_removes_its_keywords(self):
+        from app.api.routes.subscriptions import ProfileInput, update_profile
+        profile=self.db.get(SubscriptionProfile,1)
+        profile.keywords=["wald"]
+        self.db.commit()
+        with patch("app.api.routes.subscriptions.send_email"):
+            update_profile(1,ProfileInput(category_ids=[1]),self.db.get(User,1),self.db)
+        self.assertEqual(self.db.get(SubscriptionProfile,1).keywords,[])
 
     def test_profile_limit_and_ownership(self):
         from app.api.routes.subscriptions import ProfileInput, create_profile, delete_profile, update_profile
@@ -428,17 +441,25 @@ class MonitoringTests(unittest.TestCase):
         self.db.commit()
         user, other = self.db.get(User,1), self.db.get(User,2)
         with patch("app.api.routes.subscriptions.send_email"):
-            for number in range(MAX_PROFILES_PER_USER - 1):
-                create_profile(ProfileInput(name=f"P{number}",keywords=["wald"]),user,self.db)
+            for _ in range(MAX_PROFILES_PER_USER - 1):
+                create_profile(ProfileInput(canton_keys=["BE"]),user,self.db)
             with self.assertRaises(HTTPException) as limit:
-                create_profile(ProfileInput(name="zu viel",keywords=["wald"]),user,self.db)
+                create_profile(ProfileInput(canton_keys=["BE"]),user,self.db)
             self.assertEqual(limit.exception.status_code,409)
-            for action in (lambda: update_profile(1,ProfileInput(name="fremd"),other,self.db),
+            for action in (lambda: update_profile(1,ProfileInput(),other,self.db),
                            lambda: delete_profile(1,other,self.db)):
                 with self.assertRaises(HTTPException) as foreign:
                     action()
                 self.assertEqual(foreign.exception.status_code,404)
         self.assertEqual(self.db.get(SubscriptionProfile,1).name,"Klima")
+
+    def test_overlapping_profiles_notify_once(self):
+        # "Klima in Luzern" and "Klima in all cantons" both match one change.
+        self.db.add(SubscriptionProfile(user_id=1,name="Luzern",category_ids=[1],canton_keys=["LU"]))
+        self.db.commit()
+        sync_record(self.db,"agendas",{"id":1,"item_title":"Neu","item_result":"Neu"},self.db.get(Agenda,1))
+        self.db.commit()
+        self.assertEqual(self.count(Notification),1)
 
     def test_any_matching_profile_notifies_once(self):
         # Profile 1 (climate) matches; a second non-matching profile does not block it.

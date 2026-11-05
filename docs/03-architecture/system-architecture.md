@@ -26,7 +26,7 @@ flowchart LR
 | `app/core/config.py` | Einstellungen aus Umgebung und `.env` |
 | `app/db/`, `app/models/` | Datenbankzugriff und persistierte Modelle |
 | `app/services/` | Recherche, Klassifikation, Abonnementabgleich (`monitoring_match_service.py`), Fragenerkennung (`query_interpreter.py`) und E-Mail-Dienste |
-| `app/web/` | Oberfläche ohne Build-Schritt: `core.js` (Zustand, API-Aufrufe, Hilfsfunktionen), `search.js` (Bereiche, Filter, Ergebnisse), `detail.js` (Detailansicht), `account.js` (Anmeldung), `subscriptions.js` (Abonnements, Empfänger, Watches, Demo-Test), `ask.js` (Fragen und Antworten), `app.js` (Start), `i18n.js` (Übersetzungen) |
+| `app/web/` | Oberfläche ohne Build-Schritt: `core.js` (Zustand, API-Aufrufe, Hilfsfunktionen), `search.js` (Bereiche, Filter, Ergebnisse), `detail.js` (Detailansicht), `account.js` (Anmeldung), `subscriptions.js` (Abonnements, Verfolgen-Schaltfläche, Empfänger, Watches, Demo-Test), `ask.js` (Fragen und Antworten), `app.js` (Start), `i18n.js` (Übersetzungen) |
 | `app/core/rate_limit.py`, `app/api/email_links.py` | Ratenbegrenzung sowie Bestätigungsseiten und Sitzungscookie für E-Mail-Links |
 | `migrations/` | Alembic-Schemaänderungen |
 | `scripts/bootstrap/` | Erstdownload und normalisierter Import |

@@ -1,9 +1,12 @@
 """Named subscription profiles.
 
 A user can keep several independent filter combinations, e.g. "Energie in
-Bern" and "Biodiversität in Zürich". Within a profile, values of one filter are
-alternatives; different filters must all match. A profile without topics,
-cantons, keywords and affair types is paused.
+Luzern" and "Bioenergie in allen Kantonen"; a change matching several of them
+notifies once. Within a profile, values of one filter are alternatives;
+different filters must all match. Names are generated from the filters. A
+profile without topics, cantons, keywords and affair types is paused.
+Keywords are no longer offered; the column keeps them for former profiles
+until they are saved again.
 """
 from __future__ import annotations
 

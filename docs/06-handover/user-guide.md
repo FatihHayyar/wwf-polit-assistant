@@ -8,7 +8,7 @@ Themenetiketten zeigen Hauptthema und Unterthema, etwa **Klima & Energie / Sonst
 
 Geschäfte mit gleichem normalisiertem Titel, gleicher Körperschaft und gleichem Kalendertag erscheinen als eine Karte. Die getrennten Quellaufzeichnungen, etwa **Message** und **Projet de loi**, sind über ihre Schaltflächen erreichbar. Es werden keine Quelldaten gelöscht. Trefferzahl und Seiten zählen diese Gruppen; diese Darstellung beweist nicht, dass die Quellen fachlich identisch sind.
 
-Ein Klick auf einen Treffer öffnet die Detailansicht mit Quellenlinks und vorhandenen Beziehungen. Die Schliessen-Schaltfläche bleibt sichtbar, während der Inhalt gescrollt wird. Einzelne Inhalte werden im Bereich **Abonnements verwalten** zum Monitoring hinzugefügt.
+Ein Klick auf einen Treffer öffnet die Detailansicht mit Quellenlinks und vorhandenen Beziehungen. Die Schliessen-Schaltfläche bleibt sichtbar, während der Inhalt gescrollt wird. Angemeldete Nutzer verfolgen einen Inhalt mit **☆ Verfolgen** oben in der Detailansicht; **★ Wird verfolgt** beendet das Verfolgen wieder.
 
 Die Sprache lässt sich oben zwischen Deutsch, Französisch, Italienisch und Englisch wechseln. Originaltexte werden in einer verfügbaren Quellsprache angezeigt und nicht automatisch übersetzt.
 
@@ -27,27 +27,27 @@ Die Erkennung arbeitet mit festen Regeln: Sie beantwortet keine inhaltlichen Fra
 
 ## Konto und Anmeldung
 
-Für E-Mail-Benachrichtigungen zuerst registrieren, den Link in der E-Mail öffnen und auf der folgenden Seite **Registrierung bestätigen** klicken. Bereits registrierte Nutzer wählen **Anmelden** und bestätigen den Anmeldelink ebenso mit einem Klick. Aus Datenschutzgründen zeigt die Anwendung immer dieselbe Meldung, unabhängig davon, ob ein Konto existiert. Wer mehrmals kurz hintereinander einen Link anfordert, muss etwas warten. In der lokalen Docker-Demo befinden sich diese Nachrichten in Mailpit unter `http://localhost:8025`.
+Für E-Mail-Benachrichtigungen zuerst registrieren, den Link in der E-Mail öffnen und auf der folgenden Seite **Registrierung bestätigen** klicken. Bereits registrierte Nutzer wählen **Anmelden** und bestätigen den Anmeldelink ebenso mit einem Klick. Wer sich mit einer bereits registrierten Adresse registrieren will, erhält den Hinweis, sich anzumelden; wer sich mit einer unbekannten Adresse anmelden will, den Hinweis, sich zuerst zu registrieren. In beiden Fällen wechselt die Auswahl automatisch, ein zweiter Klick sendet den richtigen Link. Pro Adresse kann höchstens einmal pro Minute ein Link angefordert werden; die Meldung nennt die verbleibende Wartezeit. In der lokalen Docker-Demo befinden sich diese Nachrichten in Mailpit unter `http://localhost:8025`.
 
 Wenn Google vom Betreiber eingerichtet wurde, steht die direkte Google-Anmeldung zur Verfügung. Bei bestimmten bestehenden Konten ist zur sicheren Zuordnung weiterhin die Anmeldung per E-Mail erforderlich. Andere externe Anmeldeanbieter sind derzeit nicht implementiert.
 
 ## Abonnements verwalten
 
-Nach der Anmeldung die Abonnementverwaltung öffnen. Ein Konto kann **bis zu zehn Abonnements** führen, jedes mit eigenem Namen, etwa «Energie in Bern» und «Biodiversität in Zürich».
+Nach der Anmeldung **Abonnements ansehen und verwalten** öffnen. Ein Konto kann **bis zu zehn Abonnements** führen, etwa «Energie in Luzern» und «Bioenergie in allen Kantonen». Der Name entsteht automatisch aus der Auswahl.
 
-1. **Neues Abonnement** wählen und einen Namen vergeben.
-2. Themen, Kantone, Geschäftstypen, Datenbereiche und Suchbegriffe (einer pro Zeile) auswählen.
-3. **Abonnement speichern.**
+1. **+ Neues Abonnement** wählen oder bei einem bestehenden **Bearbeiten**.
+2. Themen, Kantone, Geschäftstypen und Datenbereiche auswählen.
+3. Unten **Abonnement speichern** klicken. Der Dialog schliesst sich und bestätigt das Speichern.
 
-Innerhalb eines Abonnements gelten mehrere Werte derselben Gruppe als Alternativen; verschiedene Gruppen müssen gemeinsam passen. Ein Hauptthema umfasst seine Unterthemen. Ein Abonnement ohne Themen, Kantone, Geschäftstypen und Suchbegriffe ist **pausiert**; eine alleinige Auswahl von Datenbereichen aktiviert es nicht. Mit dem Häkchen **Aktiv** lässt sich ein Abonnement auch bewusst pausieren. **Bearbeiten** und **Löschen** stehen auf jeder Abonnementkarte.
+Innerhalb eines Abonnements gelten mehrere Werte derselben Gruppe als Alternativen; verschiedene Gruppen müssen gemeinsam passen. Ein Hauptthema umfasst seine Unterthemen. Ein Abonnement ohne Themen, Kantone und Geschäftstypen ist **pausiert**; eine alleinige Auswahl von Datenbereichen aktiviert es nicht. Mit dem Häkchen **Benachrichtigungen für dieses Abonnement aktiv** lässt es sich auch bewusst pausieren. **Löschen** steht auf jeder Abonnementkarte.
 
-Eine Benachrichtigung genügt, wenn **eines** der aktiven Abonnements passt; passen mehrere, kommt trotzdem nur eine Nachricht. Nach jeder Änderung bestätigt eine E-Mail die gespeicherte Auswahl.
+Eine Benachrichtigung genügt, wenn **eines** der aktiven Abonnements passt; passen mehrere – etwa ein Bioenergie-Geschäft aus Luzern bei den beiden Beispielen oben –, kommt trotzdem nur eine Nachricht. Nach jeder Änderung bestätigt eine E-Mail die gespeicherte Auswahl.
 
-Beobachtete Einzelinhalte sind unabhängig von den Abonnements aktiv. Sie werden mit Bereich und Datensatz-ID hinzugefügt; bei Dokumenten gilt die lokale ID aus der API, nicht die externe Quell-ID.
+Unter **Verfolgte Inhalte** stehen alle mit **☆ Verfolgen** beobachteten Einzelinhalte mit Titel. Ein Klick öffnet den Inhalt, **Verfolgung beenden** entfernt ihn. Verfolgte Inhalte melden sich unabhängig von den Abonnements.
 
-Als Benachrichtigungsziel kann das Anmeldekonto oder eine Auswahl von insgesamt bis zu zehn E-Mail-Adressen dienen. Andere Adressen müssen über einen Bestätigungslink verifiziert werden. Bis zur ersten eigenen Auswahl verwenden bestehende Konten ihre Anmeldeadresse; **Adressen speichern** übernimmt eine geänderte Auswahl.
+Als Benachrichtigungsziel kann das Anmeldekonto oder eine Auswahl von insgesamt bis zu zehn E-Mail-Adressen dienen. Andere Adressen müssen über einen Bestätigungslink verifiziert werden. Bis zur ersten eigenen Auswahl verwenden bestehende Konten ihre Anmeldeadresse; eine geänderte Auswahl wird mit **Abonnement speichern** übernommen.
 
-**Abmelden** und **Alle Benachrichtigungen beenden** bleiben am unteren Rand des Dialogs erreichbar. «Alle Benachrichtigungen beenden» löscht alle Abonnements und beobachteten Inhalte. **Konto löschen** befindet sich am Ende der Verwaltung und entfernt die kontobezogenen Einstellungen. Abmelden beendet alle Sitzungen des Kontos, auch auf anderen Geräten, beendet aber keine Abonnements.
+**Abonnement speichern**, **Abmelden** und **Alle Benachrichtigungen beenden** bleiben am unteren Rand des Dialogs erreichbar. «Alle Benachrichtigungen beenden» löscht alle Abonnements und verfolgten Inhalte. **Konto löschen** befindet sich am Ende der Verwaltung, entfernt die kontobezogenen Einstellungen und bestätigt die Löschung per E-Mail an die Kontoadresse. Abmelden beendet alle Sitzungen des Kontos, auch auf anderen Geräten, beendet aber keine Abonnements.
 
 ## Benachrichtigungen
 
@@ -57,4 +57,4 @@ Ein erfolgreich gespeichertes Abonnement allein erzeugt noch keine parlamentaris
 
 ## Benachrichtigung in der Demo ausprobieren
 
-In der Docker-Demo zeigt die Startseite die Schritte an. Zuerst ein Abonnement anlegen. Unter **Benachrichtigung testen (Demo)** steht dann ein Thema zur Auswahl. **Testgeschäft erstellen und benachrichtigen** legt ein fiktives neues Geschäft an (Geschäftstyp und Suchbegriff aus dem passenden Abonnement) und schickt die Benachrichtigung über den regulären Ablauf an das eigene Konto. Die Nachricht erscheint in Mailpit; **Testgeschäft ansehen** öffnet das erzeugte Geschäft. Passt es zu keinem Abonnement, erklärt die Oberfläche den Grund. In einer produktiven Installation gibt es diese Funktion nicht.
+In der Docker-Demo zeigt die Startseite die Schritte an. Zuerst ein Abonnement mit mindestens einem Thema speichern. Unter **Benachrichtigung testen (Demo)** steht dann ein Thema zur Auswahl. **Testgeschäft erstellen und benachrichtigen** legt ein fiktives neues Geschäft an (Geschäftstyp aus dem Abonnement) und schickt die Benachrichtigung über den regulären Ablauf an das eigene Konto. Die Nachricht erscheint in Mailpit; **Testgeschäft ansehen** öffnet das erzeugte Geschäft. Passt es zu keinem Abonnement, erklärt die Oberfläche den Grund. In einer produktiven Installation gibt es diese Funktion nicht.

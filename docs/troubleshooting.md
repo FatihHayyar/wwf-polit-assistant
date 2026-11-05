@@ -34,7 +34,9 @@ E-Mail- und Token-Endpunkte sind begrenzt, etwa eine E-Mail pro Minute an diesel
 
 ## Link zeigt nur eine Bestätigungsseite
 
-Das ist beabsichtigt: Erst der Klick auf die Schaltfläche meldet an. So können Linkscanner von E-Mail-Systemen das einmalige Token nicht verbrauchen. «Ungültig oder bereits verwendet» bedeutet, dass ein neuer Link angefordert werden muss.
+Das ist beabsichtigt: Erst der Klick auf die Schaltfläche meldet an. So können Linkscanner von E-Mail-Systemen das einmalige Token nicht verbrauchen. «Ungültig oder bereits verwendet» bedeutet, dass ein neuer Link angefordert werden muss. Wird mehrmals ein Link angefordert, bleiben die drei neuesten unbenutzten Links je 30 Minuten gültig; ältere verfallen.
+
+Dauert die erste Anfrage nach dem Start sehr lange (Minuten), zeigt `DATABASE_URL` unter Windows vermutlich auf `localhost`. Windows versucht zuerst IPv6 (`::1`), PostgreSQL ist in Docker aber nur an `127.0.0.1` gebunden. Abhilfe: `127.0.0.1` statt `localhost` eintragen und die API neu starten.
 
 Für Monitoring zusätzlich prüfen: verifiziertes Konto, mindestens ein aktives, nicht pausiertes Abonnement oder ein Watch, bestätigte Empfänger, passende relevante Änderung und erfolgreicher Sync aller Bereiche. Ein Abonnement mit Geschäftstyp passt nur zu Datensätzen, deren Geschäft diesen Typ hat. Eine Änderung technischer Metadaten muss keine Nachricht erzeugen. Bei SMTP-Fehlern bleiben ausstehende Nachrichten erhalten; Provider-Limits können den Versand unterbrechen.
 

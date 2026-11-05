@@ -4,8 +4,9 @@
 
 ## 01 – Projektmanagement
 
+- [Projektplan: drei Milestones, Vorgehen, Definition of Done](01-project-management/project-plan.md)
+- [Fragenliste](01-project-management/question-log.md)
 - [Aktueller Aufgabenstand und erledigte Prüfungen](01-project-management/current-status.md)
-- [Projektplan](01-project-management/project-plan.md)
 - [Scope und Prioritäten](01-project-management/scope-and-priorities.md)
 - [Risiken](01-project-management/risk-register.md)
 - [Entscheidungen](01-project-management/decision-log.md)
@@ -15,8 +16,9 @@
 ## 02 – Anforderungen
 
 - [Anforderungen](02-requirements/requirements.md)
+- [Backlog: User Stories mit Akzeptanzkriterien und Tests](02-requirements/user-stories.md)
+- [Rückverfolgbarkeit: Anforderung → Story → Test](02-requirements/acceptance-criteria.md)
 - [Anwendungsfälle](02-requirements/use-cases.md)
-- [Akzeptanzkriterien](02-requirements/acceptance-criteria.md)
 
 ## 03 – Architektur
 

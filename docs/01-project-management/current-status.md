@@ -6,7 +6,7 @@ Dieser Stand ersetzt die offenen technischen Prüfpunkte aus dem [Review vom 11.
 
 Abgleich mit der Aufgabenstellung und den E-Mail-Konkretisierungen von WWF; jede Anforderung ist in der [Anforderungsprüfung](../wwf-requirements.md) mit Nachweis verknüpft.
 
-- **Mehrere Abonnements:** bis zu zehn benannte Abonnements je Konto mit Themen, Kantonen, Geschäftstypen, Stichwörtern und Bereichen; Bearbeiten, Pausieren, Löschen. Bestehende Abonnements wurden migriert (`20261021_subscription_profiles`).
+- **Mehrere Abonnements:** bis zu zehn Abonnements je Konto mit Themen, Kantonen, Geschäftstypen und Bereichen; Namen werden erzeugt; Bearbeiten, Pausieren, Löschen; ein Speichern-Knopf am Dialogende schliesst den Dialog. Einzelne Inhalte werden mit einem Klick in der Detailansicht verfolgt. Individuelle Suchbegriffe nur noch in der Recherche (Entscheid D15, November 2026).
 - **Geschäftstyp** als Such- und Abonnementfilter (Motion, Postulat, Interpellation …), auch für verknüpfte Datensätze.
 - **Dialogorientierte Abfrage:** Fragen in vier Sprachen werden regelbasiert in Filter übersetzt; das Ergebnis lässt sich als Abonnement speichern. Schnittstelle für eine spätere KI-Variante vorhanden.
 - **Synchronisierung neu aufgebaut:** nur Änderungen, neue und fehlende IDs; vollständige Vergleiche in festen Abständen. Geschäfte: rund 3 Sekunden statt 74 Minuten. Checkpoints aller Bereiche stehen wieder auf dem 21. Oktober (Dokumente zuvor 11. Oktober, 2'854 Dokumente nachgeholt). Start um 04:30 nach den Quellexporten.
@@ -15,7 +15,7 @@ Abgleich mit der Aufgabenstellung und den E-Mail-Konkretisierungen von WWF; jede
 - **Sicherheit:** gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für E-Mail-, Token- und Frage-Endpunkte, Bestätigungsseite mit POST statt Token-Verbrauch beim Öffnen, Ursprungsprüfung, Token-Widerruf beim Abmelden, Sicherheits-Header mit CSP, PostgreSQL nur lokal erreichbar.
 - **Demo:** Testbenachrichtigung über ein fiktives Geschäft, das die echte Klassifikation und den echten Versand durchläuft; Anleitung auf der Startseite.
 - **Wartbarkeit:** Frontend in Module aufgeteilt, Sync-Code vereinheitlicht (sieben veraltete Skripte entfernt), Dokumentation vollständig deutsch, ruff und GitHub-Actions-CI.
-- **Tests:** 155 isolierte Tests erfolgreich; Browser-Durchlauf der Demo mit Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung in einer isolierten Instanz erfolgreich; Migrationen auf PostgreSQL 17 vor- und zurückgespielt. Die Änderungen liegen auf dem Branch `improvements/wipro-review` und sind nicht gepusht.
+- **Tests:** 161 isolierte Tests erfolgreich (Stand 5. November); Browser-Durchlauf der Demo mit Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung in einer isolierten Instanz erfolgreich; Migrationen auf PostgreSQL 17 vor- und zurückgespielt. Die Änderungen liegen auf dem Branch `improvements/wipro-review` und sind nicht gepusht.
 
 ## Ergänzungen vom 13. Oktober
 

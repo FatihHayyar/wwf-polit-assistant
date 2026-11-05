@@ -73,27 +73,37 @@ class ApiTestCase(unittest.TestCase):
         return response
 
 
-class AccountEnumerationTests(ApiTestCase):
-    def test_register_and_login_answer_identically_for_known_and_unknown_addresses(self):
+class RegisterAndLoginAnswerTests(ApiTestCase):
+    def test_register_with_a_registered_address_asks_to_sign_in(self):
         self.add_user("known@example.com")
-        answers = set()
-        for path in ("register", "login"):
-            for email in ("known@example.com", "unknown@example.com"):
-                limiter.reset()
-                response = self.client.post(f"/api/v1/auth/{path}", json={"email": email})
-                self.assertEqual(response.status_code, 200)
-                answers.add(response.text)
-        self.assertEqual(len(answers), 1)
-
-    def test_login_for_unknown_address_sends_no_email(self):
-        self.client.post("/api/v1/auth/login", json={"email": "nobody@example.com"})
+        response = self.client.post("/api/v1/auth/register", json={"email": "known@example.com"})
+        self.assertEqual((response.status_code, response.json()["detail"]), (409, "already_registered"))
         self.assertEqual(self.mails, [])
 
-    def test_register_for_existing_account_sends_login_link_instead(self):
+    def test_login_with_an_unknown_address_asks_to_register(self):
+        response = self.client.post("/api/v1/auth/login", json={"email": "nobody@example.com"})
+        self.assertEqual((response.status_code, response.json()["detail"]), (404, "not_registered"))
+        self.assertEqual(self.mails, [])
+
+    def test_successful_requests_say_which_link_was_sent(self):
         self.add_user("known@example.com")
-        self.client.post("/api/v1/auth/register", json={"email": "known@example.com"})
+        login = self.client.post("/api/v1/auth/login", json={"email": "known@example.com"})
+        register = self.client.post("/api/v1/auth/register", json={"email": "new@example.com"})
+        self.assertEqual((login.status_code, login.json()["result"]), (200, "login_link"))
+        self.assertEqual((register.status_code, register.json()["result"]), (200, "verification_link"))
+
+    def test_answers_without_email_do_not_start_the_address_cooldown(self):
+        # Clicking the wrong action first must not block the right one for a minute.
+        self.add_user("known@example.com")
+        self.assertEqual(self.client.post("/api/v1/auth/register", json={"email": "known@example.com"}).status_code, 409)
+        self.assertEqual(self.client.post("/api/v1/auth/login", json={"email": "known@example.com"}).status_code, 200)
         self.assertEqual(len(self.mails), 1)
-        self.assertIn("/api/v1/auth/verify-login?token=", self.mails[0]["body"])
+
+    def test_unconfirmed_registration_can_be_requested_again(self):
+        self.add_user("pending@example.com", verified=False)
+        response = self.client.post("/api/v1/auth/register", json={"email": "pending@example.com"})
+        self.assertEqual((response.status_code, response.json()["result"]), (200, "verification_link"))
+        self.assertIn("/api/v1/auth/verify-email?token=", self.mails[0]["body"])
 
     def test_login_for_unverified_account_resends_verification(self):
         self.add_user("pending@example.com", verified=False)
@@ -118,6 +128,7 @@ class RateLimitTests(ApiTestCase):
         self.assertEqual(len(self.mails), 10)
 
     def test_limits_can_be_disabled_for_controlled_environments(self):
+        self.add_user("a@example.com")
         with patch.object(settings, "rate_limit_enabled", False):
             codes = {self.client.post("/api/v1/auth/login", json={"email": "a@example.com"}).status_code
                      for _ in range(3)}
@@ -128,9 +139,8 @@ class RateLimitTests(ApiTestCase):
         self.sign_in()
         with patch("app.api.routes.subscriptions.send_email") as send, \
                 patch("app.api.routes.subscriptions.SUBSCRIPTION_CHANGE_PER_USER", Limit(2, 3600)):
-            codes = [self.client.post("/api/v1/subscriptions/profiles",
-                                      json={"name": f"Bern {number}", "canton_keys": ["BE"]}).status_code
-                     for number in range(4)]
+            codes = [self.client.post("/api/v1/subscriptions/profiles", json={"canton_keys": ["BE"]}).status_code
+                     for _ in range(4)]
         self.assertEqual(codes, [201] * 4)
         self.assertEqual(send.call_count, 2)
 
@@ -149,6 +159,20 @@ class EmailLinkTests(ApiTestCase):
         self.assertIn("httponly", confirmed.headers["set-cookie"].lower())
         reused = self.client.post("/api/v1/auth/verify-login", data={"token": token}, follow_redirects=False)
         self.assertEqual(reused.status_code, 400)
+
+    def test_requesting_again_keeps_the_earlier_link_valid(self):
+        # A slow first request often leads to a second one; the first email must still work.
+        self.add_user()
+        with patch.object(settings, "rate_limit_enabled", False):
+            for _ in range(4):
+                self.client.post("/api/v1/auth/login", json={"email": "owner@example.com"})
+        tokens = [self.link_token(mail) for mail in self.mails]
+        oldest = self.client.post("/api/v1/auth/verify-login", data={"token": tokens[0]}, follow_redirects=False)
+        self.assertEqual(oldest.status_code, 400)
+        second = self.client.post("/api/v1/auth/verify-login", data={"token": tokens[1]}, follow_redirects=False)
+        self.assertEqual(second.status_code, 303)
+        newest = self.client.post("/api/v1/auth/verify-login", data={"token": tokens[3]}, follow_redirects=False)
+        self.assertEqual(newest.status_code, 303)
 
     def test_registration_link_verifies_and_signs_in(self):
         self.client.post("/api/v1/auth/register", json={"email": "fresh@example.com"})
@@ -191,11 +215,21 @@ class SessionTests(ApiTestCase):
         self.sign_in()
         self.assertEqual(self.client.get("/api/v1/auth/me").status_code, 200)
 
+    def test_account_deletion_is_confirmed_by_email(self):
+        self.add_user()
+        self.sign_in()
+        self.mails.clear()
+        self.assertEqual(self.client.delete("/api/v1/auth/me").status_code, 204)
+        self.assertEqual(self.client.get("/api/v1/auth/me").status_code, 401)
+        self.assertEqual([(mail["recipient"], mail["subject"]) for mail in self.mails],
+                         [("owner@example.com", "WWF Polit-Assistant – Konto gelöscht")])
+
     def test_subscriptions_require_authentication(self):
         self.assertEqual(self.client.get("/api/v1/subscriptions").status_code, 401)
-        self.assertEqual(self.client.post("/api/v1/subscriptions/profiles", json={"name": "x"}).status_code, 401)
-        self.assertEqual(self.client.put("/api/v1/subscriptions/profiles/1", json={"name": "x"}).status_code, 401)
+        self.assertEqual(self.client.post("/api/v1/subscriptions/profiles", json={}).status_code, 401)
+        self.assertEqual(self.client.put("/api/v1/subscriptions/profiles/1", json={}).status_code, 401)
         self.assertEqual(self.client.delete("/api/v1/subscriptions/profiles/1").status_code, 401)
+        self.assertEqual(self.client.put("/api/v1/subscriptions/watches/affairs/1").status_code, 401)
         self.assertEqual(self.client.delete("/api/v1/subscriptions").status_code, 401)
 
 

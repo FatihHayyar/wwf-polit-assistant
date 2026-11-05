@@ -55,17 +55,17 @@ Die Frage umfasst 3–300 Zeichen; höchstens 30 Fragen pro Minute und Client-Ad
 | `POST /auth/logout` | Sitzungscookie entfernen und alle ausgestellten Tokens widerrufen |
 | `DELETE /auth/me` | Eigenes Konto und zugehörige Daten löschen |
 
-Register und Login erhalten einen JSON-Body mit `email` und antworten immer mit derselben Meldung, unabhängig davon, ob ein Konto existiert; E-Mails werden im Hintergrund versendet. Ein Link öffnet eine Bestätigungsseite; erst deren POST verbraucht das Token, setzt ein HttpOnly-Cookie `access_token` und leitet zur Oberfläche weiter. POSTs mit fremdem `Origin` werden mit 403 abgewiesen. API-Clients können alternativ `Authorization: Bearer <JWT>` verwenden; ein vorhandener Bearer-Header hat Vorrang vor dem Cookie. Logout erhöht die Sitzungsversion des Kontos und macht damit alle zuvor ausgestellten Tokens ungültig.
+Register und Login erhalten einen JSON-Body mit `email`. Erfolg: `200` mit `result` (`login_link` oder `verification_link`); E-Mails werden im Hintergrund versendet. Register mit bereits registrierter Adresse: `409` mit `detail: "already_registered"`; Login mit unbekannter Adresse: `404` mit `detail: "not_registered"`; in beiden Fällen ohne E-Mail. Ein unbestätigtes Konto erhält bei beiden Routen erneut einen Bestätigungslink. Ein Link öffnet eine Bestätigungsseite; erst deren POST verbraucht das Token, setzt ein HttpOnly-Cookie `access_token` und leitet zur Oberfläche weiter. POSTs mit fremdem `Origin` werden mit 403 abgewiesen. API-Clients können alternativ `Authorization: Bearer <JWT>` verwenden; ein vorhandener Bearer-Header hat Vorrang vor dem Cookie. Logout erhöht die Sitzungsversion des Kontos und macht damit alle zuvor ausgestellten Tokens ungültig.
 
 E-Mail- und Token-Endpunkte sind ratenbegrenzt und antworten bei Überschreitung mit `429` und `Retry-After`. Die Grenzen stehen in der [Monitoring-Dokumentation](monitoring.md#anmeldung-und-schutz-vor-missbrauch).
 
 ## Abonnements und Empfänger
 
-Ein Konto besitzt bis zu zehn benannte Abonnements. Alle Routen benötigen eine Anmeldung; Anlegen und Ändern zusätzlich eine bestätigte E-Mail-Adresse.
+Ein Konto besitzt bis zu zehn Abonnements. Alle Routen benötigen eine Anmeldung; Anlegen, Ändern und Verfolgen zusätzlich eine bestätigte E-Mail-Adresse.
 
 | Methode und Pfad | Funktion |
 |---|---|
-| `GET /subscriptions` | Übersicht: Abonnements, Watches, `active`, `max_profiles` |
+| `GET /subscriptions` | Übersicht: Abonnements, Watches (mit Titel), `active`, `max_profiles` |
 | `POST /subscriptions/profiles` | Abonnement anlegen (`201`; `409` ab dem elften) |
 | `PUT /subscriptions/profiles/{id}` | Abonnement vollständig ersetzen |
 | `DELETE /subscriptions/profiles/{id}` | Abonnement löschen |
@@ -73,19 +73,17 @@ Ein Konto besitzt bis zu zehn benannte Abonnements. Alle Routen benötigen eine 
 
 ```json
 {
-  "name": "Energie-Motionen in Bern",
   "active": true,
   "category_ids": [1],
-  "canton_keys": ["BE"],
+  "canton_keys": ["LU"],
   "affair_types": ["Motion", "Postulat"],
-  "datasets": ["affairs", "documents"],
-  "keywords": ["Photovoltaik"]
+  "datasets": ["affairs", "documents"]
 }
 ```
 
-Kategorie-IDs stammen aus `/categories`, Geschäftstypen aus `/affair-types`. Bis zu 20 Suchbegriffe mit je 1–200 Zeichen. Innerhalb einer Gruppe gilt OR, zwischen Gruppen AND, zwischen Abonnements OR. Leere Dataset-Auswahl bedeutet alle Bereiche. Sind Themen, Kantone, Geschäftstypen und Suchbegriffe leer, ist das Abonnement pausiert (`paused: true`); Einzel-Watches bleiben aktiv. Fremde oder unbekannte Abonnement-IDs ergeben `404`. Jede Änderung löst eine Bestätigungs-E-Mail mit der Zusammenfassung aus (höchstens 60 pro Stunde).
+Kategorie-IDs stammen aus `/categories`, Geschäftstypen aus `/affair-types`. Der Name wird aus den Filtern erzeugt und nicht übergeben. Innerhalb einer Gruppe gilt OR, zwischen Gruppen AND, zwischen Abonnements OR; passen mehrere Abonnements, entsteht eine Nachricht. Leere Dataset-Auswahl bedeutet alle Bereiche. Sind Themen, Kantone und Geschäftstypen leer, ist das Abonnement pausiert (`paused: true`); Einzel-Watches bleiben aktiv. Stichwörter werden nicht mehr angenommen; frühere Stichwörter eines Abonnements entfallen beim nächsten Speichern. Fremde oder unbekannte Abonnement-IDs ergeben `404`. Jede Änderung löst eine Bestätigungs-E-Mail mit der Zusammenfassung aus (höchstens 60 pro Stunde).
 
-`PUT /subscriptions/watches/{dataset}/{record_id}` beobachtet einen Inhalt, `DELETE` entfernt die Beobachtung. `record_id` ist die positive lokale ID; bei Dokumenten ist dies `pk`, nicht `source_id`.
+`PUT /subscriptions/watches/{dataset}/{record_id}` beobachtet einen Inhalt, `DELETE` entfernt die Beobachtung. Die Oberfläche ruft dies über **☆ Verfolgen** in der Detailansicht auf. `record_id` ist die positive lokale ID; bei Dokumenten ist dies `pk`, nicht `source_id`.
 
 `GET /subscriptions/recipients` liest Adressen und Bestätigungsstatus. `PUT` ersetzt die Liste mit `{"emails": ["name@example.org"]}`; insgesamt 1–10 Adressen. Fremde Adressen erhalten einen Bestätigungslink zu `/subscriptions/recipients/verify?token=...`; auch dieser öffnet eine Bestätigungsseite, die Bestätigung erfolgt per POST. Änderungen der Adressliste sind auf zehn pro Stunde begrenzt. Nur bestätigte Adressen erhalten Monitoring-Nachrichten. Diese Verwaltungsrouten benötigen eine gültige Benutzersitzung; der Bestätigungslink verwendet seinen eigenen Token.
 

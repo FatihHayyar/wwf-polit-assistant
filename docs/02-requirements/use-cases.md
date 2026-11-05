@@ -8,7 +8,7 @@
 | UC04 | Sitzung verstehen | Sitzung und verknüpfte Traktanden/Unterlagen öffnen | Zusammenhang korrekt, fehlende Beziehungen nicht erfunden |
 | UC05 | Weitere Datenbereiche nutzen | Abstimmungen, Gruppen und Interessen recherchieren | Eigenständige Listen und vorhandener Kontext |
 | UC06 | Empfänger verwalten | Eigene und fremde Adresse hinterlegen, fremde bestätigen | Monitoring nur an bestätigte Ziele |
-| UC07 | Benachrichtigungen beenden | Abonnement pausieren oder löschen, Watches entfernen oder alles beenden | Keine weiterhin aktive unbeabsichtigte Auswahl |
+| UC07 | Benachrichtigungen beenden | Abonnement pausieren oder löschen, Verfolgen in Detailansicht oder Verwaltung beenden oder alles beenden | Keine weiterhin aktive unbeabsichtigte Auswahl |
 | UC08 | Kontodaten entfernen | Konto löschen | Kontobezogene Einstellungen entfernt |
 | UC09 | Betrieb prüfen | Job starten/status prüfen, Fehler fortsetzen | Checkpoints nachvollziehbar, kein paralleler Runner |
 | UC10 | Frage stellen | Frage in natürlicher Sprache eingeben, Verstandenes prüfen, ggf. als Abonnement speichern | Korrekt erkannte Filter und passende Treffer; nichts Erfundenes |

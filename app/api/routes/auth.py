@@ -43,11 +43,13 @@ router = APIRouter(
     tags=["Auth"],
 )
 
-# Register and login deliberately return the same answer whether or not an
-# account exists, so the endpoints cannot be used to test email addresses.
-LINK_SENT_MESSAGE = (
-    "If this address can be used, a link has been sent to it."
-)
+# Register and login say whether an address is registered, so users know
+# whether to sign in or register (decision D16). This reveals registered
+# addresses; the per-IP limit below slows down systematic probing.
+VERIFICATION_SENT = "A confirmation link has been sent."
+LOGIN_SENT = "A sign-in link has been sent."
+ALREADY_REGISTERED = "already_registered"
+NOT_REGISTERED = "not_registered"
 
 
 class LoginRequest(BaseModel):
@@ -56,6 +58,7 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     message: str
+    result: str
 
 
 def link_url(path: str, token: str) -> str:
@@ -109,9 +112,14 @@ def queue_login_email(background: BackgroundTasks, db: Session, user: User) -> N
     )
 
 
-def limit_email_request(request: Request, email: str) -> None:
+def limit_ip(request: Request) -> None:
+    """Every attempt counts, including answers without an email."""
+    enforce((f"auth-ip:{client_address(request)}", AUTH_EMAIL_PER_IP))
+
+
+def limit_address(email: str) -> None:
+    """Only requests that actually send an email count against the address."""
     enforce(
-        (f"auth-ip:{client_address(request)}", AUTH_EMAIL_PER_IP),
         (f"auth-cooldown:{email}", AUTH_EMAIL_COOLDOWN),
         (f"auth-address:{email}", AUTH_EMAIL_PER_ADDRESS),
     )
@@ -132,10 +140,14 @@ def register(
     db: Session = Depends(get_db),
 ) -> RegisterResponse:
     email = str(payload.email).strip().lower()
-    limit_email_request(request, email)
+    limit_ip(request)
 
     user = find_user(db, email)
 
+    if user is not None and (user.email_verified or not user.is_active):
+        raise HTTPException(status.HTTP_409_CONFLICT, ALREADY_REGISTERED)
+
+    limit_address(email)
     if user is None:
         user = User(
             email=email,
@@ -148,13 +160,9 @@ def register(
         db.add(user)
         db.flush()
 
-    if user.is_active and user.email_verified:
-        # The owner of an existing account receives a sign-in link instead.
-        queue_login_email(background, db, user)
-    elif user.is_active:
-        queue_verification_email(background, db, user)
-
-    return RegisterResponse(message=LINK_SENT_MESSAGE)
+    # A started but unconfirmed registration receives a new confirmation link.
+    queue_verification_email(background, db, user)
+    return RegisterResponse(message=VERIFICATION_SENT, result="verification_link")
 
 
 @router.post(
@@ -168,17 +176,20 @@ def login(
     db: Session = Depends(get_db),
 ) -> LoginResponse:
     email = str(payload.email).strip().lower()
-    limit_email_request(request, email)
+    limit_ip(request)
 
     user = find_user(db, email)
 
-    if user is not None and user.is_active:
-        if user.email_verified:
-            queue_login_email(background, db, user)
-        else:
-            queue_verification_email(background, db, user)
+    if user is None or not user.is_active:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, NOT_REGISTERED)
 
-    return LoginResponse(message=LINK_SENT_MESSAGE)
+    limit_address(email)
+    if user.email_verified:
+        queue_login_email(background, db, user)
+        return LoginResponse(message=LOGIN_SENT, result="login_link")
+    # The registration was never confirmed: send the confirmation link again.
+    queue_verification_email(background, db, user)
+    return LoginResponse(message=VERIFICATION_SENT, result="verification_link")
 
 
 @router.get(
@@ -303,15 +314,30 @@ def logout(
 )
 def delete_my_account(
     response: Response,
+    background: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    email = current_user.email
     db.delete(current_user)
     db.commit()
 
     response.delete_cookie(
         key="access_token",
         path="/",
+    )
+    # Confirm to the account address that the deletion happened.
+    background.add_task(
+        deliver_email,
+        email,
+        "WWF Polit-Assistant – Konto gelöscht",
+        "Hallo,\n\n"
+        "dein Konto beim WWF Polit-Assistant wurde gelöscht. Alle Abonnements, "
+        "verfolgten Inhalte und Benachrichtigungsadressen wurden entfernt; du erhältst "
+        "keine Benachrichtigungen mehr.\n\n"
+        "Falls du das nicht selbst veranlasst hast, melde dich bitte beim WWF.\n\n"
+        "Beste Grüsse\n"
+        "WWF Polit-Assistant",
     )
 
 

@@ -1,22 +1,47 @@
-# Akzeptanzkriterien
+# Akzeptanzkriterien und Rückverfolgbarkeit
 
-Die folgenden Kriterien konkretisieren die Anforderungen. Sie sind Prüfdefinitionen und keine bereits erteilte WWF-Abnahme. Numerische Leistungsschwellen und Klassifikationsziele werden vor Messung vereinbart.
+Die Akzeptanzkriterien stehen direkt bei ihrer User Story im [Backlog](user-stories.md), jeweils mit dem Test, der sie nachweist. Diese Seite zeigt den Weg von der Anforderung bis zum Testergebnis.
 
-| ID | Bezug | Kriterium | Nachweisart |
-|---|---|---|---|
-| AC01 | R01/R02 | Bekannte Quellbeispiele werden korrekt abgebildet; Beziehungen nachvollziehbar | Mappingtests plus unabhängige Quellstichprobe |
-| AC02 | R01 | Fehlerhafte Stufe meldet Ursache; abgeschlossene Batches bleiben fortsetzbar | Fehlerszenario und Wiederanlauf |
-| AC03 | R03/R16 | Freigegebene Themen, positive/negative Beispiele und regelbasierte Evidenz | WWF-Freigabe und annotierte Stichprobe |
-| AC04 | R04/R10 | Kombinierte Recherche liefert die erwarteten Beispieltreffer | API/UI und WWF-Aufgabendurchlauf |
-| AC05 | R05/R06 | Passende relevante Änderung erreicht die Auswahl, unpassende nicht | Matcher-/Policytests und kontrollierte Integration |
-| AC06 | R07 | Bestehender Watch erhält relevante verbundene Entwicklung | Reproduzierbarer Updatefall |
-| AC07 | R08/R17 | Verifizierte Ziele erhalten Nachrichten; unbestätigte nicht | Mailpit-Test plus Organisations-SMTP-Prüfung |
-| AC08 | R09 | OpenAPI entspricht dem übergebenen Stand; geschützte Routen bleiben geschützt | Generierte Spezifikation und Zugriffsprüfung |
-| AC09 | R10 | Lange Details und Formulare bleiben auf Desktop/Mobil bedienbar | Browserdurchlauf und Praxisfeedback |
-| AC10 | R11 | Neue Umgebung startet anhand Dokumentation, Grenzen sind bekannt | Unabhängiger Demostart und Handover |
-| AC11 | R12 | Tatsächliche WWF-Beobachtung, Abweichungen und Entscheid dokumentiert | Abnahmeformular; derzeit offen |
-| AC12 | R14 | Container, Schnittstellen, Konfiguration und Betriebsanforderungen für WWF dokumentiert | Technischer Handover; tatsächlicher Azure-Betrieb ist eine spätere WWF-Integrationsaufgabe |
-| AC13 | R19 | Mehrere Abonnements werden unabhängig gespeichert; jedes passende aktive Abonnement löst eine (einzige) Nachricht aus, pausierte nicht | API- und Matchertests, Demo-Durchlauf |
-| AC14 | R20 | Beispielfragen in vier Sprachen ergeben die erwarteten Filter; Erkanntes ist sichtbar | Interpretertests, Browser-Durchlauf |
+## Von der Anforderung zum Test
 
-Ein Implementierungs-Issue kann geschlossen sein, während das zugehörige fachliche oder betriebliche Prüf-Issue offen bleibt. Dieses Vorgehen verhindert eine pauschale Erfolgserklärung durch technischen Abschluss.
+| Anforderung | User Stories | Kriterien | Nachweis | Ergebnis |
+|---|---|---|---|---|
+| R01 Datenintegration und Aktualisierung | US-01 | 5 | `test_sync_strategy`, `test_sync_control`, `test_event_mapping` | ✅ bestanden |
+| R02 Speicherung und Verknüpfung | US-01, US-02 | 9 | `test_monitoring`, `test_affair_result_groups` | ✅ bestanden |
+| R03 Regelbasierte WWF-Klassifikation | US-03, US-16 | 7 | `test_rule_classifier`, `test_holdout_evaluation`, Prüfset B | ✅ bestanden; Expertenprüfung offen |
+| R04 Suche nach Thema, Kanton, Typ, Stichwort | US-04, US-13 | 7 | `test_monitoring`, `test_query_interpreter` | ✅ bestanden |
+| R05 Neue relevante Inhalte erkennen | US-06, US-08 | 10 | `test_monitoring`, `test_notification_policy` | ✅ bestanden |
+| R06 Kombinierte Abonnementfilter | US-06, US-13, US-17 | 11 | `test_monitoring`, `browser_membership` | ✅ bestanden |
+| R07 Bestehende Inhalte beobachten | US-07, US-18 | 6 | `test_monitoring`, `browser_membership` | ✅ bestanden |
+| R08 Benachrichtigungen per E-Mail | US-06, US-08 | 10 | `test_monitoring`, `test_notification_presentation`, `test_notification_content` | ✅ bestanden; Organisationsversand offen (F11) |
+| R09 Dokumentierte REST-API | US-10 | 3 | `test_api_security` | ✅ bestanden |
+| R10 Geeignete Oberfläche | US-04, US-17–US-20 | 15 | `browser_membership`, `test_frontend.cjs` | ✅ bestanden; Praxisbewertung offen |
+| R11 Dokumentation | AP-1.x, US-22, AP-3.1 | – | Durchsicht, manueller Start | In Arbeit |
+| R12 Anwendungsfälle validieren | US-11, US-16, US-23 | 8 | `test_api_security` (Demo), Abnahme | Demo ✅; WWF-Abnahme offen |
+| R13 Python-Nähe | US-21 | – | Technologieentscheid D3 | ✅ |
+| R14 Azure-Anschlussfähigkeit | US-21 | 3 | CI-Docker-Build, Dokumentation | In Arbeit; Testdeployment offen |
+| R15 Abstimmungen, Gruppen, Interessen | US-02, US-04 | 8 | `test_monitoring` | ✅ bestanden |
+| R16 Energie-/Klima-Themen abstimmen | US-15 | 4 | `test_rule_classifier`, Freigabe | Umsetzung ✅; Freigabe offen (F05) |
+| R17 Mehrere Empfängeradressen | US-09 | 2 | `test_account_preferences`, `test_api_security` | ✅ bestanden |
+| R18 Optionale Google-Anmeldung | – | – | `test_google_callback_rejects_state_before_network_or_account_changes` | ✅ bestanden (technische Ergänzung) |
+| R19 Mehrere Abonnements, E-Mail-Zugang | US-05, US-12, US-19 | 15 | `test_api_security`, `test_monitoring`, `browser_membership` | ✅ bestanden |
+| R20 Dialogorientierte Abfrage | US-14 | 5 | `test_query_interpreter` | ✅ bestanden; Umfang bestätigen (F02) |
+| R21 Architektur für KI | US-14 | – | Schnittstelle `QueryInterpreter`, Klassifikator-Version | ✅ vorbereitet |
+| R22 Rechenzentren / Grossverbraucher getrennt | US-15 | 4 | `test_rule_classifier` | ✅ bestanden; Freigabe offen |
+
+## Testlauf
+
+Stand der letzten vollständigen Ausführung (5. November 2026):
+
+| Testart | Umfang | Ergebnis |
+|---|---|---|
+| Python-Tests (Backend, API, Sync, Klassifikation) | 161 Tests | alle bestanden |
+| Frontend-Prüfungen (`node tests/test_frontend.cjs`) | Übersetzungen in vier Sprachen, Modulstruktur | bestanden |
+| Browser-Durchlauf (`tests/browser_membership.py`, Edge) | Anmeldung, zwei Abonnements, Speichern am Dialogende, Verfolgen mit einem Klick, Meldungen bei Registrieren/Anmelden | bestanden |
+| Lint (`ruff check app tests`) | gesamter Code | keine Befunde |
+
+Befehle und weitere Prüfungen stehen im [Testplan](../05-testing/test-plan.md).
+
+## Was ein bestandener Test nicht belegt
+
+Automatisierte Tests weisen nach, dass die Anwendung sich wie in den Kriterien beschrieben verhält. Ob die Themen fachlich richtig sind (F05, F12), ob der Funktionsumfang den Bedarf deckt (US-23) und ob der Versand in der WWF-Umgebung funktioniert (F11), klären erst die Rückmeldungen und die Abnahme durch WWF.

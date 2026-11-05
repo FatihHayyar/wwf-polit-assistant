@@ -4,7 +4,7 @@ Die Einstellungen liegen in [app/core/config.py](../app/core/config.py). Lokal w
 
 | Variable | Standard | Zweck |
 |---|---|---|
-| `DATABASE_URL` | erforderlich | SQLAlchemy-Verbindung, z. B. `postgresql+psycopg://USER:PASSWORD@localhost:5433/DB` |
+| `DATABASE_URL` | erforderlich | SQLAlchemy-Verbindung, z. B. `postgresql+psycopg://USER:PASSWORD@127.0.0.1:5433/DB` |
 | `JWT_SECRET_KEY` | erforderlich | Eigener geheimer Signaturschlüssel; Demo-Werte nicht für den Betrieb übernehmen |
 | `JWT_ALGORITHM` | `HS256` | JWT-Signaturalgorithmus |
 | `JWT_EXPIRE_MINUTES` | `10080` | Sitzungsdauer, standardmässig sieben Tage |

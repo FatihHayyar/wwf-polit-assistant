@@ -16,7 +16,7 @@ Das MVP soll die politische Recherche und das Monitoring für WWF vereinfachen:
 
 - **Relevante Inhalte finden:** parlamentarische Daten nach Themen, Kantonen, Geschäftstypen und individuellen Suchbegriffen durchsuchen oder als Frage formulieren.
 - **Zusammenhänge verstehen:** zu einem Geschäft auch die zugehörigen Termine, Ereignisse, Abstimmungen und Dokumente sehen.
-- **Entwicklungen verfolgen:** mehrere Abonnements mit eigenen Filterkombinationen anlegen oder einzelne Einträge beobachten und über relevante Veränderungen informiert werden.
+- **Entwicklungen verfolgen:** mehrere Abonnements mit eigenen Filterkombinationen anlegen oder einzelne Einträge mit einem Klick verfolgen und über relevante Veränderungen informiert werden.
 - **Eine anschlussfähige Grundlage schaffen:** dokumentierte API, strukturierte Daten und eine containerisierte Python-Anwendung für die spätere Integration in die WWF-Systemlandschaft.
 
 Die Themenklassifikation und die dialogorientierte Abfrage arbeiten regelbasiert und nachvollziehbar. Beide besitzen eine definierte Schnittstelle, an der später ein Sprachmodell angeschlossen werden kann ([KI-Erweiterung](docs/03-architecture/system-architecture.md#erweiterungspunkte-für-ki)).
@@ -63,7 +63,7 @@ Die aktuelle Version `rule-based-v8` erkennt eindeutige Titelbegriffe auch in Zu
 
 Die Recherche ist ohne Konto zugänglich. Für Benachrichtigungen registrieren sich Nutzer per E-Mail und melden sich über einen zeitlich begrenzten Link an. Optional steht eine konfigurierte Google-Anmeldung zur Verfügung. In der Abonnementverwaltung können bis zu zehn Benachrichtigungsadressen ausgewählt werden; zusätzliche Adressen benötigen eine Bestätigung.
 
-Jedes Konto kann **bis zu zehn benannte Abonnements** führen, z. B. «Energie in Bern» und «Biodiversität in Zürich». Ein Abonnement kombiniert WWF-Themen, Kantone, Geschäftstypen, Suchbegriffe und Datenbereiche; es lässt sich pausieren, bearbeiten und löschen. Hauptthemen schliessen ihre Unterthemen ein. Innerhalb eines Abonnements gelten mehrere Werte einer Filtergruppe als Alternativen, verschiedene Gruppen müssen gemeinsam passen. Eine Änderung wird gemeldet, sobald **eines** der aktiven Abonnements passt. Zusätzlich lassen sich einzelne Einträge verfolgen.
+Jedes Konto kann **bis zu zehn Abonnements** führen, z. B. «Energie in Luzern» und «Bioenergie in allen Kantonen». Ein Abonnement kombiniert WWF-Themen, Kantone, Geschäftstypen und Datenbereiche; sein Name entsteht automatisch aus der Auswahl. Es lässt sich pausieren, bearbeiten und löschen. Hauptthemen schliessen ihre Unterthemen ein. Innerhalb eines Abonnements gelten mehrere Werte einer Filtergruppe als Alternativen, verschiedene Gruppen müssen gemeinsam passen. Eine Änderung wird gemeldet, sobald **eines** der aktiven Abonnements passt; passen mehrere, kommt trotzdem nur eine Nachricht. Zusätzlich lässt sich jeder Eintrag in seiner Detailansicht mit **☆ Verfolgen** einzeln beobachten, unabhängig von den Abonnements.
 
 Die Anwendung speichert Quelldatenänderungen getrennt von ihrer Benachrichtigungsrelevanz. Technische Metadaten, reine Formatänderungen und bestimmte geringfügige Textkorrekturen sollen keine E-Mail auslösen. Relevante Updates werden pro Nutzer und Geschäft beziehungsweise eigenständigem Eintrag zusammengefasst.
 
@@ -71,7 +71,7 @@ Benachrichtigungen besitzen eine HTML-Ansicht mit Inhaltskarten und eine separat
 
 ## Projektstand – 21. Oktober 2026
 
-Datenimport, Synchronisierung aller neun Bereiche, konfigurierbare regelbasierte Klassifikation, Recherche mit Geschäftstyp-Filter, dialogorientierte Abfrage, verknüpfte Detailansichten, passwortlose Anmeldung, mehrere Abonnements pro Konto und E-Mail-Benachrichtigungen sind umgesetzt. Präsentation, fachliche Bewertung durch WWF und formale Abnahme stehen aus. Die Azure-Bereitstellung selbst übernimmt WWF; das Projekt liefert dafür ein vorbereitetes Container-Setup und eine [Integrationsanleitung](docs/03-architecture/azure-integration.md).
+Datenimport, Synchronisierung aller neun Bereiche, konfigurierbare regelbasierte Klassifikation, Recherche mit Geschäftstyp-Filter, dialogorientierte Abfrage, verknüpfte Detailansichten, passwortlose Anmeldung, mehrere Abonnements pro Konto, Ein-Klick-Verfolgen und E-Mail-Benachrichtigungen sind umgesetzt. Präsentation, fachliche Bewertung durch WWF und formale Abnahme stehen aus. Die Azure-Bereitstellung selbst übernimmt WWF; das Projekt liefert dafür ein vorbereitetes Container-Setup und eine [Integrationsanleitung](docs/03-architecture/azure-integration.md).
 
 | Bereich | Stand und Nachweis |
 |---|---|
@@ -79,7 +79,7 @@ Datenimport, Synchronisierung aller neun Bereiche, konfigurierbare regelbasierte
 | Synchronisierung | Nur Änderungen, neue und fehlende IDs werden gelesen; vollständige Vergleiche laufen je Bereich in festen Abständen. Der tägliche Geschäftsabgleich dauert Sekunden statt über einer Stunde ([Strategie](docs/monitoring.md#synchronisierungsstrategie)) |
 | Klassifikation | `rule-based-v8` auf allen Datensätzen. Entwicklungsset 50/50 (Regeln daran verbessert). **Unabhängiges Prüfset B (300 Zufallsgeschäfte, vor der Messung annotiert): Precision 1.0, Recall 0.667** (v7 auf demselben Set: Recall 0.361). Rund ein Drittel der relevanten Geschäfte wird weiterhin übersehen ([Auswertung](docs/05-testing/evidence/holdout-evaluation.md)) |
 | Sicherheit | Gleiche Antwort für bekannte und unbekannte Adressen, Ratenbegrenzung für E-Mail-, Token- und Frage-Endpunkte sowie für Bestätigungs-E-Mails bei Abonnementänderungen, Bestätigungsseite statt Token-Verbrauch beim Öffnen eines Links, Widerruf aller Tokens beim Abmelden, strikte Sicherheits-Header, Container ohne Root-Rechte ([Details](docs/monitoring.md#anmeldung-und-schutz-vor-missbrauch)) |
-| Tests | 155 isolierte Backend-, API-, Sync- und Klassifikationstests, Frontend-Prüfungen und CI (Lint, Migrationen auf PostgreSQL 17, Docker-Build). Browser-Durchlauf der Demo inkl. Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung am 21. Oktober |
+| Tests | 161 isolierte Backend-, API-, Sync- und Klassifikationstests (Stand 5. November), Frontend-Prüfungen und CI (Lint, Migrationen auf PostgreSQL 17, Docker-Build). Browser-Durchlauf der Demo inkl. Frage, zwei Abonnements, Testbenachrichtigung und Abmeldung am 21. Oktober |
 | Demo | Ein-Kommando-Start mit Beispieldaten und Mailpit; Benachrichtigungen lassen sich mit einem Testgeschäft direkt ausprobieren |
 
 Automatisierte Tests und Stichproben ersetzen keine WWF-Abnahme. Frühere Nachweise: [Prüfung vom 13. Oktober](docs/05-testing/review-2026-10-13.md), [Testergebnisse](docs/05-testing/test-results.md), [Aufgabenstand](docs/01-project-management/current-status.md).
@@ -126,7 +126,7 @@ Die Demo verwendet eine eigene Datenbank, erhält vorhandene Daten beim Neustart
 1. Eine Frage stellen, z. B. «Motionen zur Photovoltaik», «Geschäfte zum Wolf seit 2024», «Motionen zum Klima im Kanton Zürich» oder «Séances au Grand Conseil de Genève en 2026», oder einen Bereich auswählen und nach Begriff, WWF-Thema oder Geschäftstyp filtern; einen Treffer öffnen und seine verknüpften Inhalte ansehen. Diese Beispiele liefern auch im begrenzten Demo-Datenausschnitt Treffer.
 2. **Registrieren** wählen und eine E-Mail-Adresse eingeben (beliebig, z. B. `test@example.org`).
 3. In **Mailpit** ([localhost:8025](http://localhost:8025)) die Bestätigungs-E-Mail öffnen, dem Link folgen und **Registrierung bestätigen** klicken. Die Abonnementverwaltung öffnet sich.
-4. **Neues Abonnement** wählen, einen Namen vergeben und ein Thema wählen, z. B. **Klima & Energie**, optional auch Kantone, Geschäftstypen oder Stichwörter. Weitere Abonnements lassen sich auf dieselbe Weise ergänzen.
+4. **+ Neues Abonnement** wählen und ein Thema wählen, z. B. **Klima & Energie**, optional auch Kantone oder Geschäftstypen. Unten **Abonnement speichern** klicken; der Dialog schliesst sich mit einer Bestätigung. Weitere Abonnements lassen sich auf dieselbe Weise ergänzen.
 5. Unter **Benachrichtigung testen (Demo)** ein Thema wählen und **Testgeschäft erstellen und benachrichtigen** klicken. Die Anwendung legt ein fiktives neues Geschäft an und schickt es durch die echte Klassifikation, die Relevanzprüfung und den Versand.
 6. In Mailpit erscheint die Benachrichtigung zum neuen Geschäft. Passt das Testgeschäft zu keinem gespeicherten Abonnement, erklärt die Oberfläche den Grund, statt eine E-Mail zu senden.
 
@@ -320,24 +320,23 @@ Beispiel eines Abonnements (`POST /api/v1/subscriptions/profiles`):
 
 ```json
 {
-  "name": "Energie-Motionen in Bern",
   "category_ids": [1],
-  "canton_keys": ["BE"],
+  "canton_keys": ["LU"],
   "affair_types": ["Motion"]
 }
 ```
 
-Kategorie-IDs werden über die Kategorien-API ermittelt, Geschäftstypen über `GET /api/v1/affair-types`. Ein Hauptthema umfasst seine Unterkategorien. Leere Filtergruppen schränken die jeweilige Dimension nicht ein; ein Abonnement ohne Themen, Kantone, Geschäftstypen und Suchbegriffe ist pausiert. Einzelne Record-Watches werden separat verwaltet.
+Kategorie-IDs werden über die Kategorien-API ermittelt, Geschäftstypen über `GET /api/v1/affair-types`. Der Name (hier z. B. «Klima & Energie · Luzern · Motion») wird aus den Filtern erzeugt. Ein Hauptthema umfasst seine Unterkategorien. Leere Filtergruppen schränken die jeweilige Dimension nicht ein; ein Abonnement ohne Themen, Kantone und Geschäftstypen ist pausiert. Einzelne Record-Watches werden separat verwaltet.
 
 | Abonnement | Themen | Kantone | Geschäftstypen | Bedeutung |
 |---|---|---|---|---|
-| 1 | Klima & Energie | BE | Alle | Passende Entwicklungen im Kanton Bern |
-| 2 | Biodiversität & Landschaft | ZH | Motion, Postulat | Motionen und Postulate zur Biodiversität in Zürich |
-| 3 | Alle | Alle | Alle, Suchbegriff «Wolf» | Alles mit «Wolf» im Titel |
+| 1 | Klima & Energie | LU | Alle | Passende Entwicklungen im Kanton Luzern |
+| 2 | Bioenergie | Alle | Alle | Bioenergie in allen Kantonen |
+| 3 | Biodiversität & Landschaft | ZH | Motion, Postulat | Motionen und Postulate zur Biodiversität in Zürich |
 
-Eine Änderung, die zu Abonnement 1 **oder** 2 **oder** 3 passt, erzeugt genau eine Benachrichtigung.
+Eine Änderung, die zu Abonnement 1 **oder** 2 **oder** 3 passt, erzeugt genau eine Benachrichtigung – auch ein Bioenergie-Geschäft aus Luzern, das zu 1 und 2 passt.
 
-Die Anmeldung verwendet JWT und ein HttpOnly-Sitzungscookie für die Oberfläche; API-Clients können Bearer-Tokens verwenden. Abmelden widerruft alle bisher ausgestellten Tokens des Kontos. Registrierung und Anmeldung antworten für bekannte und unbekannte Adressen identisch; E-Mail- und Token-Endpunkte sind ratenbegrenzt (HTTP 429 mit `Retry-After`). Verwaltungsfunktionen erfordern Anmeldung, Sync-Operationen den separat konfigurierten Schlüssel im Header `X-Sync-API-Key`. Kontolöschung ist unterstützt.
+Die Anmeldung verwendet JWT und ein HttpOnly-Sitzungscookie für die Oberfläche; API-Clients können Bearer-Tokens verwenden. Abmelden widerruft alle bisher ausgestellten Tokens des Kontos. Registrierung mit einer bereits registrierten Adresse und Anmeldung mit einer unbekannten Adresse werden klar abgewiesen und führen zur richtigen Aktion (Entscheid D16); E-Mail- und Token-Endpunkte sind ratenbegrenzt (HTTP 429 mit `Retry-After`). Verwaltungsfunktionen erfordern Anmeldung, Sync-Operationen den separat konfigurierten Schlüssel im Header `X-Sync-API-Key`. Kontolöschung ist unterstützt.
 
 ## Lokale Entwicklung
 

@@ -9,11 +9,10 @@ textarea {
   resize: vertical;
 }
 
-#subscription-watches>div {
-  display: flex;
-  flex-wrap: wrap;
+#subscription-watches {
+  display: grid;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 :root {
@@ -980,7 +979,7 @@ dialog {
   margin: 18px 0;
 }
 
-#subscription-dialog .dialog-body>fieldset, #recipients-form>fieldset {
+#subscription-dialog .dialog-body>fieldset {
   margin: 20px 0;
 }
 
@@ -1310,7 +1309,7 @@ dialog {
   align-self: center;
 }
 
-/* Subscription profiles */
+/* Subscriptions */
 .profiles {
   margin: 18px 0;
 }
@@ -1330,6 +1329,11 @@ dialog {
   border: 1px solid var(--border);
   border-radius: 10px;
   background: white;
+}
+
+.profile-card.editing {
+  border-color: #6f9a5b;
+  box-shadow: 0 0 0 2px #dcebd3;
 }
 
 .profile-card h4 {
@@ -1363,13 +1367,43 @@ dialog {
   margin: 0;
 }
 
+.profile-form .hint {
+  margin: 0;
+}
+
 .profile-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-#recipients-form fieldset > button {
-  justify-self: start;
-  margin-top: 10px;
+.watch-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.watch-row .related-item {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.follow-button {
+  margin: 0 0 14px;
+}
+
+.follow-button[aria-pressed="true"] {
+  border-color: #18563d;
+  background: #eef6ea;
+  color: #18563d;
+  font-weight: 600;
+}
+
+.subscription-toolbar .save-subscription {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
 }

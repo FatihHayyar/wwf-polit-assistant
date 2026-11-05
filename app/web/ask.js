@@ -1,6 +1,6 @@
 "use strict";
-// Dialogue-oriented query: questions become search filters, and a question can
-// be kept as a subscription. Earlier questions stay visible as a conversation.
+// Dialogue-oriented query: questions become search filters, and the recognised
+// filters can be kept as a subscription. Earlier questions stay visible as a conversation.
 (() => {
   const Polit = window.Polit;
   const { state, t, $, el, button, api, errorText, formatDate, categoryName, toast } = Polit;
@@ -41,21 +41,19 @@
     return null;
   }
 
-  /** A subscription needs at least one topic, canton, affair type or keyword. */
+  /** A subscription needs at least one topic, canton or affair type; a
+   * recognised keyword alone is not saved. */
   function profileFrom(answer) {
     const { filters } = answer;
     const topic = categoryId(filters.subcategory || filters.category);
     const profile = {
-      name: answer.question.slice(0, 100),
       active: true,
       category_ids: topic ? [topic] : [],
       canton_keys: filters.canton ? [filters.canton] : [],
-      keywords: filters.q ? [filters.q] : [],
       affair_types: filters.affair_type ? [filters.affair_type] : [],
       datasets: [answer.dataset],
     };
-    const hasFilters = profile.category_ids.length || profile.canton_keys.length || profile.keywords.length || profile.affair_types.length;
-    return hasFilters ? profile : null;
+    return profile.category_ids.length || profile.canton_keys.length || profile.affair_types.length ? profile : null;
   }
 
   async function saveProfile(answer, trigger) {
@@ -68,6 +66,7 @@
     trigger.disabled = true;
     try {
       const saved = await api("/api/v1/subscriptions/profiles", { method: "POST", body: JSON.stringify(profileFrom(answer)) });
+      state.subscriptions = null;
       toast(t("askSaved", { name: saved.name }));
     } catch (error) {
       toast(errorText(error), true);
@@ -92,8 +91,7 @@
     reply.append(el("p", count
       ? t("askAnswer", { count: count.toLocaleString(`${state.language}-CH`), dataset: state.names[answer.dataset] })
       : t("askNone")));
-    const profile = profileFrom(answer);
-    if (profile) reply.append(button(t("askSave"), (event) => saveProfile(answer, event.currentTarget)));
+    if (profileFrom(answer)) reply.append(button(t("askSave"), (event) => saveProfile(answer, event.currentTarget)));
     entry.append(reply);
     $("ask-log").prepend(entry);
   }

@@ -1,6 +1,7 @@
 "use strict";
-// Subscription dialog: notification recipients, several named subscription
-// profiles, watched records and (in demo mode) a test notification.
+// Subscription dialog: several subscriptions (filter combinations with
+// generated names), individually followed records, notification recipients
+// and (in demo mode) a test notification. One button at the bottom saves.
 (() => {
   const Polit = window.Polit;
   const { ui, state, t, $, el, button, api, errorText, showStatus, addOption, checkbox, categoryName,
@@ -16,6 +17,7 @@
   }
 
   function renderRecipients(recipients) {
+    state.recipients = recipients.map((row) => row.email).sort();
     $("recipient-own").checked = recipients.some((row) => row.email === state.account.email);
     $("recipient-emails").value = recipients.filter((row) => row.email !== state.account.email).map((row) => row.email).join("\n");
     renderRecipientStatus(recipients);
@@ -27,39 +29,14 @@
     return [...new Set([...own, ...others])];
   }
 
-  async function saveRecipients(event) {
-    event.preventDefault();
+  /** Recipients are only sent when they changed, so no confirmation is resent. */
+  async function saveRecipients() {
     const emails = selectedRecipients();
-    if (!emails.length) {
-      showStatus("subscription-message", t("recipientRequired"), true);
-      return;
-    }
-    try {
-      renderRecipientStatus(await api("/api/v1/subscriptions/recipients", { method: "PUT", body: JSON.stringify({ emails }) }));
-      toast(t("recipientsSaved"));
-      showStatus("subscription-message", "");
-    } catch (error) {
-      showStatus("subscription-message", errorText(error), true);
-    }
+    if (emails.slice().sort().join("\n") === (state.recipients || []).join("\n")) return;
+    renderRecipients(await api("/api/v1/subscriptions/recipients", { method: "PUT", body: JSON.stringify({ emails }) }));
   }
 
-  // --- Profiles -------------------------------------------------------------
-
-  function summary(profile) {
-    const all = t("profileAll");
-    const types = profile.affair_types.length ? profile.affair_types.join(", ") : all;
-    const datasets = profile.datasets.length ? profile.datasets.map((key) => state.names[key]).join(", ") : all;
-    const topics = profile.category_ids.length
-      ? profile.category_ids.map((id) => categoryName(findCategory(id) || { code: String(id) })).join(", ") : all;
-    const lines = [
-      `${t("topics")}: ${topics}`,
-      `${t("cantons")}: ${profile.canton_names.length ? profile.canton_names.join(", ") : all}`,
-      `${t("affairTypes")}: ${types}`,
-      `${t("datasets")}: ${datasets}`,
-    ];
-    if (profile.keywords.length) lines.push(`${t("keywords")}: ${profile.keywords.join(", ")}`);
-    return lines;
-  }
+  // --- Subscriptions ---------------------------------------------------------
 
   function findCategory(id) {
     for (const parent of state.categories) {
@@ -70,6 +47,29 @@
     return null;
   }
 
+  function summary(profile) {
+    const all = t("profileAll");
+    const topics = profile.category_ids.length
+      ? profile.category_ids.map((id) => categoryName(findCategory(id) || { code: String(id) })).join(", ") : all;
+    return [
+      `${t("topics")}: ${topics}`,
+      `${t("cantons")}: ${profile.canton_names.length ? profile.canton_names.join(", ") : all}`,
+      `${t("affairTypes")}: ${profile.affair_types.length ? profile.affair_types.join(", ") : all}`,
+      `${t("datasets")}: ${profile.datasets.length ? profile.datasets.map((key) => state.names[key]).join(", ") : all}`,
+    ];
+  }
+
+  /** Name in the interface language; the stored German name is used in emails. */
+  function profileTitle(profile) {
+    const part = (names, empty) => (!names.length ? empty
+      : names.slice(0, 2).join(", ") + (names.length > 2 ? ` +${names.length - 2}` : ""));
+    const topics = profile.category_ids.map((id) => categoryName(findCategory(id) || { code: String(id) }));
+    const cantons = profile.canton_keys.map((code) => state.cantons.find((row) => row.code === code)?.name || code);
+    const parts = [part(topics, t("allTopics")), part(cantons, t("allCantons"))];
+    if (profile.affair_types.length) parts.push(part(profile.affair_types, ""));
+    return parts.join(" · ");
+  }
+
   function renderProfiles() {
     const list = $("profile-list");
     list.replaceChildren();
@@ -77,13 +77,14 @@
     if (!profiles.length) list.append(el("p", t("profileEmpty"), "hint"));
     for (const profile of profiles) {
       const card = el("article", undefined, "profile-card");
-      const heading = el("h4", profile.name);
+      if (state.editingProfile?.id === profile.id) card.classList.add("editing");
+      const heading = el("h4", profileTitle(profile));
       if (profile.paused) heading.append(el("span", t("profilePaused"), "tag paused"));
       card.append(heading);
       for (const line of summary(profile)) card.append(el("p", line, "card-meta"));
       const actions = el("div", undefined, "agenda-links");
       actions.append(
-        button(t("profileEdit"), () => editProfile(profile)),
+        button(t("profileEdit"), () => renderProfileForm(profile)),
         button(t("profileDelete"), () => deleteProfile(profile)),
       );
       card.append(actions);
@@ -130,10 +131,9 @@
     $("subscription-datasets").replaceChildren(main, support);
   }
 
-  function renderProfileForm(profile) {
+  function renderProfileForm(profile, scroll = true) {
     state.editingProfile = profile;
     $("profile-form-title").textContent = t(profile.id ? "profileEditTitle" : "profileNewTitle");
-    $("profile-name").value = profile.name;
     $("profile-active").checked = profile.active;
     renderTopics(profile.category_ids);
     $("subscription-cantons").replaceChildren();
@@ -145,122 +145,174 @@
       checkbox($("subscription-affair-types"), "affair_types", value, value, profile.affair_types.includes(value));
     }
     renderDatasets(profile.datasets);
-    $("subscription-keywords").value = profile.keywords.join("\n");
-    $("profile-form").hidden = false;
-    $("profile-name").focus();
+    $("subscription-form").hidden = false;
+    renderProfiles();
+    if (scroll) $("profile-form-title").scrollIntoView({ block: "start", behavior: "smooth" });
   }
 
+  /** Disabled subtopics (covered by their main topic) are not sent. */
   function captureProfile() {
-    const form = new FormData($("profile-form"));
+    const form = new FormData($("subscription-form"));
     return {
-      name: $("profile-name").value.trim(),
       active: $("profile-active").checked,
       category_ids: form.getAll("category_ids").map(Number),
       canton_keys: form.getAll("canton_keys"),
       affair_types: form.getAll("affair_types"),
       datasets: form.getAll("datasets"),
-      keywords: $("subscription-keywords").value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean),
     };
   }
 
-  function editProfile(profile) {
-    renderProfileForm(profile);
+  function newProfile() {
+    renderProfileForm({ id: null, active: true, category_ids: [], canton_keys: [], affair_types: [], datasets: [] });
   }
 
-  function newProfile() {
-    renderProfileForm({ id: null, name: "", active: true, category_ids: [], canton_keys: [], affair_types: [], datasets: [], keywords: [] });
+  function hideProfileForm() {
+    state.editingProfile = null;
+    $("subscription-form").hidden = true;
   }
 
   function closeProfileForm() {
-    state.editingProfile = null;
-    $("profile-form").hidden = true;
+    hideProfileForm();
+    renderProfiles();
   }
 
-  async function saveProfile(event) {
-    event.preventDefault();
-    const payload = captureProfile();
+  const hasFilters = (profile) =>
+    Boolean(profile.category_ids.length || profile.canton_keys.length || profile.affair_types.length);
+
+  async function saveProfile() {
     const editing = state.editingProfile;
+    const payload = captureProfile();
+    await api(editing.id ? `/api/v1/subscriptions/profiles/${editing.id}` : "/api/v1/subscriptions/profiles",
+      { method: editing.id ? "PUT" : "POST", body: JSON.stringify(payload) });
+    hideProfileForm();
+    return payload;
+  }
+
+  /** The button at the bottom saves the open subscription and the recipients, then closes. */
+  async function save() {
+    if (!selectedRecipients().length) {
+      showStatus("subscription-message", t("recipientRequired"), true);
+      return;
+    }
+    const trigger = $("subscription-save");
+    trigger.disabled = true;
     try {
-      await api(editing?.id ? `/api/v1/subscriptions/profiles/${editing.id}` : "/api/v1/subscriptions/profiles",
-        { method: editing?.id ? "PUT" : "POST", body: JSON.stringify(payload) });
-      closeProfileForm();
-      await reload();
-      const empty = !payload.category_ids.length && !payload.canton_keys.length && !payload.affair_types.length && !payload.keywords.length;
-      toast(empty ? t("profileNoFilter") : t("profileSaved"));
+      const profile = state.editingProfile ? await saveProfile() : null;
+      await saveRecipients();
+      state.subscriptions = await api("/api/v1/subscriptions");
       showStatus("subscription-message", "");
+      $("subscription-dialog").close();
+      toast(profile && profile.active && !hasFilters(profile) ? t("profileNoFilter") : t("profileSaved"));
     } catch (error) {
       showStatus("subscription-message", errorText(error), true);
+    } finally {
+      trigger.disabled = false;
     }
   }
 
   async function deleteProfile(profile) {
-    if (!confirm(t("profileDeleteConfirm", { name: profile.name }))) return;
+    if (!confirm(t("profileDeleteConfirm", { name: profileTitle(profile) }))) return;
     try {
       await api(`/api/v1/subscriptions/profiles/${profile.id}`, { method: "DELETE" });
-      if (state.editingProfile?.id === profile.id) closeProfileForm();
-      await reload();
+      if (state.editingProfile?.id === profile.id) hideProfileForm();
+      state.subscriptions = await api("/api/v1/subscriptions");
+      renderProfiles();
       toast(t("profileDeleted"));
     } catch (error) {
       showStatus("subscription-message", errorText(error), true);
     }
   }
 
-  // --- Watches ----------------------------------------------------------------
+  // --- Followed records -------------------------------------------------------
+
+  function watchLabel(watch) {
+    return `${state.names[watch.dataset]} · ${watch.title || `#${watch.record_id}`}`;
+  }
 
   function renderWatches() {
-    $("watch-dataset").replaceChildren();
-    for (const [key, name] of Object.entries(state.names)) addOption($("watch-dataset"), key, name);
-    $("subscription-watches").replaceChildren();
-    for (const watch of state.subscriptions?.watches || []) {
-      const row = el("div");
-      const open = button(`${state.names[watch.dataset]} #${watch.record_id}`, () => {
+    const container = $("subscription-watches");
+    container.replaceChildren();
+    const watches = state.subscriptions?.watches || [];
+    if (!watches.length) container.append(el("p", t("watchEmpty"), "hint"));
+    for (const watch of watches) {
+      const row = el("div", undefined, "watch-row");
+      const open = button(watchLabel(watch), () => {
         $("subscription-dialog").close();
         Polit.detail.show(watch.dataset, watch.record_id);
-      });
+      }, "related-item");
       const remove = button(t("unwatch"), async () => {
         try {
-          await api(`/api/v1/subscriptions/watches/${watch.dataset}/${watch.record_id}`, { method: "DELETE" });
-          state.subscriptions.watches = state.subscriptions.watches.filter((item) => item !== watch);
-          row.remove();
+          await unwatch(watch.dataset, watch.record_id);
+          renderWatches();
         } catch (error) {
           showStatus("subscription-message", errorText(error), true);
         }
       });
       row.append(open, remove);
-      $("subscription-watches").append(row);
+      container.append(row);
     }
   }
 
-  async function addWatch() {
-    const id = Number($("watch-record").value);
-    const dataset = $("watch-dataset").value;
-    if (!Number.isInteger(id) || id <= 0) return;
-    try {
-      await api(`/api/v1/subscriptions/watches/${dataset}/${id}`, { method: "PUT" });
-      await reload();
-      $("watch-record").value = "";
-      toast(t("watchSaved"));
-    } catch (error) {
-      showStatus("subscription-message", errorText(error), true);
+  function isWatched(dataset, id) {
+    return (state.subscriptions?.watches || []).some((watch) => watch.dataset === dataset && watch.record_id === id);
+  }
+
+  async function unwatch(dataset, id) {
+    await api(`/api/v1/subscriptions/watches/${dataset}/${id}`, { method: "DELETE" });
+    state.subscriptions.watches = state.subscriptions.watches.filter((watch) => !(watch.dataset === dataset && watch.record_id === id));
+  }
+
+  /** One-click follow button for the detail view. */
+  function followButton(dataset, id, title) {
+    const node = button("", () => toggle(), "follow-button");
+    const update = () => {
+      const watched = isWatched(dataset, id);
+      node.textContent = watched ? `★ ${t("following")}` : `☆ ${t("follow")}`;
+      node.title = watched ? t("unwatch") : t("followHelp");
+      node.setAttribute("aria-pressed", String(watched));
+    };
+    async function toggle() {
+      await Polit.account.refresh();
+      if (!state.account) {
+        toast(t("followSignIn"));
+        $("account-dialog").showModal();
+        return;
+      }
+      node.disabled = true;
+      try {
+        if (!state.subscriptions) state.subscriptions = await api("/api/v1/subscriptions");
+        if (isWatched(dataset, id)) {
+          await unwatch(dataset, id);
+          toast(t("unwatched"));
+        } else {
+          await api(`/api/v1/subscriptions/watches/${dataset}/${id}`, { method: "PUT" });
+          state.subscriptions.watches.push({ dataset, record_id: id, title });
+          toast(t("watchSaved"));
+        }
+      } catch (error) {
+        toast(errorText(error), true);
+      } finally {
+        node.disabled = false;
+        update();
+      }
     }
+    update();
+    if (state.account && !state.subscriptions) {
+      api("/api/v1/subscriptions").then((overview) => {
+        state.subscriptions ||= overview;
+        update();
+      }).catch(() => {});
+    }
+    return node;
   }
 
   // --- Dialog -----------------------------------------------------------------
 
+  /** Re-render after a language change and keep unsaved edits. */
   function render() {
-    renderProfiles();
-    renderWatches();
-    if (state.editingProfile) renderProfileForm(captureProfileDraft());
-  }
-
-  /** Keep unsaved edits when the language changes. */
-  function captureProfileDraft() {
-    return { ...state.editingProfile, ...captureProfile() };
-  }
-
-  async function reload() {
-    state.subscriptions = await api("/api/v1/subscriptions");
-    renderProfiles();
+    if (!state.subscriptions) return;
+    if (state.editingProfile) renderProfileForm({ ...state.editingProfile, ...captureProfile() }, false);
+    else renderProfiles();
     renderWatches();
   }
 
@@ -273,13 +325,9 @@
     try {
       const [subscriptions, recipients] = await Promise.all([api("/api/v1/subscriptions"), api("/api/v1/subscriptions/recipients")]);
       state.subscriptions = subscriptions;
-      closeProfileForm();
+      hideProfileForm();
       renderProfiles();
       renderWatches();
-      if (state.detail) {
-        $("watch-dataset").value = state.detail.dataset;
-        $("watch-record").value = state.detail.id;
-      }
       renderRecipients(recipients);
       showStatus("subscription-message", "");
       await loadDemoTopics();
@@ -293,8 +341,9 @@
     if (!confirm(t("stopConfirm"))) return;
     try {
       await api("/api/v1/subscriptions", { method: "DELETE" });
+      state.subscriptions = await api("/api/v1/subscriptions");
       closeProfileForm();
-      await reload();
+      renderWatches();
       toast(t("stopped"));
     } catch (error) {
       showStatus("subscription-message", errorText(error), true);
@@ -307,7 +356,9 @@
       await api("/api/v1/auth/me", { method: "DELETE" });
       $("subscription-dialog").close();
       state.subscriptions = null;
+      Polit.account.resetDialog();
       await Polit.account.refresh();
+      toast(t("accountDeleted"));
     } catch (error) {
       showStatus("subscription-message", errorText(error), true);
       toast(errorText(error), true);
@@ -374,18 +425,20 @@
 
   function bindEvents() {
     $("membership-view").addEventListener("click", open);
-    $("recipients-form").addEventListener("submit", saveRecipients);
+    $("subscription-save").addEventListener("click", save);
+    $("subscription-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      save();
+    });
     $("profile-new").addEventListener("click", newProfile);
-    $("profile-form").addEventListener("submit", saveProfile);
     $("profile-cancel").addEventListener("click", closeProfileForm);
     $("unsubscribe").addEventListener("click", stopAll);
     $("subscription-logout").addEventListener("click", () => {
       Polit.account.logout("subscription-message", () => $("subscription-dialog").close());
     });
     $("delete-account").addEventListener("click", deleteAccount);
-    $("watch-add").addEventListener("click", addWatch);
     $("demo-send").addEventListener("click", sendDemoNotification);
   }
 
-  Polit.subscriptions = { bindEvents, open, render, reload, isOpen: () => $("subscription-dialog").open };
+  Polit.subscriptions = { bindEvents, open, render, followButton, isOpen: () => $("subscription-dialog").open };
 })();

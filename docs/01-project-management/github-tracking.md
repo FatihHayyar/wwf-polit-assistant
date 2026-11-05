@@ -63,6 +63,34 @@ Milestones M1–M4 dokumentieren die abgeschlossene technische beziehungsweise d
 
 Die geschlossenen Issues verlinken den veröffentlichten Implementierungs-/Dokumentationsstand und beschreiben ihre Aussagegrenzen. Die Rechte-/Projekttafel-Aufgabe bleibt [in Issue #25](https://github.com/FatihHayyar/wwf-polit-assistant/issues/25) offen. Die übrigen Issues können bereits über Milestones und Labels verfolgt werden.
 
+## Zuordnung zu den drei Milestones und den User Stories
+
+Der [Projektplan](project-plan.md) gliedert das Projekt seit November 2026 in drei Milestones mit [User Stories](../02-requirements/user-stories.md). Auf GitHub sind noch die bisherigen sieben Milestones angelegt; die folgende Tabelle ordnet die Issues zu. Eine Umstellung der GitHub-Milestones ist noch nicht erfolgt.
+
+| GitHub-Milestone | Neuer Milestone |
+|---|---|
+| M1 Auftrag und Anforderungsbasis | M1 – Projektstart und Planung |
+| M2 Datenintegration, M3 Klassifikation und Recherche, M4 Monitoring und Kontofunktionen | M2 – Umsetzung bis zur Zwischenpräsentation |
+| M5 Validation, M6 Dokumentation und Übergabe | M3 – Rückmeldungen, Fertigstellung und WIPRO-Dokumentation |
+| M7 Betrieb und Weiterentwicklung | Nicht Teil des WIPRO (Won't); Übergabe über US-21 |
+
+| Issue | Story / Arbeitspaket | Issue | Story / Arbeitspaket |
+|---|---|---|---|
+| #1 | AP-1.5, AP-1.7 | #15 | US-16, F12 |
+| #2 | US-01 | #16 | US-23 |
+| #3 | US-02 | #17 | US-01 (Validierung der Quelle) |
+| #4 | US-01 | #18 | US-08, F11 |
+| #5 | US-03 | #19 | US-04 (Leistung) |
+| #6 | US-02, US-04 | #20 | AP-1.8 |
+| #7 | US-10 | #21 | US-11 |
+| #8 | US-06, US-07 | #22 | US-22 |
+| #9 | US-08 | #23 | AP-3.1, AP-3.2 |
+| #10 | US-05, US-09 (R18) | #24 | F14 |
+| #11 | US-04, US-06 (Oberfläche) | #25 | AP-1.6 |
+| #12 | Testnachweis aller M2-Stories | #26 | US-21 |
+| #13 | US-14, F02 | #27 | F13 |
+| #14 | US-15, F05 | #28 | Won't (Weiterentwicklung) |
+
 ## Lokal umgesetzt, auf GitHub noch nachzuführen (21. Oktober 2026)
 
 Die Tabelle oben gibt den Stand auf GitHub wieder. Auf dem Branch `improvements/wipro-review` sind folgende Punkte umgesetzt; die Issues werden nach dem Push mit Nachweis aktualisiert:
