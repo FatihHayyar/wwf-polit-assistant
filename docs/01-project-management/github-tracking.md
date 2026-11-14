@@ -21,7 +21,7 @@ Ein Issue wird geschlossen, wenn alle Akzeptanzkriterien erfüllt sind. Stories,
 |---|---|---|---|
 | M1 – Projektstart und Planung | #29–#36 (AP-1.1 – AP-1.8) | 8 | 0 |
 | M2 – Umsetzung bis zur Zwischenpräsentation | #37–#58 (US-01 – US-20, AP-2.1, AP-2.2) | 19 | 3 (US-15, US-16, AP-2.2) |
-| M3 – Rückmeldungen, Fertigstellung und WIPRO-Dokumentation | #59–#64 (US-21 – US-23, AP-3.1 – AP-3.3) | 0 | 6 |
+| M3 – Rückmeldungen, Fertigstellung und WIPRO-Dokumentation | #59–#64 (US-21 – US-23, AP-3.1 – AP-3.3) | 1 (US-21) | 5 |
 
 | Story / Arbeitspaket | Issue | Story / Arbeitspaket | Issue |
 |---|---|---|---|

@@ -32,7 +32,7 @@ Der Backlog wurde zu Beginn aus der [Anforderungsliste](requirements.md) abgelei
 | US-19 | Klare Meldungen bei Registrieren und Anmelden | Abonnent:in | Should | R10, R19 | M2 | Erledigt | [#55](https://github.com/FatihHayyar/wwf-polit-assistant/issues/55) |
 | US-20 | Konto löschen mit Bestätigung | Abonnent:in | Should | R10 | M2 | Erledigt | [#56](https://github.com/FatihHayyar/wwf-polit-assistant/issues/56) |
 | AP-2.1 – AP-2.2 | Fragen sammeln, Zwischenpräsentation am 18.11.2026 | Projektleitung | Must | R11 | M2 | In Arbeit | [#57](https://github.com/FatihHayyar/wwf-polit-assistant/issues/57) – [#58](https://github.com/FatihHayyar/wwf-polit-assistant/issues/58) |
-| US-21 | Übergabe für Azure vorbereiten | WWF-IT | Must | R13, R14 | M3 | In Arbeit | [#59](https://github.com/FatihHayyar/wwf-polit-assistant/issues/59) |
+| US-21 | Übergabe für den Betrieb vorbereiten | WWF-IT | Must | R13, R14 | M3 | Erledigt | [#59](https://github.com/FatihHayyar/wwf-polit-assistant/issues/59) |
 | US-22 | Anwendung anhand der Dokumentation übernehmen | WWF-IT | Must | R11 | M3 | In Arbeit | [#60](https://github.com/FatihHayyar/wwf-polit-assistant/issues/60) |
 | US-23 | MVP mit WWF abnehmen | WWF-Fachperson | Must | R12 | M3 | Offen | [#61](https://github.com/FatihHayyar/wwf-polit-assistant/issues/61) |
 | AP-3.1 – AP-3.3 | WIPRO-Bericht, Abgabe, Abschlusspräsentation | Projektleitung | Must | R11 | M3 | In Arbeit | [#62](https://github.com/FatihHayyar/wwf-polit-assistant/issues/62) – [#64](https://github.com/FatihHayyar/wwf-polit-assistant/issues/64) |
@@ -313,16 +313,16 @@ Should · R10 · Erledigt · GitHub [#56](https://github.com/FatihHayyar/wwf-pol
 
 M3 beginnt nach der Zwischenpräsentation am 18.11.2026 und endet mit der Abgabe am 21.12.2026. Stories aus den Rückmeldungen der Zwischenpräsentation werden hier ergänzt, sobald sie vorliegen.
 
-### US-21 Übergabe für Azure vorbereiten
+### US-21 Übergabe für den Betrieb vorbereiten
 
-**Als** WWF-IT **möchte ich** einen Container und eine Zielarchitektur für Azure, **damit** wir die Anwendung in unserer Umgebung betreiben können.
-Must · R13, R14 · In Arbeit (Testdeployment durch WWF offen) · GitHub [#59](https://github.com/FatihHayyar/wwf-polit-assistant/issues/59)
+**Als** WWF-IT **möchte ich** einen Container und eine beschriebene Zielarchitektur, **damit** wir die Anwendung in unserer Azure-Umgebung betreiben können.
+Must · R13, R14 · Erledigt · Die Bereitstellung in Azure übernimmt WWF (D9, F06) · GitHub [#59](https://github.com/FatihHayyar/wwf-polit-assistant/issues/59)
 
 | AK | Gegeben / Wenn / Dann | Test |
 |---|---|---|
 | 1 | Das Image läuft ohne Root-Rechte und meldet seinen Zustand über `/health`. | Docker-Build in der CI; [Deployment-Anleitung](../06-handover/deployment-guide.md) |
 | 2 | Zielarchitektur, Konfiguration und Betriebsanforderungen sind beschrieben. | [Azure-Integration](../03-architecture/azure-integration.md) |
-| 3 | WWF startet die Anwendung in einer Testumgebung. | Offen |
+| 3 | Gegeben nur Umgebungsvariablen, wenn das Image gestartet wird, dann läuft die Anwendung ohne Anpassung am Code. | CI-Schritt «Application imports inside the image»; Docker-Demo [`docker-compose.demo.yml`](../../docker-compose.demo.yml) |
 
 ### US-22 Anwendung anhand der Dokumentation übernehmen
 
@@ -368,3 +368,4 @@ Must · R12 · Offen · GitHub [#61](https://github.com/FatihHayyar/wwf-polit-as
 | M2, nach der WWF-Rückmeldung (Oktober 2026) | Neu: US-12 mehrere Abonnements, US-13 Geschäftstyp, US-15 Unterthemen; dazu US-14 als Umsetzung der dialogorientierten Abfrage aus der Aufgabenstellung | E-Mail von WWF; Abgleich mit der Aufgabenstellung | D12–D14 |
 | M2, Test der Oberfläche (November 2026) | Suchbegriffe aus Abonnements entfernt (bleiben in der Suche), Namen werden erzeugt, Verfolgen mit einem Klick (US-17, US-18) | Rückmeldung aus dem eigenen Test | D15 |
 | M2, Test der Oberfläche (November 2026) | Klare Meldungen bei Registrieren/Anmelden, Bestätigung beim Löschen (US-19, US-20) | Rückmeldung aus dem eigenen Test | D16 |
+| M2, vor der Zwischenpräsentation (November 2026) | US-21 auf den Projektanteil begrenzt: Kriterium «WWF startet die Anwendung in einer Testumgebung» ersetzt durch den Start allein über Umgebungsvariablen; Story abgeschlossen | Bereitstellung in Azure ist Aufgabe von WWF | D9 |

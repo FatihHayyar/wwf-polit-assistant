@@ -19,7 +19,7 @@ Die Akzeptanzkriterien stehen direkt bei ihrer User Story im [Backlog](user-stor
 | R11 Dokumentation | AP-1.x, US-22, AP-3.1 | – | Durchsicht, manueller Start | In Arbeit |
 | R12 Anwendungsfälle validieren | US-11, US-16, US-23 | 8 | `test_api_security` (Demo), Abnahme | Demo ✅; WWF-Abnahme offen |
 | R13 Python-Nähe | US-21 | – | Technologieentscheid D3 | ✅ |
-| R14 Azure-Anschlussfähigkeit | US-21 | 3 | CI-Docker-Build, Dokumentation | In Arbeit; Testdeployment offen |
+| R14 Azure-Anschlussfähigkeit | US-21 | 3 | CI-Docker-Build, Docker-Demo, Dokumentation | ✅ bestanden; Bereitstellung durch WWF (D9) |
 | R15 Abstimmungen, Gruppen, Interessen | US-02, US-04 | 8 | `test_monitoring` | ✅ bestanden |
 | R16 Energie-/Klima-Themen abstimmen | US-15 | 4 | `test_rule_classifier`, Freigabe | Umsetzung ✅; Freigabe offen (F05) |
 | R17 Mehrere Empfängeradressen | US-09 | 2 | `test_account_preferences`, `test_api_security` | ✅ bestanden |
