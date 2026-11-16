@@ -235,9 +235,35 @@ Der Versand stoppt nach drei aufeinanderfolgenden Fehlern. Erfolgreiche Nachrich
 
 Die Prüfung der Änderungsqualität vom 11. Oktober 2026 fand unter 1'329 Text-Updates mit Snapshot 1'251 reine Formatierungsänderungen (78 mit sichtbar anderem Inhalt, darunter Rechtschreibkorrekturen). Die Richtlinie `meaningful-v2` wertet sichtbaren HTML-Text aus, ignoriert Inline-Wrapper und gleichwertige Anführungszeichen sowie Leerraum um Satzzeichen. Vorzeichen, geänderte Beträge und Verneinungen bleiben relevant. Frühere Change-Events ohne Snapshot lassen sich nicht abschliessend auf Formatierungsänderungen prüfen. Lokale Detailauswertung: `logs/change_quality_audit_20261011.json`.
 
-### Aktuelle Richtlinie: meaningful-v3
+### Aktuelle Richtlinie: meaningful-v4
 
-Alle Quelländerungen aktualisieren weiterhin Datenbank, Klassifikation und Änderungsverlauf. Die E-Mail-Relevanz wird unabhängig davon bestimmt. Diese Richtlinie ersetzt die früheren, breiteren Feldregeln.
+Alle Quelländerungen aktualisieren weiterhin Datenbank, Klassifikation und Änderungsverlauf. Die E-Mail-Relevanz wird unabhängig davon bestimmt. `meaningful-v4` übernimmt die Feldregeln von `meaningful-v3` (Tabelle unten) und ergänzt Regeln, die den Datensatz selbst und das Erkennungsdatum berücksichtigen.
+
+**Anlass.** Am 09.11.2026 hat OpenParlData über 100'000 Geschäfte und viele weitere Datensätze auf einmal überarbeitet. Der Abgleich vom 14./15.11.2026 (11,5 Stunden, 0 Fehler) fand 87'664 neue Datensätze und 464'189 Änderungen. Unter `meaningful-v3` galten davon 342'295 als meldewürdig. Fast alles davon waren Übersetzungen, Schreibweisen, Zeitstempel und nachgetragene Altdaten.
+
+**Neue Regeln in v4.** Diese Fälle lösen keine E-Mail mehr aus:
+
+| Regel | Beispiel aus dem Abgleich vom 14.11.2026 |
+| --- | --- |
+| Zeitstempel werden sekundengenau verglichen; erhält ein reines Datum (00:00) nachträglich eine Uhrzeit am selben Tag, bleibt das still | Abstimmung `17:59:42` → `17:59:42.540000`; `2024-12-20T00:00:00` → `2024-12-20T08:26:21` |
+| Akzente und Gross-/Kleinschreibung werden ignoriert | «Conseil des Etats» → «Conseil des États» |
+| Satzzeichen allein (`. , : ; ! ? …`) ändern keine Aussage; Vorzeichen wie «-» bleiben relevant | «Italien: Warum …» → «Italien. Warum …» |
+| Ein Sprachfeld enthielt eine Kopie einer anderen Sprache und wird nun übersetzt (oder umgekehrt) | `state_name_it` «Liquidé» → «Liquidato»; `text_it` mit französischem Text → italienischer Text |
+| Eine FR-/IT-/RM-/EN-Fassung ändert sich, während eine andere vorhandene Fassung gleich bleibt. Eine echte Änderung betrifft alle vorhandenen Sprachfassungen. Eine reine DE-Änderung bleibt relevant, weil Deutsch die Hauptsprache von WWF ist | `state_name_it` «La dichiarazione …» → «Il parere …», `state_name_de` unverändert |
+| Kaputte Zeichen werden repariert (UTF-8-Text, der als Latin-1/Windows-1252 gelesen wurde) oder entstehen neu | Rolle «SekretÃ¤r» → «Sekretär» |
+| «Unbekannt» wird zu «nein» (oder umgekehrt) | Interessenbindung `ex_officio`: leer → `false` |
+| Datensätze mit Datum (Traktanden, Sitzungen, Abstimmungen, Ereignisse, Dokumente, Texte, Interessenbindungen), deren Datum mehr als 30 Tage vor der Erkennung liegt, gelten als Nachtrag oder redaktionelle Korrektur und nicht als Neuigkeit; das gilt für neue und geänderte Datensätze. Geschäfte sind ausgenommen: Ein neuer Status eines alten Geschäfts bleibt relevant. Datensätze ohne Datum und künftige Termine bleiben relevant | Neue Abstimmung vom 05.05.2015; Sitzung von 2009 erhält ein Enddatum |
+
+**Wirkung.** Eine schreibgeschützte Nachrechnung über alle Change-Events des Abgleichs vom 14.11.2026 ergibt:
+
+| | meaningful-v3 | meaningful-v4 |
+| --- | ---: | ---: |
+| Änderungen, meldewürdig | 254'631 | 1'807 |
+| Neue Datensätze, meldewürdig | 87'664 | 12'702 |
+
+Ob daraus E-Mails entstehen, entscheiden weiterhin die Abonnements und Watches der einzelnen Personen. Die Regeln werden beim Erzeugen der Benachrichtigung und beim Versand erneut angewendet. Bereits erzeugte Benachrichtigungen fallen deshalb auch dann weg, wenn sie unter einer älteren Version entstanden sind.
+
+#### Feldregeln (seit meaningful-v3)
 
 | Bereich | Benachrichtigung bei neuen Datensätzen und diesen Änderungen |
 | --- | --- |

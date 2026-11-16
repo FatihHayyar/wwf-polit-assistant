@@ -39,6 +39,12 @@ class MemorySource:
 
 class MonitoringTests(unittest.TestCase):
     def setUp(self):
+        # Fixtures use fixed 2026 dates; the age rule of the notification policy is
+        # covered in test_notification_policy, so it must not depend on today's date here.
+        from datetime import timedelta
+        stale_rule = patch("app.services.notification_policy.STALE_AFTER", timedelta(days=365 * 100))
+        stale_rule.start()
+        self.addCleanup(stale_rule.stop)
         self.engine = create_engine("sqlite:///:memory:")
         Base.metadata.create_all(self.engine)
         self.db = Session(self.engine, autoflush=False)
