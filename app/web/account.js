@@ -2,7 +2,7 @@
 // Account dialog: passwordless sign-in links, sign-in sync across tabs, logout.
 (() => {
   const Polit = window.Polit;
-  const { state, t, $, api, errorText, showStatus } = Polit;
+  const { state, t, $, api, errorText, showStatus, externalLink } = Polit;
 
   async function refresh() {
     const previous = state.account?.email;
@@ -93,6 +93,9 @@
         body: JSON.stringify({ email: data.get("email") }),
       });
       showStatus("account-message", t(answer.result === "login_link" ? "loginLinkSent" : "verificationLinkSent"));
+      // The demo sends nothing outside; point to the local test mailbox.
+      const mailbox = state.demo.enabled ? externalLink(state.demo.mailboxUrl, t("demoOpenMailbox")) : null;
+      if (mailbox) $("account-message").append(" ", t("demoMailboxHint"), " ", mailbox);
     } catch (error) {
       // Wrong choice: say so and switch, so the next click does the right thing.
       if (error.status === 409) {

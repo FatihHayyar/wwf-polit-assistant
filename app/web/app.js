@@ -43,6 +43,9 @@
       state.demo = { enabled: false, mailboxUrl: null };
     }
     $("demo-guide").hidden = !state.demo.enabled;
+    const mailbox = state.demo.enabled ? Polit.externalLink(state.demo.mailboxUrl, t("demoOpenMailbox")) : null;
+    if (mailbox) mailbox.dataset.i18n = "demoOpenMailbox"; // follows language switches
+    $("demo-mailbox").replaceChildren(...(mailbox ? [mailbox] : []));
   }
 
   /** Handle links from emails, e.g. ?dataset=affairs&record=123. */

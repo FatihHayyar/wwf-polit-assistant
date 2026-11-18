@@ -152,6 +152,7 @@ window.PolitUI = (() => {
     ["demoNoMatch", "Das Testgeschäft passt zu keinem gespeicherten Abonnement. Prüfe Themen, Kantone, Geschäftstypen und Bereiche.", "L'objet de test ne correspond à aucun abonnement. Vérifiez thèmes, cantons, types d'objets et domaines.", "L'oggetto di prova non corrisponde ad alcun abbonamento. Controlla temi, cantoni, tipi e ambiti.", "The test affair does not match any saved subscription. Check topics, cantons, affair types and datasets."],
     ["demoMailFailed","Die Benachrichtigung konnte nicht gesendet werden. Prüfe die E-Mail-Konfiguration.","La notification n'a pas pu être envoyée. Vérifiez la configuration e-mail.","Impossibile inviare la notifica. Controlla la configurazione e-mail.","The notification could not be sent. Check the email configuration."],
     ["demoOpenMailbox","Postfach öffnen","Ouvrir la boîte mail","Apri la casella","Open mailbox"],
+    ["demoMailboxHint","Demo: Die E-Mail liegt im lokalen Testpostfach.","Démo : l'e-mail se trouve dans la boîte de test locale.","Demo: l'e-mail si trova nella casella di prova locale.","Demo: the email is in the local test mailbox."],
     ["data_centers", "Rechenzentren", "Centres de données", "Centri dati", "Data centres"],
     ["large_consumers", "Grossverbraucher", "Grands consommateurs", "Grandi consumatori", "Large energy consumers"],
     ["climate_energy_other", "Sonstiges", "Autres", "Altro", "Other"],
