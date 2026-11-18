@@ -8,7 +8,7 @@ Der WWF Polit-Assistant bündelt Schweizer Parlamentsdaten aus OpenParlData und 
 
 Das Projekt entsteht für **WWF Schweiz** im **Wirtschaftsprojekt (WIPRO)** des BSc Informatik an der **Hochschule Luzern (HSLU)**. Der aktuelle Stand ist ein funktionsfähiger Entwicklungs-MVP; die fachliche Abnahme und der Betrieb in der WWF-Umgebung stehen noch aus.
 
-[Projektziele](#projektziele) · [Funktionen](#funktionen) · [Demo starten](#quick-start-mit-docker) · [Architektur](#architektur) · [Entwicklung](#lokale-entwicklung) · [Dokumentation](#dokumentation)
+[Projektziele](#projektziele) · [Funktionen](#funktionen) · [Installation](#installation-und-test) · [Architektur](#architektur) · [Entwicklung](#lokale-entwicklung) · [Dokumentation](#dokumentation)
 
 ## Projektziele
 
@@ -84,71 +84,29 @@ Datenimport, Synchronisierung aller neun Bereiche, konfigurierbare regelbasierte
 
 Automatisierte Tests und Stichproben ersetzen keine WWF-Abnahme. Frühere Nachweise: [Prüfung vom 13. Oktober](docs/05-testing/review-2026-10-13.md), [Testergebnisse](docs/05-testing/test-results.md), [Aufgabenstand](docs/01-project-management/current-status.md).
 
-## Quick Start mit Docker
+## Installation und Test
 
-> **Demo-Installation:** Der Quick Start startet eine lokale Demo mit einem begrenzten Datenausschnitt, nicht mit dem vollständigen Datenbestand. Pro Bereich sind die jeweils 500 neuesten Datensätze aus einer festen Stichprobe enthalten, dazu die für die Detailansichten nötigen verknüpften Einträge. Suchen und Fragen liefern deshalb deutlich weniger Treffer als im Betrieb; spezifische Kombinationen aus Thema, Kanton, Geschäftstyp und Zeitraum bleiben oft leer.
+Zum Ausprobieren gibt es eine **Demo** mit einem Ausschnitt der Daten (die Geschäfte, Sitzungen, Abstimmungen und Dokumente des letzten Jahres, Dokumenttexte gekürzt). Sie läuft mit oder ohne Docker; der ZIP-Download auf GitHub (**«Code → Download ZIP»**) ersetzt Git.
 
-Für die lokale Demo werden **Docker Desktop** (gestartet) und **Git** benötigt. Alternativ kann das Repository als ZIP heruntergeladen werden. Eine separate Installation von Python oder PostgreSQL und eine eigene `.env` sind nicht erforderlich.
+| Variante | Benötigt | Speicher | Dauer beim ersten Mal |
+|---|---|---|---|
+| [Demo mit Docker](docs/installation/1-demo-docker.md) (empfohlen) | Docker Desktop | ca. 4 GB | ca. 15–20 Min. |
+| [Demo ohne Docker und Git](docs/installation/2-demo-ohne-docker.md) | Python, PostgreSQL, Mailpit (Windows) | ca. 3 GB | ca. 30–45 Min. |
+| [Vollständige Installation](docs/installation/3-vollinstallation.md) | Git, Docker Desktop, Python, 16 GB RAM | ca. 50 GB | mehrere Stunden |
 
-### 1. Repository herunterladen
+Die Demo läuft lokal mit einem Testpostfach (Mailpit), es werden keine echten E-Mails versendet. Nach dem Start helfen die [ersten Schritte](docs/installation/erste-schritte.md) beim Ausprobieren von Suche, Abonnements und Benachrichtigungen. Die vollständige Installation mit allen Daten von OpenParlData (rund 3 Millionen Einträge) entspricht dem Betrieb und richtet sich an technisch Verantwortliche.
+
+**Kurzstart mit Git und Docker:**
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) installieren (für private Nutzung kostenlos), starten und warten, bis «Engine running» angezeigt wird. Danach:
 
 ```sh
 git clone https://github.com/FatihHayyar/wwf-polit-assistant.git
 cd wwf-polit-assistant
-```
-
-Bei einem ZIP-Download das Archiv entpacken und ein Terminal im Projektordner öffnen.
-
-### 2. Anwendung starten
-
-```sh
 docker compose -f docker-compose.demo.yml up --build -d
 ```
 
-Docker startet **FastAPI**, **PostgreSQL 17**, die **Alembic-Migrationen** und **Mailpit**. Der erste Start benötigt Internet für Images und Python-Pakete und kann einige Minuten dauern.
-
-Eine leere Demo-Datenbank erhält automatisch **500 Beispieldatensätze pro Bereich**. Zusätzliche verknüpfte Referenzdaten erhalten den Kontext der Detailansichten; deshalb enthalten einige Bereiche mehr als 500 Einträge. Die Stichprobe liegt bereits im Repository, ein vollständiger OpenParlData-Import ist nicht erforderlich.
-
-Bei jedem Start übernimmt die Demo die aktuelle [taxonomy.json](app/classification/taxonomy.json) und klassifiziert alle Datensätze neu, deren Klassifikation von einer anderen Klassifikator-Version stammt (derzeit `rule-based-v8`). Das dauert beim ersten Start rund zehn Sekunden.
-
-Die Demo verwendet eine eigene Datenbank, erhält vorhandene Daten beim Neustart und startet keine tägliche Synchronisierung.
-
-### 3. Anwendung öffnen
-
-| Dienst | Adresse |
-|---|---|
-| Polit-Assistant | [localhost:8081](http://localhost:8081) |
-| Swagger / OpenAPI | [localhost:8081/docs](http://localhost:8081/docs) |
-| Lokale E-Mails (Mailpit) | [localhost:8025](http://localhost:8025) |
-
-### Einen ersten Ablauf ausprobieren
-
-1. Eine Frage stellen, z. B. «Motionen zur Photovoltaik», «Geschäfte zum Wolf seit 2024», «Motionen zum Klima im Kanton Zürich» oder «Séances au Grand Conseil de Genève en 2026», oder einen Bereich auswählen und nach Begriff, WWF-Thema oder Geschäftstyp filtern; einen Treffer öffnen und seine verknüpften Inhalte ansehen. Diese Beispiele liefern auch im begrenzten Demo-Datenausschnitt Treffer.
-2. **Registrieren** wählen und eine E-Mail-Adresse eingeben (beliebig, z. B. `test@example.org`).
-3. In **Mailpit** ([localhost:8025](http://localhost:8025)) die Bestätigungs-E-Mail öffnen, dem Link folgen und **Registrierung bestätigen** klicken. Die Abonnementverwaltung öffnet sich.
-4. **+ Neues Abonnement** wählen und ein Thema wählen, z. B. **Klima & Energie**, optional auch Kantone oder Geschäftstypen. Unten **Abonnement speichern** klicken; der Dialog schliesst sich mit einer Bestätigung. Weitere Abonnements lassen sich auf dieselbe Weise ergänzen.
-5. Unter **Benachrichtigung testen (Demo)** ein Thema wählen und **Testgeschäft erstellen und benachrichtigen** klicken. Die Anwendung legt ein fiktives neues Geschäft an und schickt es durch die echte Klassifikation, die Relevanzprüfung und den Versand.
-6. In Mailpit erscheint die Benachrichtigung zum neuen Geschäft. Passt das Testgeschäft zu keinem gespeicherten Abonnement, erklärt die Oberfläche den Grund, statt eine E-Mail zu senden.
-
-Alle Demo-E-Mails bleiben lokal; externe SMTP-Zugangsdaten werden nicht benötigt. Die Testfunktion existiert nur mit `DEMO_MODE=true` und ist auch per Kommandozeile verfügbar:
-
-```sh
-docker compose -f docker-compose.demo.yml exec app python -m scripts.demo.send_test_notification --email test@example.org --topic renewable_electricity
-```
-
-### Logs und Beenden
-
-```sh
-docker compose -f docker-compose.demo.yml logs -f app
-```
-
-```sh
-docker compose -f docker-compose.demo.yml down
-```
-
-Die PostgreSQL-Daten bleiben im Docker-Volume erhalten.
-
-> `docker compose -f docker-compose.demo.yml down -v` löscht den lokalen Demo-Datenbestand. Nur verwenden, wenn die Demo bewusst zurückgesetzt werden soll.
+Danach [localhost:8081](http://localhost:8081) (Anwendung) und [localhost:8025](http://localhost:8025) (Testpostfach) öffnen.
 
 ## Architektur
 
@@ -431,7 +389,7 @@ Die Dokumentation ist nach Projektmanagement, Anforderungen, Architektur, techni
 |---|---|
 | [Dokumentationsindex](docs/README.md) | Einstieg in alle Projektunterlagen |
 | [Aktueller Aufgabenstand](docs/01-project-management/current-status.md) | Erledigte Prüfungen, verbleibende Abnahme und Abgleich der gestrigen Aufgaben |
-| [Installation](docs/getting-started.md) | Demo, Entwicklungsumgebung und vollständiger Erstimport |
+| [Installation](docs/getting-started.md) | Entwicklungsumgebung und Erstimport für Entwickler; Schritt-für-Schritt-Anleitungen unter [docs/installation](docs/installation/) |
 | [Benutzerhandbuch](docs/06-handover/user-guide.md) | Recherche, Fragen, Anmeldung und Abonnements |
 | [Konfiguration](docs/configuration.md) | Umgebungsvariablen, Container, Google-Anmeldung und editierbare Klassifikation |
 | [Architektur](docs/03-architecture/system-architecture.md) | Komponenten, Datenmodell und Ausführungsgrenzen |

@@ -2,6 +2,13 @@
 
 **Stand: 21. Oktober 2026.** Entwicklungs-MVP; technische Umsetzung, WWF-Abnahme und Betriebsfreigabe werden getrennt geführt. Der lokale Stand steht im [Aufgabenstand](01-project-management/current-status.md), die aktuelle Messung der Klassifikation in der [Prüfset-Auswertung](05-testing/evidence/holdout-evaluation.md). [GitHub-Tracking](01-project-management/github-tracking.md) dokumentiert den bisherigen externen Tracking-Stand.
 
+## Installation und Test
+
+- [Demo mit Docker](installation/1-demo-docker.md)
+- [Demo ohne Docker und Git (Windows)](installation/2-demo-ohne-docker.md)
+- [Vollständige Installation](installation/3-vollinstallation.md)
+- [Erste Schritte nach der Installation](installation/erste-schritte.md)
+
 ## 01 – Projektmanagement
 
 - [Projektplan: drei Milestones, Vorgehen, Definition of Done](01-project-management/project-plan.md)

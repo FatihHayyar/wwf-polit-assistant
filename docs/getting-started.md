@@ -1,25 +1,7 @@
 # Installation und Entwicklung
 
-## Lokale Demo
-
-Voraussetzungen: Git und ein laufendes Docker Desktop mit Docker Compose. Die Demo benötigt keine eigene `.env` oder Python-Installation.
-
-```sh
-git clone https://github.com/FatihHayyar/wwf-polit-assistant.git
-cd wwf-polit-assistant
-docker compose -f docker-compose.demo.yml up --build -d
-```
-
-Öffnen: Anwendung unter `http://localhost:8081`, API-Dokumentation unter `http://localhost:8081/docs`, lokale E-Mails unter `http://localhost:8025`.
-
-Beim Start werden Migrationen ausgeführt und eine leere Demo-Datenbank mit der mitgelieferten Stichprobe befüllt. Bereits vorhandene Daten bleiben erhalten. Es läuft kein täglicher Sync. Mailpit fängt E-Mails lokal ab. Die Startseite zeigt im Demo-Modus, wie sich eine Benachrichtigung mit einem Testgeschäft ausprobieren lässt (Registrieren → Abonnement anlegen → «Benachrichtigung testen» → E-Mail in Mailpit).
-
-```sh
-docker compose -f docker-compose.demo.yml logs -f app
-docker compose -f docker-compose.demo.yml down
-```
-
-`down` erhält das Datenbank-Volume. `down -v` löscht den Demo-Datenbestand und darf nur zum bewussten Zurücksetzen verwendet werden.
+Diese Seite richtet sich an Entwickler. Schritt-für-Schritt-Anleitungen ohne Vorkenntnisse:
+[Demo mit Docker](installation/1-demo-docker.md), [Demo ohne Docker und Git](installation/2-demo-ohne-docker.md) und [vollständige Installation](installation/3-vollinstallation.md).
 
 ## Entwicklungsumgebung unter Windows
 
@@ -44,7 +26,7 @@ python -m uvicorn app.main:app --reload
 
 Anwendung: `http://localhost:8000`; Swagger: `http://localhost:8000/docs`. Ohne aktivierte virtuelle Umgebung kann überall `.\.venv\Scripts\python.exe` statt `python` verwendet werden.
 
-Migrationen erzeugen Tabellen und Indizes, aber keine parlamentarischen Inhalte. Auf grossen Beständen können Suchindex-Migrationen lange dauern. Für eine sofort befüllte Anwendung die separate Docker-Demo verwenden.
+Migrationen erzeugen Tabellen und Indizes, aber keine parlamentarischen Inhalte. Auf grossen Beständen können Suchindex-Migrationen lange dauern. Für eine sofort befüllte Anwendung die [Demo](installation/1-demo-docker.md) verwenden.
 
 ## Vollständiger Erstimport
 
