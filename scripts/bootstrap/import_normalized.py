@@ -20,6 +20,9 @@ from app.core.config import settings  # noqa: E402
 
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
 PROGRESS_EVERY = 25_000
+# Waits long enough for PostgreSQL to finish crash recovery.
+RETRIES = 10
+RETRY_SECONDS = 60
 
 
 @dataclass(frozen=True)
@@ -930,13 +933,29 @@ def main() -> None:
 
     print(f"Snapshot: {snapshot.name}")
 
-    with psycopg.connect(database_url()) as conn:
-        for dataset_name in selected:
-            import_dataset(
-                conn=conn,
-                snapshot=snapshot,
-                dataset=DATASETS[dataset_name],
-            )
+    for dataset_name in selected:
+        # A lost connection (e.g. the database restarting under memory
+        # pressure) only repeats the current dataset; sharded datasets
+        # resume after their last committed file.
+        for attempt in range(1, RETRIES + 1):
+            try:
+                with psycopg.connect(database_url()) as conn:
+                    import_dataset(
+                        conn=conn,
+                        snapshot=snapshot,
+                        dataset=DATASETS[dataset_name],
+                    )
+                break
+            except psycopg.OperationalError as error:
+                if attempt == RETRIES:
+                    raise
+                print(
+                    f"\n[RETRY] {dataset_name}: database connection lost "
+                    f"({str(error).splitlines()[0]}). Retrying in "
+                    f"{RETRY_SECONDS}s ({attempt}/{RETRIES - 1}); "
+                    "committed files are kept."
+                )
+                time.sleep(RETRY_SECONDS)
 
     print()
     print("=" * 78)

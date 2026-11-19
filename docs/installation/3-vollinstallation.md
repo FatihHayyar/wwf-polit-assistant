@@ -129,7 +129,7 @@ Fertig, wenn `All requested export files are present` erscheint. Meldet der Befe
 
 Das Fenster zeigt den Fortschritt je Bereich. Fertig, wenn wieder die Eingabezeile erscheint und davor `[VALIDATION OK]` steht.
 
-Bricht der Import ab (z. B. `server closed the connection unexpectedly`), denselben Befehl erneut ausführen. Kleine Bereiche werden in wenigen Minuten neu geladen, Dokumente und Texte setzen nach der letzten fertigen Datei fort.
+Auf Computern mit wenig Arbeitsspeicher kann die Datenbank während der Dokumente kurz neu starten. Der Import meldet dann `[RETRY] … database connection lost`, wartet eine Minute und setzt nach der letzten fertigen Datei automatisch fort. Erst nach zehn Fehlversuchen bricht er ab; dann denselben Befehl erneut ausführen.
 
 ## 9. Themen zuordnen (mehrere Stunden)
 
