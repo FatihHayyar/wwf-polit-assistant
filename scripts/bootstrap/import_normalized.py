@@ -536,6 +536,74 @@ def mark_file_complete(
         )
 
 
+def defer_search_indexes(conn: psycopg.Connection[Any], table: str) -> None:
+    """Drops the full-text indexes of a table until its import is complete.
+
+    Maintaining a GIN index row by row is many times slower than building it
+    once. The definitions are stored first, so an interrupted import still
+    restores them on the next run.
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS bootstrap_deferred_indexes (
+                table_name TEXT NOT NULL,
+                index_name TEXT PRIMARY KEY,
+                definition TEXT NOT NULL
+            )
+            """
+        )
+        cursor.execute(
+            """
+            INSERT INTO bootstrap_deferred_indexes
+            SELECT tablename, indexname, indexdef
+            FROM pg_indexes
+            WHERE schemaname = current_schema()
+              AND tablename = %s
+              AND indexdef LIKE '%%USING gin%%'
+            ON CONFLICT (index_name) DO NOTHING
+            RETURNING index_name
+            """,
+            (table,),
+        )
+        for (name,) in cursor.fetchall():
+            cursor.execute(
+                sql.SQL("DROP INDEX IF EXISTS {}").format(sql.Identifier(name))
+            )
+            print(f"[INDEX] {name} deferred until the import of {table} is complete.")
+
+    conn.commit()
+
+
+def restore_search_indexes(conn: psycopg.Connection[Any], table: str) -> None:
+    with conn.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT index_name, definition
+            FROM bootstrap_deferred_indexes
+            WHERE table_name = %s
+            """,
+            (table,),
+        )
+        deferred = cursor.fetchall()
+
+    for name, definition in deferred:
+        print(f"[INDEX] Building {name} ...", flush=True)
+        started = time.perf_counter()
+        with conn.cursor() as cursor:
+            cursor.execute("SET maintenance_work_mem = '256MB'")
+            cursor.execute(
+                sql.SQL("DROP INDEX IF EXISTS {}").format(sql.Identifier(name))
+            )
+            cursor.execute(definition)
+            cursor.execute(
+                "DELETE FROM bootstrap_deferred_indexes WHERE index_name = %s",
+                (name,),
+            )
+        conn.commit()
+        print(f"[INDEX] {name} built in {time.perf_counter() - started:.0f}s")
+
+
 def existing_rows(
     conn: psycopg.Connection[Any],
     table: str,
@@ -888,6 +956,8 @@ def import_dataset(
     print(f"CURRENT:       {current:,}")
     print("=" * 78)
 
+    defer_search_indexes(conn, dataset.table)
+
     if dataset.shard_commits:
         import_sharded_dataset(
             conn=conn,
@@ -902,6 +972,8 @@ def import_dataset(
             dataset=dataset,
             files=files,
         )
+
+    restore_search_indexes(conn, dataset.table)
 
 
 def parse_args() -> argparse.Namespace:

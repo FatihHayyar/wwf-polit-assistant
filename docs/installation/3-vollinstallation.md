@@ -127,7 +127,7 @@ Fertig, wenn `All requested export files are present` erscheint. Meldet der Befe
 .\.venv\Scripts\python.exe scripts/bootstrap/import_normalized.py all
 ```
 
-Das Fenster zeigt den Fortschritt je Bereich. Fertig, wenn wieder die Eingabezeile erscheint und davor `[VALIDATION OK]` steht.
+Das Fenster zeigt den Fortschritt je Bereich. Nach jedem Bereich wird dessen Suchindex aufgebaut (`[INDEX] Building …`); bei den Dokumenten kann das allein eine halbe Stunde dauern. Fertig, wenn `NORMALIZED IMPORT COMPLETE` erscheint.
 
 Auf Computern mit wenig Arbeitsspeicher kann die Datenbank während der Dokumente kurz neu starten. Der Import meldet dann `[RETRY] … database connection lost`, wartet eine Minute und setzt nach der letzten fertigen Datei automatisch fort. Erst nach zehn Fehlversuchen bricht er ab; dann denselben Befehl erneut ausführen.
 
